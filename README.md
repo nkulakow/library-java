@@ -6,3 +6,8 @@
 - Janek Hapunik 318659
 - Nel Kułakowska 318687
 
+### Treść zadania:
+
+
+### Wybrana technologia:
+Java Swing
