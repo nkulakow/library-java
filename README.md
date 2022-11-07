@@ -2,7 +2,7 @@
 
 ### Członkowie zespołu:
 - Marcin Wawrzyniak 318741
-- Mateusz Kiełbus
-- Janek Hapunik
+- Mateusz Kiełbus 318668
+- Janek Hapunik 318659
 - Nel Kułakowska 318687
 
