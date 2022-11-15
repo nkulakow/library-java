@@ -25,3 +25,4 @@ Chcemy stworzyć aplikację **desktopową** pozwalającą na **zarządzanie bibl
 ### Wybrane technologie:
 - Java Swing
 - Maven
+- Sqldeveloper
