@@ -11,8 +11,8 @@ Chcemy stworzyć aplikację **desktopową** pozwalającą na **zarządzanie bibl
   
 
 **Wymagania**:
-1. Dostęp do bazy książek i zajerestrowanych klientów
-2. Możliwość edycji baz książek i klientów (nowe książki/nowi klienci)
+1. Dostęp do bazy książek i zajerestrowanych klientów (w tym wyszukiwanie, wyświetlanie jako lista)
+2. Możliwość edycji baz książek i klientów (nowe książki/nowi klienci/zmiana danych elementu)
 3. Możliwość edycji stanu książek (wypożyczenia, zamówienia)
 4. Możliwość naliczenia opłat (za przetrzymanie książek itd.)
 5. Konto administratora (login, hasło)
@@ -20,7 +20,7 @@ Chcemy stworzyć aplikację **desktopową** pozwalającą na **zarządzanie bibl
 **Dodatkowe funkcjonalności**:
 1. Przypomnienia o zbliżaniu się terminu zwrotu
 2. Możliwość automatycznego wysyłania maili
-3. Utworzenie kont dla klientów (login i hasło, wypożyczenia, zamówienia, naliczone opłaty, zbliżające się terminy zwrotu)
+3. Utworzenie kont dla klientów (login i hasło, wypożyczenia, zamówienia, naliczone opłaty, zbliżające się terminy zwrotu, oceny książek itd.)
 
 ### Wybrane technologie:
 - Java Swing
