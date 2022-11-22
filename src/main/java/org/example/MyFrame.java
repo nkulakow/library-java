@@ -36,7 +36,7 @@ public class MyFrame extends JFrame{
         ImageIcon image = new ImageIcon("src/20220715_052950.jpg");
         this.setIconImage(image.getImage());
     }
-     void setLabel()
+     private void setLabel()
      {
          this.label.setText("Bruh, do you even code?");
          this.label.setIcon(image);
