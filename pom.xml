@@ -19,6 +19,7 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
+                <includes><include>wiatrak.jpg</include></includes>
             </resource>
         </resources>
         <plugins>
