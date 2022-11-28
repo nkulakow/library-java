@@ -6,7 +6,7 @@ import java.awt.*;
 public class MyFrame extends JFrame{
     String frameName;
     JLabel label = new JLabel();
-    ImageIcon image = new ImageIcon("src/main/wiatrak.jpg");
+    ImageIcon image = new ImageIcon("src/main/resources/images/wiatrak.jpg");
     int width;
     int height;
     MyFrame(final int f_width, final int f_height)
