@@ -32,7 +32,7 @@ public class LoginPage extends MyFrame implements ActionListener {
     void setLabels(){
         userIDLabel.setBounds(150, 150, 75, 25);
         userPasswordLabel.setBounds(150, 200, 75, 25);
-        messageLabel.setBounds(200, 300, 200, 25);
+        messageLabel.setBounds(200, 300, 400, 25);
 
         userIDField.setBounds(225,150,200,25);
         userPasswordField.setBounds(225,200,200,25);
