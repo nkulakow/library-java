@@ -7,8 +7,9 @@ public class Main {
             loginpage.setVisible(true);
         }
         try {
-            Thread.sleep(1);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
+            System.out.println("Exception!!");
             //tu powinien być log jakiś ale idk jak to zrobić lol
         }
         loginpage.setVisible(false);
