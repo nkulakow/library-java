@@ -1,7 +1,14 @@
 package org.example;
 
-public class Main {
+import lombok.Data;
+
+import java.util.LinkedList;
+
+@Data
+public class Library {
+    private LinkedList<Book> bookList;
     public static void main(String[] args) {
+        Library lib = new Library();
         LoginPage loginpage = new LoginPage(600, 500);
         while (!loginpage.isLoggedIn()){
             loginpage.setVisible(true);
