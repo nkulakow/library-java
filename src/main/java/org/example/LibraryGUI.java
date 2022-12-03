@@ -1,18 +1,19 @@
-package org.example.GUI;
+package org.example;
 
 import java.awt.*;
-import java.nio.charset.MalformedInputException;
 
-public class LibraryGUI {
+
+public class LibraryGUI{
     public static final int LOG_FRAME = 0;
     private static Page login_frame;
     private static Page main_page;
+    private LibraryContext libContext;
     public LibraryGUI() {
-        login_frame = new LogInPage();
-
+        this.libContext = new LibraryContext();
+        login_frame = new LogInPage(this.libContext);
         int width = Toolkit.getDefaultToolkit().getScreenSize().width;
         int height = Toolkit.getDefaultToolkit().getScreenSize().height;
-        LibraryGUI.main_page = new MainPage();
+        LibraryGUI.main_page = new MainPage(this.libContext);
     }
 
     public Page getFrame() {
@@ -27,5 +28,8 @@ public class LibraryGUI {
     public static void changeAfterLogged() {
         LibraryGUI.login_frame.setVisible(false);
         LibraryGUI.main_page.setVisible(true);
+    }
+    public static void main(String[] args) {
+        LibraryGUI lib = new LibraryGUI();
     }
 }

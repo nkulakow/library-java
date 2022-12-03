@@ -1,4 +1,4 @@
-package org.example.GUI;
+package org.example;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,8 +7,8 @@ import java.util.Vector;
 
 public class MainPage extends Page {
     private JPanel options;
-    public MainPage () {
-        super(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
+    public MainPage (LibraryContext libContext) {
+        super(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height, libContext);
         this.init();
     }
 

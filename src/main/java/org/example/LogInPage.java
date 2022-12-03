@@ -1,4 +1,4 @@
-package org.example.GUI;
+package org.example;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,13 +18,13 @@ class LogInPage extends Page {
     private JLabel password_text;
     private JLabel prompt;
 
-    private static final String LOGIN = "root";
-    private static final char[] PASSWORD = new char[] {'r', 'o', 'o', 't'};
+    /* private static final String LOGIN = "root";
+    private static final char[] PASSWORD = new char[] {'r', 'o', 'o', 't'}; */
 
     private JPanel panel;
 
-    public LogInPage() {
-        super(LogInPage.width, LogInPage.height);
+    public LogInPage(LibraryContext libContext) {
+        super(LogInPage.width, LogInPage.height, libContext);
         this.panel = new JPanel();
         this.panel.setLayout(null);
         this.setResizable(false);
@@ -45,7 +45,6 @@ class LogInPage extends Page {
         this.prompt = new JLabel("Enter Your login and password.");
         this.prompt.setBounds(150, 420, 500, 40);
         this.prompt.setFont(new Font(this.prompt.getFont().getName(), Font.PLAIN, 20));
-
         this.panel.add(this.login_field);
         this.panel.add(this.password_field);
         this.panel.add(this.login_button);
@@ -58,12 +57,20 @@ class LogInPage extends Page {
         bottomPanel.add(this.prompt);
         this.add(bottomPanel);
         this.add(this.panel);
-
         this.login_button.addActionListener(this);
+        this.setVisible((true));
     }
 
     private boolean checkLogging() {
-        return this.login_field.getText().equals(LogInPage.LOGIN) && Arrays.equals(this.password_field.getPassword(), LogInPage.PASSWORD);
+        for(Admin ad:this.libContext.getAdmins())
+        {
+            char[] password = ad.getPassword().toCharArray();
+            if(this.login_field.getText().equals(ad.getName()) && Arrays.equals(this.password_field.getPassword(), password))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
