@@ -1,12 +1,22 @@
 package org.example;
 
-import lombok.Data;
-
+import lombok.Getter;
+import lombok.Setter;
 import java.util.LinkedList;
 
-@Data
 public class Library {
+    @Getter @Setter
     private LinkedList<Book> bookList;
+    @Getter @Setter
+    private LinkedList<User> users;
+    @Getter @Setter
+    private LinkedList<Admin> admins;
+    public Library()
+    {
+        this.bookList = null;
+        this.users = null;
+        this.admins.addLast(new Admin("root", "root", 0));
+    }
     public static void main(String[] args) {
         Library lib = new Library();
         LoginPage loginpage = new LoginPage(600, 500);
