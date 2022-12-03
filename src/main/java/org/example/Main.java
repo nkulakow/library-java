@@ -1,19 +1,10 @@
 package org.example;
+import org.example.GUI.LibraryGUI;
 
 public class Main {
+    static LibraryGUI gui_manager;
     public static void main(String[] args) {
-        LoginPage loginpage = new LoginPage(600, 500);
-        while (!loginpage.isLoggedIn()){
-            loginpage.setVisible(true);
-        }
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            System.out.println("Exception!!");
-            //tu powinien być log jakiś ale idk jak to zrobić lol
-        }
-        loginpage.setVisible(false);
-        WelcomePage welcomepage = new WelcomePage(600, 500);
-        welcomepage.setVisible(true);
+        new LibraryGUI();
+        LibraryGUI.showFrame(LibraryGUI.LOG_FRAME);
     }
 }
