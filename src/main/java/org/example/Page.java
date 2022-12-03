@@ -1,12 +1,15 @@
 package org.example;
 
+import lombok.Getter;
+
 import javax.swing.*;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 class Page extends JFrame implements ActionListener {
-    LibraryContext libContext;
+    @Getter
+    private LibraryContext libContext;
     public Page(final int width, final int height, LibraryContext libContext) {
         super();
         this.libContext = libContext;

@@ -58,25 +58,12 @@ class LogInPage extends Page {
         this.add(bottomPanel);
         this.add(this.panel);
         this.login_button.addActionListener(this);
-        this.setVisible((true));
-    }
-
-    private boolean checkLogging() {
-        for(Admin ad:this.libContext.getAdmins())
-        {
-            char[] password = ad.getPassword().toCharArray();
-            if(this.login_field.getText().equals(ad.getName()) && Arrays.equals(this.password_field.getPassword(), password))
-            {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == this.login_button) {
-            if(this.checkLogging()) {
+            if(this.getLibContext().checkLogging(this.login_field.getText(), this.password_field.getPassword())) {
                 LibraryGUI.changeAfterLogged();
             }
             else {
