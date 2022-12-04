@@ -23,8 +23,8 @@ class LogInPage extends Page {
 
     private JPanel panel;
 
-    public LogInPage(LibraryContext libContext) {
-        super(LogInPage.width, LogInPage.height, libContext);
+    public LogInPage() {
+        super(LogInPage.width, LogInPage.height);
         this.panel = new JPanel();
         this.panel.setLayout(null);
         this.setResizable(false);
@@ -63,10 +63,10 @@ class LogInPage extends Page {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == this.login_button) {
-            if(this.getLibContext().checkLogging(this.login_field.getText(), this.password_field.getPassword())) {
-                LibraryGUI.changeAfterLogged();
+            if(LibraryGUI.getLibContext().checkLogging(this.login_field.getText(), this.password_field.getPassword()) == 1) {
+                LibraryGUI.changeAfterLoggedToAdminSite();
             }
-            else {
+            else if(LibraryGUI.getLibContext().checkLogging(this.login_field.getText(), this.password_field.getPassword()) == -1){
                 this.prompt.setText("Incorrect data. Try again.");
             }
         }

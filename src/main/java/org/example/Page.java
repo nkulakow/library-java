@@ -8,11 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 class Page extends JFrame implements ActionListener {
-    @Getter
-    private LibraryContext libContext;
-    public Page(final int width, final int height, LibraryContext libContext) {
+    public Page(final int width, final int height) {
         super();
-        this.libContext = libContext;
         int x_pos = (Toolkit.getDefaultToolkit().getScreenSize().width - width) / 2;
         int y_pos = (Toolkit.getDefaultToolkit().getScreenSize().height - height) / 2;
         this.setBounds(x_pos, y_pos, width, height);

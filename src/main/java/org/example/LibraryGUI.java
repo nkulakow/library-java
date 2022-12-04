@@ -10,16 +10,20 @@ public class LibraryGUI{
     private static Page login_frame;
     private static Page main_page;
     @Getter
-    private LibraryContext libContext;
-    public LibraryGUI() {
-        this.libContext = new LibraryContext();
-        login_frame = new LogInPage(this.getLibContext());
+    private static LibraryContext libContext;
+
+    public static void init()
+    {
+        LibraryGUI.libContext = new LibraryContext();
+        login_frame = new LogInPage();
         int width = Toolkit.getDefaultToolkit().getScreenSize().width;
         int height = Toolkit.getDefaultToolkit().getScreenSize().height;
-        LibraryGUI.main_page = new MainPage(this.getLibContext());
+        LibraryGUI.main_page = new MainPage();
+    }
+    private LibraryGUI() {
     }
 
-    public Page getFrame() {
+    public static Page getFrame() {
         return LibraryGUI.login_frame;
     }
 
@@ -28,12 +32,12 @@ public class LibraryGUI{
             LibraryGUI.login_frame.setVisible(true);
     }
 
-    public static void changeAfterLogged() {
+    public static void changeAfterLoggedToAdminSite() {
         LibraryGUI.login_frame.setVisible(false);
         LibraryGUI.main_page.setVisible(true);
     }
     public static void main(String[] args) {
-        LibraryGUI lib = new LibraryGUI();
-        LibraryGUI.showFrame(0);
+        LibraryGUI.init();
+        LibraryGUI.showFrame(LibraryGUI.LOG_FRAME);
     }
 }
