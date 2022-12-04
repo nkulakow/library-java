@@ -9,6 +9,7 @@ import java.util.Vector;
 
 public class MainPage extends Page {
     private OptionPanel options;
+    final ImageIcon image = new ImageIcon("src/main/resources/images/wiatrak.jpg");
     public MainPage () {
         super(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height - 55);
         this.init();
@@ -19,6 +20,7 @@ public class MainPage extends Page {
         this.initOptions();
         this.initBottom();
         this.initCenter();
+        this.getIcon();
     }
 
     private void initOptions() {
@@ -59,6 +61,12 @@ public class MainPage extends Page {
             }
         }
     }
+
+    private void getIcon()
+    {
+        this.setIconImage(this.image.getImage());
+    }
+
 }
 
 class OptionPanel extends JPanel {
@@ -131,4 +139,6 @@ class CenterPannel extends JPanel {
         this.setBackground(new Color(233, 221, 235));
         this.setPreferredSize(new Dimension(100, 200));
     }
+
+
 }
