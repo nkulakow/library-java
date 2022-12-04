@@ -1,4 +1,4 @@
-package org.example;
+package org.example.LibraryContextPackage;
 
 public class NullOrEmptyStringException extends Exception
 {
