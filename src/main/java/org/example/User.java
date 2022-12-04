@@ -1,28 +1,50 @@
 package org.example;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Objects;
 
 public class User {
-    @Getter @Setter
+    @Getter
     private String login;
-    @Getter @Setter
+    @Getter
     private String password;
 
-    @Getter @Setter
-    private int userId;
-    public User(String name, String password, int id)
+    public void setLogin(String login) throws NullOrEmptyStringException
     {
-        this.userId = id;
-        this.login = name;
+        if(login == null || login.isEmpty())
+        {
+            throw new NullOrEmptyStringException("Login użytkownika nie może być pusty.");
+        }
+        this.login = login;
+    }
+
+    public void setPassword(String password) throws NullOrEmptyStringException
+    {
+        if(password == null || password.isEmpty())
+        {
+            throw new NullOrEmptyStringException("Hasło użytkownika nie może być puste.");
+        }
         this.password = password;
+    }
+
+//    public void setUserId(int id) throws InvalidIdException
+//    {
+//        if(id < 0)
+//        {
+//            throw new InvalidIdException("Nieprawidłowe id użytkownika.");
+//        }
+//        this.userId = id;
+//    }
+    public User(String name, String password) throws NullOrEmptyStringException
+    {
+        this.setLogin(name);
+        this.setPassword(password);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.getUserId());
+        return Objects.hashCode(this.getLogin());
     }
 
     @Override
@@ -34,13 +56,10 @@ public class User {
         if (getClass() != obj.getClass())
             return false;
         User otherUser = (User) obj;
-        if(this.getUserId() == otherUser.getUserId())
+        if(this.getLogin() == otherUser.getLogin())
         {
             return true;
         }
-        else
-        {
-            return false;
-        }
+        return false;
     }
 }

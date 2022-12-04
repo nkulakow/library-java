@@ -12,7 +12,7 @@ public class LibraryGUI{
     @Getter
     private static LibraryContext libContext;
 
-    public static void init()
+    public static void init() throws NullOrEmptyStringException, InvalidIdException
     {
         LibraryGUI.libContext = new LibraryContext();
         login_frame = new LogInPage();
@@ -36,7 +36,7 @@ public class LibraryGUI{
         LibraryGUI.login_frame.setVisible(false);
         LibraryGUI.main_page.setVisible(true);
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NullOrEmptyStringException, InvalidIdException{
         LibraryGUI.init();
         LibraryGUI.showFrame(LibraryGUI.LOG_FRAME);
     }
