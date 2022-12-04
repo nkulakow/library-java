@@ -7,21 +7,21 @@ import java.util.HashSet;
 
 public class LibraryContext {
     @Getter
-    private HashSet<Book> books;
+    private static HashSet<Book> books;
     @Getter
-    private HashSet<User> users;
+    private static HashSet<User> users;
     @Getter
-    private HashSet<Admin> admins;
-    public LibraryContext() throws NullOrEmptyStringException, InvalidIdException
+    private static HashSet<Admin> admins;
+    public static void LibContextInit() throws NullOrEmptyStringException, InvalidIdException
     {
-        this.books = new HashSet<>();
-        this.users = new HashSet<>();
-        this.admins = new HashSet<>();
-        this.admins.add(new Admin("root", "root", 0));
+        LibraryContext.books = new HashSet<>();
+        LibraryContext.users = new HashSet<>();
+        LibraryContext.admins = new HashSet<>();
+        LibraryContext.admins.add(new Admin("root", "root", 0));
     }
 
-    public int checkLogging(String login, char[] password) {
-        for(Admin ad: this.getAdmins())
+    static public int checkLogging(String login, char[] password) {
+        for(Admin ad: LibraryContext.getAdmins())
         {
             char[] ad_password = ad.getPassword().toCharArray();
             if(login.equals(ad.getLogin()) && Arrays.equals(password, ad_password))
@@ -29,7 +29,7 @@ public class LibraryContext {
                 return 1;
             }
         }
-        for(User usr: this.getUsers())
+        for(User usr: LibraryContext.getUsers())
         {
             char[] usr_password = usr.getPassword().toCharArray();
             if(login.equals(usr.getLogin()) && Arrays.equals(password, usr_password))
@@ -40,37 +40,37 @@ public class LibraryContext {
         return -1;
     }
 
-    public boolean addBook(Book book)
+    static public boolean addBook(Book book)
     {
         return books.add(book);
     }
 
-    public boolean addUser(User user)
+    static public boolean addUser(User user)
     {
         return users.add(user);
     }
 
-    public boolean addAdmin(Admin admin)
+    static public boolean addAdmin(Admin admin)
     {
         return admins.add(admin);
     }
 
-    public boolean removeBook(Book book)
+    static public boolean removeBook(Book book)
     {
         return books.remove(book);
     }
 
-    public boolean removeUser(User user)
+    static public boolean removeUser(User user)
     {
         return users.remove(user);
     }
 
-    public boolean removeAdmin(Admin admin)
+    static public boolean removeAdmin(Admin admin)
     {
         return admins.remove(admin);
     }
 
-    public Book searchForBook(String name)
+    static public Book searchForBook(String name)
     {
         for(Book book:books)
         {
@@ -82,7 +82,7 @@ public class LibraryContext {
         return null;
     }
 
-    public Book searchForBook(int id)
+    static public Book searchForBook(int id)
     {
         for(Book book:books)
         {
@@ -94,7 +94,7 @@ public class LibraryContext {
         return null;
     }
 
-    public User searchForUser(String login)
+    static public User searchForUser(String login)
     {
         for(User user:users)
         {
@@ -105,7 +105,7 @@ public class LibraryContext {
         return null;
     }
 
-    public Admin searchForAdmin(int id)
+    static public Admin searchForAdmin(int id)
     {
         for(Admin admin:admins)
         {
@@ -116,7 +116,7 @@ public class LibraryContext {
         return null;
     }
 
-    public Admin searchForAdmin(String login)
+    static public Admin searchForAdmin(String login)
     {
         for(Admin admin:admins)
         {

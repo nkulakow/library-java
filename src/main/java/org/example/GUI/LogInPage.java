@@ -1,5 +1,7 @@
 package org.example.GUI;
 
+import org.example.LibraryContextPackage.LibraryContext;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -59,13 +61,12 @@ class LogInPage extends Page {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == this.login_button) {
-            if(LibraryGUI.getLibContext().checkLogging(this.login_field.getText(), this.password_field.getPassword()) == 1) {
+            if(LibraryContext.checkLogging(this.login_field.getText(), this.password_field.getPassword()) == 1) {
                 LibraryGUI.changeAfterLoggedToAdminSite();
             }
-            else if(LibraryGUI.getLibContext().checkLogging(this.login_field.getText(), this.password_field.getPassword()) == -1){
+            else if(LibraryContext.checkLogging(this.login_field.getText(), this.password_field.getPassword()) == -1){
                 this.prompt.setText("Incorrect login and/or password");
             }
         }
     }
-
 }
