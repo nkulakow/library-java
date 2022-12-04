@@ -10,7 +10,7 @@ import java.util.Vector;
 public class MainPage extends Page {
     private OptionPanel options;
     public MainPage () {
-        super(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
+        super(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height - 55);
         this.init();
     }
 
@@ -47,13 +47,13 @@ public class MainPage extends Page {
         if(e.getSource() instanceof OptionPanel.OptionButton button) {
             switch (button.getActionType()) {
                 case OptionPanel.OptionButton.SEARCH_IN_DATABASE:
-
+                    System.out.println("Search...");
                     break;
                 case OptionPanel.OptionButton.MODIFY_DATABASE:
-
+                    System.out.println("Modify...");
                     break;
                 case OptionPanel.OptionButton.SHOW_ACCOUNT:
-
+                    System.out.println("Show...");
                 default:
                     break;
             }

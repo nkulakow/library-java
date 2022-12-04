@@ -3,7 +3,6 @@ package org.example.GUI;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.Arrays;
 
 class LogInPage extends Page {
     //some constant common stuff
@@ -15,9 +14,6 @@ class LogInPage extends Page {
     private JPasswordField password_field;
     private JButton login_button;
     private JLabel prompt;
-
-    private static final String LOGIN = "root";
-    private static final char[] PASSWORD = new char[] {'r', 'o', 'o', 't'};
 
     private final JPanel panel;
 
@@ -40,9 +36,9 @@ class LogInPage extends Page {
         login_text.setBounds(300, 160, 100, 30);
         JLabel password_text = new JLabel("Enter password");
         password_text.setBounds(300, 260, 150, 30);
-        this.prompt = new JLabel("Enter Your login and password.");
+        this.prompt = new JLabel("Enter your login and password");
         this.prompt.setBounds(150, 420, 500, 40);
-        this.prompt.setFont(new Font(this.prompt.getFont().getName(), Font.PLAIN, 20));
+        this.prompt.setFont(new Font(this.prompt.getFont().getName(), Font.PLAIN, 15));
 
         this.panel.add(this.login_field);
         this.panel.add(this.password_field);
@@ -60,21 +56,16 @@ class LogInPage extends Page {
         this.login_button.addActionListener(this);
     }
 
-    private boolean checkLogging() {
-        return this.login_field.getText().equals(LogInPage.LOGIN) && Arrays.equals(this.password_field.getPassword(), LogInPage.PASSWORD);
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println("bly");
         if (e.getSource() == this.login_button) {
-            if(this.checkLogging()) {
-                this.prompt.setText("Logged in");
-                LibraryGUI.changeAfterLogged();
+            if(LibraryGUI.getLibContext().checkLogging(this.login_field.getText(), this.password_field.getPassword()) == 1) {
+                LibraryGUI.changeAfterLoggedToAdminSite();
             }
-            else {
+            else if(LibraryGUI.getLibContext().checkLogging(this.login_field.getText(), this.password_field.getPassword()) == -1){
                 this.prompt.setText("Incorrect login and/or password");
             }
         }
     }
+
 }
