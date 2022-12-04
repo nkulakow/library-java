@@ -1,8 +1,10 @@
 package org.example;
+import org.example.GUI.LibraryGUI;
 
 public class Main {
+    static LibraryGUI gui_manager;
     public static void main(String[] args) {
-        //System.out.println("Hello world!");
-        new MyFrame(600, 500);
+        new LibraryGUI();
+        LibraryGUI.showFrame(LibraryGUI.LOG_FRAME);
     }
 }
