@@ -27,9 +27,9 @@ Do implementacji interfejsu graficznego wykorzystamy narzędzia środowiska Inte
 Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarządzających interfejsem graficznym. 
 
 **Klasy:**
-1. Klasa Biblioteka_GUI - Steruje całą aplikacją biblioteki w wersji graficznej łącznie z korzystaniem z bazy danych. Odpowiada za połączenie logiki aplikacji z jej interfejsem graficznym.
+1. Klasa Biblioteka_GUI - klasa zawierająca definicje elementów graficznych, obiekty klas kontrolek i zarządzająca nimi, aktualizująca je.
 2. Klasy utworzone do zarządzania kontrolkami.
-3. Klasa Biblioteka_Context - Zawiera obiekty klas administrator, zwykły użytkownik, książka na zasadzie kompozycji. Reprezentuje część logiczną aplikacji. Odpowiada za utrzymanie więzów integralności danych.
+3. Klasa Biblioteka - klasa sterująca. Zawiera obiekty klas administrator, zwykły użytkownik na zasadzie kompozycji. Implementuje metody, które służą do komunikacji między obiektami zawartymi w jej atrybutach. Steruje całą aplikacją biblioteki łącznie z korzystaniem z bazy danych. 
 4. Klasa Książka - reprezentuje książkę, ma atrybuty takie jak nazwa, kategoria, data zwrotu, etc., gettery, settery.
 5. Klasa Użytkownik - klasa reprezentująca użytkownika, ma metody reprezentujące czynności: wypożyczanie, oddawanie, przedłużanie, opłacanie kar za nieoddane książki, ma atrybuty takie jak imię, nazwisko, id, liczba wypożyczonych książek, etc.
 6. Klasa Administrator - ma uprawnienia zwykłego użytkownika, ale dodatkowo rozszerza jego możliwości dzięki zastosowaniu dziedziczenia. Może wykonywać czynności administracyjne na systemie zarządzania biblioteką.
