@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.Vector;
 
 public class MainPage extends Page {
+    private JPanel cards;
     private OptionPanel options;
-    final ImageIcon image = new ImageIcon("src/main/resources/images/wiatrak.jpg");
+
     public MainPage () {
-        super(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height - 55);
+        super(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
         this.init();
     }
 
@@ -19,8 +20,67 @@ public class MainPage extends Page {
         this.setLayout(new BorderLayout());
         this.initOptions();
         this.initBottom();
-        this.initCenter();
-        this.getIcon();
+        this.initcards();
+    }
+
+    private void initcards(){
+        this.cards = new JPanel(new CardLayout());
+        this.initcard1();
+        this.initcard2();
+        this.initcard3();
+        this.initcard4();
+
+        this.add(cards, BorderLayout.CENTER);
+        cardChanged("MAIN");
+    }
+    private void initcard1(){
+        JPanel card1 = new JPanel(new BorderLayout());
+        card1.setPreferredSize(new Dimension(300, 600));
+        JPanel top_panel = new JPanel();
+        JTextField searchtext = new JTextField();
+        searchtext.setPreferredSize(new Dimension(250, 30));
+        JButton searchbutton = new JButton("SEARCH");
+        top_panel.add(searchbutton);
+        top_panel.add(searchtext);
+        card1.add(top_panel, BorderLayout.NORTH);
+        this.cards.add(card1,"SEARCH");
+    }
+
+    private void initcard2(){
+        JPanel card2 = new JPanel(new BorderLayout());
+        JButton add = new JButton("ADD");
+        JButton delete = new JButton("DELETE");
+        JButton modify = new JButton("MODIFY");
+        JPanel top_panel = new JPanel();
+        top_panel.add(add);
+        top_panel.add(delete);
+        top_panel.add(modify);
+        card2.add(top_panel, BorderLayout.WEST);
+        this.cards.add(card2,"MODIFY");
+    }
+
+    private void initcard3(){
+        JPanel card3 = new JPanel(new BorderLayout());
+        JPanel top_panel = new JPanel();
+        card3.setPreferredSize(new Dimension(300, 600));
+        JLabel label= new JLabel("YOUR ACCOUNT");
+        label.setFont(new Font("Verdana",1,20));
+        top_panel.add(label);
+        card3.add(top_panel, BorderLayout.NORTH);
+        this.cards.add(card3,"ACCOUNT");
+    }
+
+    private void initcard4(){
+        JPanel card4 = new JPanel();
+        JLabel label = new JLabel("LIBRARY DATABASE");
+        label.setFont(new Font("Verdana",1,20));
+        card4.add(label);
+        this.cards.add(card4, "MAIN");
+    }
+
+    public void cardChanged(String name){
+        CardLayout cl = (CardLayout)(cards.getLayout());
+        cl.show(cards, name);
     }
 
     private void initOptions() {
@@ -40,33 +100,25 @@ public class MainPage extends Page {
         this.add(new BottomPanel(), BorderLayout.SOUTH);
     }
 
-    private void initCenter() {
-        this.add(new CenterPannel(), BorderLayout.CENTER);
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() instanceof OptionPanel.OptionButton button) {
             switch (button.getActionType()) {
                 case OptionPanel.OptionButton.SEARCH_IN_DATABASE:
-                    System.out.println("Search...");
+                    cardChanged("SEARCH");
                     break;
                 case OptionPanel.OptionButton.MODIFY_DATABASE:
-                    System.out.println("Modify...");
+                    cardChanged("MODIFY");
                     break;
                 case OptionPanel.OptionButton.SHOW_ACCOUNT:
-                    System.out.println("Show...");
+                    cardChanged("ACCOUNT");
+                    break;
                 default:
                     break;
             }
         }
     }
-
-    private void getIcon()
-    {
-        this.setIconImage(this.image.getImage());
-    }
-
 }
 
 class OptionPanel extends JPanel {
@@ -132,13 +184,4 @@ class BottomPanel extends JPanel {
         this.setBackground(new Color(94, 94, 94));
         this.setPreferredSize(new Dimension(100, 100));
     }
-}
-
-class CenterPannel extends JPanel {
-    public CenterPannel() {
-        this.setBackground(new Color(233, 221, 235));
-        this.setPreferredSize(new Dimension(100, 200));
-    }
-
-
 }
