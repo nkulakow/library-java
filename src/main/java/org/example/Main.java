@@ -10,5 +10,8 @@ public class Main {
         LibraryGUI.GUIInit();
         LibraryContext.LibContextInit();
         LibraryGUI.showFrame(LibraryGUI.LOG_FRAME);
+
+        JDBC connection = new JDBC();
+        connection.test_connection();
     }
 }
