@@ -10,7 +10,9 @@ public class JDBC {
             String login = "janczor1";
             String password = "2.kfkDFZFdJwK2k";
             System.out.println("connecting...");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             Connection connection = DriverManager.getConnection(url, login, password);
+
             Statement statement = connection.createStatement();
             ResultSet resultset = statement.executeQuery("select * from users");
             while (resultset.next()){
