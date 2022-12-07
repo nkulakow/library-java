@@ -36,13 +36,16 @@ Do implementacji interfejsu graficznego wykorzystamy narzędzia środowiska Inte
 Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarządzających interfejsem graficznym. 
 
 **Klasy:**
-1. Klasa Biblioteka_GUI - klasa zawierająca definicje elementów graficznych, obiekty klas kontrolek i zarządzająca nimi, aktualizująca je.
+1. Klasa LibraryGUI - klasa zawierająca definicje elementów graficznych, obiekty klas kontrolek i stron, zarządzająca nimi, aktualizująca je.
 2. Klasy utworzone do zarządzania kontrolkami.
-3. Klasa Biblioteka - klasa sterująca. Zawiera obiekty klas administrator, zwykły użytkownik na zasadzie kompozycji. Implementuje metody, które służą do komunikacji między obiektami zawartymi w jej atrybutach. Steruje całą aplikacją biblioteki łącznie z korzystaniem z bazy danych. 
-4. Klasa Książka - reprezentuje książkę, ma atrybuty takie jak nazwa, kategoria, data zwrotu, etc., gettery, settery.
-5. Klasa Użytkownik - klasa reprezentująca użytkownika, ma metody reprezentujące czynności: wypożyczanie, oddawanie, przedłużanie, opłacanie kar za nieoddane książki, ma atrybuty takie jak imię, nazwisko, id, liczba wypożyczonych książek, etc.
-6. Klasa Administrator - ma uprawnienia zwykłego użytkownika, ale dodatkowo rozszerza jego możliwości dzięki zastosowaniu dziedziczenia. Może wykonywać czynności administracyjne na systemie zarządzania biblioteką.
-7. Klasa Baza danych - klasa reprezentująca bazę danych.
+3. Klasa MainPage - klasa przedstawiająca elementy graficzne strony głównej, obok ma zdefiniowane klasy kontrolek: OptionPanel i BottomPanel.
+4. Klasa LoginPage - klasa przedstawiająca elementy graficzne strony logowania.
+4. Klasa LibraryContext - klasa sterująca. Zawiera obiekty klas Admin, User na zasadzie kompozycji. Implementuje metody, które służą do komunikacji między obiektami zawartymi w jej atrybutach. Steruje całą aplikacją biblioteki łącznie z korzystaniem z bazy danych. 
+5. Klasa Book - reprezentuje książkę, ma atrybuty takie jak nazwa, kategoria, data zwrotu, etc., gettery, settery.
+6. Klasa User - klasa reprezentująca użytkownika, ma metody reprezentujące czynności: wypożyczanie, oddawanie, przedłużanie, opłacanie kar za nieoddane książki, ma atrybuty takie jak imię, nazwisko, id, liczba wypożyczonych książek, etc.
+7. Klasa Admin - ma uprawnienia zwykłego użytkownika, ale dodatkowo rozszerza jego możliwości dzięki zastosowaniu dziedziczenia. Może wykonywać czynności administracyjne na systemie zarządzania biblioteką.
+8. Klasa Baza danych - klasa reprezentująca bazę danych.
+9. Klasy reprezentujące pewne wyjątki m.in. InvalidIdException, NullOrEmptyStringException
 
 **Testy:**  
 Do implementacji testów jednostkowych planujemy używać JUnit. Poszczególne metody i funkcjonalności będą sprawdzane oddzielnie.
