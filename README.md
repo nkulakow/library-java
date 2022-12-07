@@ -6,6 +6,15 @@
 - Janek Hapunik 318659
 - Nel Kułakowska 318687
 
+## Instrukcja instalacji i obsługi
+<ins>Wymagania systemowe</ins>
+- Wersja Javy: 19
+- Wersja Mavena: 3.8.1+ (najlepiej 3.8.6) 
+
+<ins>Uruchamianie z linii komend w systemie Linux</ins>
+- utworzenie pliku jar: *mvn install* lub *mvn package*
+- uruchomienie pliku jar: *java -jar target/pap22l-z01-1.0-SNAPSHOT.jar*
+
 ## Treść zadania:
 Chcemy stworzyć aplikację **desktopową** pozwalającą na **zarządzanie biblioteką** z użyciem języka **Java**.
   
