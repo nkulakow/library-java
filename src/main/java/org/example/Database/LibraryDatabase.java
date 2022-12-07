@@ -27,17 +27,10 @@ public class LibraryDatabase {
         }
     }
 
-    private static void connect() {
-        try {
-            CONNECTION = DriverManager.getConnection(URL, LOGIN, PASSWORD);
-        } catch (java.sql.SQLException bad_connection) {
-            System.out.println("Could not connect to database.");
-        }
-    }
     private static ArrayList<UserInDB> searchUsers(final String query_str) {
         ArrayList<UserInDB> users = new ArrayList<>();
         try {
-            LibraryDatabase.connect();
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, PASSWORD);
             Statement query = CONNECTION.createStatement();
             ResultSet result = query.executeQuery(query_str);
             while (result.next()) {
@@ -60,6 +53,18 @@ public class LibraryDatabase {
             result.add(respresentation);
         }
         return result;
+    }
+
+    public static void addUser(String id, final String name, final String surname) {
+        String query_str = "insert into users values (" + id + ",'" + name + "','" + surname + "')";
+
+        try {
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, PASSWORD);
+            Statement query = CONNECTION.createStatement();
+            query.executeUpdate(query_str);
+        } catch (java.sql.SQLException e) {
+            System.out.println("Could not execute query.");
+        }
     }
 }
 

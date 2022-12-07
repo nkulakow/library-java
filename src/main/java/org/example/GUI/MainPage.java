@@ -1,5 +1,6 @@
 package org.example.GUI;
 
+import lombok.Getter;
 import org.example.Database.LibraryDatabase;
 import org.example.Main;
 
@@ -7,6 +8,8 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -15,7 +18,9 @@ public class MainPage extends Page {
     //content in center
     private JPanel center_panel;
     private OptionPanel search_options;
+    private OptionPanel modify_options;
     private JPanel content_panel;
+    private JPanel current_options;
 
     public MainPage () {
         super(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
@@ -24,9 +29,11 @@ public class MainPage extends Page {
 
     private void init() {
         this.setLayout(new BorderLayout());
+        this.current_options = null;
         this.initCenter();
         this.initOptions();
         this.initSearchOptions();
+        this.initModifyOptions();
         this.initBottom();
         this.initcards();
     }
@@ -43,7 +50,6 @@ public class MainPage extends Page {
                 0,
                 800,
                 800);
-        System.out.println(this.center_panel.getSize().width);
         this.center_panel.add(this.content_panel);
         this.content_panel.setVisible(true);
     }
@@ -142,13 +148,31 @@ public class MainPage extends Page {
         this.search_options.getOptions().get(0).setActionType(OptionPanel.OptionButton.SHOW_USERS);
     }
 
-    private void showSearchOptions() {
-        this.search_options.setVisible(true);
+    private void initModifyOptions() {
+        String[] modify_options_text = {
+                "Add user"
+        };
+        OptionPanel mod_options = new OptionPanel(new Vector<>(List.of(modify_options_text)));
+        for (var option : mod_options.getOptions())
+            option.addActionListener(this);
+        this.modify_options = mod_options;
+        this.modify_options.setBackground(this.getBackground());
+        this.center_panel.add(this.modify_options, BorderLayout.CENTER);
+        this.modify_options.setBounds(0, 0, OptionPanel.OptionButton.BUTTON_WIDTH, OptionPanel.OptionButton.BUTTON_HEIGHT);
+        this.modify_options.setVisible(false);
+
+        this.modify_options.getOptions().get(0).setActionType(OptionPanel.OptionButton.ADD_USER);
     }
 
-    private void hideSearchOptions() {
-        this.search_options.setVisible(false);
+    private void showOptions(OptionPanel options) {
+        if(this.current_options != null) {
+            this.current_options.setVisible(false);
+        }
+        this.current_options = options;
+        this.current_options.setVisible(true);
+        this.center_panel.validate();
     }
+
     private void initBottom() {
         this.add(new BottomPanel(), BorderLayout.SOUTH);
     }
@@ -159,19 +183,37 @@ public class MainPage extends Page {
         var list = new JList<>(users_repr);
         list.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
         this.content_panel.add(list);
+        this.content_panel.setLayout(new FlowLayout());
         this.content_panel.validate();
+        this.content_panel.repaint();
     }
 
+    private void addUser() {
+        this.content_panel.removeAll();
+        this.content_panel.setLayout(new FlowLayout());
+        this.content_panel.setLayout(null);
+        this.content_panel.add(new AddingPanel(this));
+        this.content_panel.validate();
+        this.content_panel.repaint();
+    }
+
+    private void addUserToDatabase() {
+        AddingPanel panel = (AddingPanel) this.content_panel.getComponent(0);
+        var user_data = panel.getData();
+        LibraryDatabase.addUser(user_data.get(0), user_data.get(1), user_data.get(2));
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() instanceof OptionPanel.OptionButton button) {
             switch (button.getActionType()) {
-                case OptionPanel.OptionButton.SEARCH_IN_DATABASE -> this.showSearchOptions();
-                case OptionPanel.OptionButton.MODIFY_DATABASE -> cardChanged("MODIFY");
+                case OptionPanel.OptionButton.SEARCH_IN_DATABASE -> this.showOptions(this.search_options);
+                case OptionPanel.OptionButton.MODIFY_DATABASE -> this.showOptions(this.modify_options);
                 case OptionPanel.OptionButton.SHOW_ACCOUNT -> cardChanged("ACCOUNT");
                 case OptionPanel.OptionButton.EXIT -> Main.exit();
                 case OptionPanel.OptionButton.SHOW_USERS -> this.showUsers();
+                case OptionPanel.OptionButton.ADD_USER -> this.addUser();
+                case OptionPanel.OptionButton.ADD_TO_DATABASE -> this.addUserToDatabase();
                 default -> {
                 }
             }
@@ -215,8 +257,8 @@ class OptionPanel extends JPanel {
         public final static int SHOW_ACCOUNT = 2;
         public final static int EXIT = 3;
         public final static int SHOW_USERS = 4;
-//        public final static int EXIT = 3;
-//        public final static int EXIT = 3;
+        public final static int ADD_USER = 5;
+        public final static int ADD_TO_DATABASE = 6;
 
 
         public final static int BUTTON_WIDTH = 250;
@@ -239,6 +281,35 @@ class OptionPanel extends JPanel {
         public void setActionType(final int new_action) {
             this.action = new_action;
         }
+    }
+}
+
+class AddingPanel extends JPanel {
+    private JTextField id_fild;
+    private JTextField name_fild;
+    private JTextField surname_fild;
+    private OptionPanel.OptionButton add_button;
+    public AddingPanel(ActionListener listener) {
+        this.setLayout(new GridLayout(4, 1));
+        this.id_fild = new JTextField("Id");
+        this.add(this.id_fild);
+        this.name_fild = new JTextField("Name");
+        this.add(this.name_fild);
+        this.surname_fild = new JTextField("Surname");
+        this.add(this.surname_fild);
+        this.add_button = new OptionPanel.OptionButton("Add");
+        this.add_button.addActionListener(listener);
+        this.add_button.setActionType(OptionPanel.OptionButton.ADD_TO_DATABASE);
+        this.add(this.add_button);
+        this.setBounds(200, 0, 400, 120);
+    }
+
+    public ArrayList<String> getData() {
+        ArrayList<String> result = new ArrayList<>();
+        result.add(id_fild.getText());
+        result.add(name_fild.getText());
+        result.add(surname_fild.getText());
+        return result;
     }
 }
 
