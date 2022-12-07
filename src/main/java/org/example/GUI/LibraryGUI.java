@@ -2,6 +2,7 @@ package org.example.GUI;
 
 public class LibraryGUI {
     public static final int LOG_FRAME = 0;
+    public static final int MAIN_FRAME = 1;
     private static Page login_frame;
     private static Page main_page;
     public static void GUIInit() {

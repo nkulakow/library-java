@@ -3,7 +3,6 @@ package org.example.Database;
 import java.sql.Connection;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.List;
 
 public class LibraryDatabase {
     //logging stuff
@@ -35,7 +34,7 @@ public class LibraryDatabase {
             System.out.println("Could not connect to database.");
         }
     }
-    public static List<UserInDB> searchUsers(final String query_str) {
+    private static ArrayList<UserInDB> searchUsers(final String query_str) {
         ArrayList<UserInDB> users = new ArrayList<>();
         try {
             LibraryDatabase.connect();
@@ -51,6 +50,16 @@ public class LibraryDatabase {
             System.out.println("Could not execute query.");
         }
         return users;
+    }
+
+    public static ArrayList<String> getUsers(final String query_str) {
+        ArrayList<String> result = new ArrayList<>();
+        var users = searchUsers(query_str);
+        for(var user : users) {
+            String respresentation = user.getId() + " " + user.getName() + " " + user.getSurname();
+            result.add(respresentation);
+        }
+        return result;
     }
 }
 
