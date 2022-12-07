@@ -1,4 +1,5 @@
 package org.example;
+import org.example.Database.LibraryDatabase;
 import org.example.GUI.LibraryGUI;
 import org.example.LibraryContextPackage.InvalidIdException;
 import org.example.LibraryContextPackage.LibraryContext;
@@ -10,8 +11,6 @@ public class Main {
         LibraryGUI.GUIInit();
         LibraryContext.LibContextInit();
         LibraryGUI.showFrame(LibraryGUI.LOG_FRAME);
-
-        JDBC connection = new JDBC();
-        connection.test_connection();
+        LibraryDatabase.searchUsers("select * from users");
     }
 }
