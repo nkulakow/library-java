@@ -6,6 +6,22 @@
 - Janek Hapunik 318659
 - Nel Kułakowska 318687
 
+## Aktualności
+<ins>Zrealizowane do te pory:</ins>
+- Prorotypy klas zarządzających aplikacją (LibraryContext, LibraryDatabase itp.)
+- Wstępne GUI
+- Prototypowa baza danych
+- Dostęp do bazy danych i podstawowe operacje
+- Prototypowe logowanie (dla administratora)
+
+<ins>Do zrobienia:</ins>
+- Naprawienie niedziałającej ikonki :(
+- Zrefaktoryzowanie kodu
+- Rozbudowanie i usprawnienie operacji na bazie danych
+- Zrobienie ładniejszego GUI (temat przewodni: Kubuś Puchatek)
+- Przestawienie się z obecnej bazy danych na Oracle
+
+
 ## Instrukcja instalacji i obsługi
 <ins>Wymagania systemowe</ins>
 - Wersja Javy: 19
@@ -44,7 +60,7 @@ Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarząd
 5. Klasa Book - reprezentuje książkę, ma atrybuty takie jak nazwa, kategoria, data zwrotu, etc., gettery, settery.
 6. Klasa User - klasa reprezentująca użytkownika, ma metody reprezentujące czynności: wypożyczanie, oddawanie, przedłużanie, opłacanie kar za nieoddane książki, ma atrybuty takie jak imię, nazwisko, id, liczba wypożyczonych książek, etc.
 7. Klasa Admin - ma uprawnienia zwykłego użytkownika, ale dodatkowo rozszerza jego możliwości dzięki zastosowaniu dziedziczenia. Może wykonywać czynności administracyjne na systemie zarządzania biblioteką.
-8. Klasa Baza danych - klasa reprezentująca bazę danych.
+8. Klasa LibraryDatabase - klasa reprezentująca bazę danych.
 9. Klasy reprezentujące pewne wyjątki m.in. InvalidIdException, NullOrEmptyStringException
 
 **Testy:**  
