@@ -7,25 +7,10 @@ import java.util.ArrayList;
 public class LibraryDatabase {
     //logging stuff
 
-    private static final String URL = "jdbc:mysql://db4free.net:3306/librarydbtest1";
-    private static final String LOGIN = "janczor1";
-    private static final String PASSWORD = "2.kfkDFZFdJwK2k";
+    private static final String URL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
+    private static final String LOGIN = "nkulakow";
+    private static final String PASSWORD = "nkulakow";
     private static Connection CONNECTION;
-    public static void test_connection() {
-        try{
-            System.out.println("connecting...");
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection connection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
-            Statement statement = connection.createStatement();
-            ResultSet resultset = statement.executeQuery("select * from users");
-            while (resultset.next()){
-                System.out.println(resultset.getString("user_id"));
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     private static ArrayList<UserInDB> searchUsers(final String query_str) {
         ArrayList<UserInDB> users = new ArrayList<>();
@@ -56,7 +41,7 @@ public class LibraryDatabase {
     }
 
     public static void addUser(String id, final String name, final String surname) {
-        String query_str = "insert into users values (" + id + ",'" + name + "','" + surname + "')";
+        String query_str = "insert into nkulakow.pap_users values (" + id + ",'" + name + "','" + surname + "')";
 
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, PASSWORD);

@@ -179,7 +179,7 @@ public class MainPage extends Page {
 
     private void showUsers() {
         this.content_panel.removeAll();
-        var users_repr = new Vector<>(LibraryDatabase.getUsers("select * from users"));
+        var users_repr = new Vector<>(LibraryDatabase.getUsers("select * from nkulakow.pap_users"));
         var list = new JList<>(users_repr);
         list.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
         this.content_panel.add(list);
