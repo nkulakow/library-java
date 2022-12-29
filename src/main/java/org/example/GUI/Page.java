@@ -12,6 +12,8 @@ class Page extends JFrame implements ActionListener {
         int y_pos = (Toolkit.getDefaultToolkit().getScreenSize().height - height) / 2;
         this.setBounds(x_pos, y_pos, width, height);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        ImageIcon image = new ImageIcon("src/main/resources/images/winnie.jpeg");
+        this.setIconImage(image.getImage());
     }
     @Override
     public void actionPerformed(ActionEvent e) {
