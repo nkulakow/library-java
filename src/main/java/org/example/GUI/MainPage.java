@@ -200,7 +200,7 @@ public class MainPage extends Page {
     private void addUserToDatabase() {
         AddingPanel panel = (AddingPanel) this.content_panel.getComponent(0);
         var user_data = panel.getData();
-        LibraryDatabase.addUser(user_data.get(0), user_data.get(1), user_data.get(2));
+        LibraryDatabase.addUser(user_data.get(0), user_data.get(1), user_data.get(2), user_data.get(3));
     }
 
     @Override
@@ -288,20 +288,23 @@ class AddingPanel extends JPanel {
     private JTextField id_fild;
     private JTextField name_fild;
     private JTextField surname_fild;
+    private JTextField mail_fild;
     private OptionPanel.OptionButton add_button;
     public AddingPanel(ActionListener listener) {
-        this.setLayout(new GridLayout(4, 1));
+        this.setLayout(new GridLayout(5, 1));
         this.id_fild = new JTextField("Id");
         this.add(this.id_fild);
         this.name_fild = new JTextField("Name");
         this.add(this.name_fild);
         this.surname_fild = new JTextField("Surname");
         this.add(this.surname_fild);
+        this.mail_fild = new JTextField("Mail");
+        this.add(this.mail_fild);
         this.add_button = new OptionPanel.OptionButton("Add");
         this.add_button.addActionListener(listener);
         this.add_button.setActionType(OptionPanel.OptionButton.ADD_TO_DATABASE);
         this.add(this.add_button);
-        this.setBounds(200, 0, 400, 120);
+        this.setBounds(200, 0, 400, 150);
     }
 
     public ArrayList<String> getData() {
@@ -309,6 +312,7 @@ class AddingPanel extends JPanel {
         result.add(id_fild.getText());
         result.add(name_fild.getText());
         result.add(surname_fild.getText());
+        result.add(mail_fild.getText());
         return result;
     }
 }

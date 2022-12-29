@@ -22,7 +22,9 @@ public class LibraryDatabase {
                 int id = result.getInt(DatabaseConstants.USER_ID);
                 String name = result.getString(DatabaseConstants.USER_NAME);
                 String surname = result.getString(DatabaseConstants.USER_SURNAME);
-                users.add(new UserInDB(id, name, surname));
+                String mail = result.getString(DatabaseConstants.USER_MAIL);
+                int booksNumber = result.getInt(DatabaseConstants.USER_BOOKS_NR);
+                users.add(new UserInDB(id, name, surname, mail, booksNumber));
             }
         } catch (java.sql.SQLException e) {
             System.out.println("Could not execute query.");
@@ -34,14 +36,14 @@ public class LibraryDatabase {
         ArrayList<String> result = new ArrayList<>();
         var users = searchUsers(query_str);
         for(var user : users) {
-            String respresentation = user.getId() + " " + user.getName() + " " + user.getSurname();
+            String respresentation = user.getId() + " " + user.getName() + " " + user.getSurname()+" "+user.getMail()+" "+user.getBooksNumber();
             result.add(respresentation);
         }
         return result;
     }
 
-    public static void addUser(String id, final String name, final String surname) {
-        String query_str = "insert into nkulakow.pap_users values (" + id + ",'" + name + "','" + surname + "')";
+    public static void addUser(String id, final String name, final String surname, final String mail) {
+        String query_str = "insert into nkulakow.pap_users values (" + id + ",'" + name + "','" + surname + "','" + mail+ "','" + 0  + "')";
 
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, PASSWORD);
@@ -60,4 +62,6 @@ class DatabaseConstants {
     public static final String USER_ID = "user_id";
     public static final String USER_NAME = "first_name";
     public static final String USER_SURNAME = "last_name";
+    public static final String USER_MAIL = "mail";
+    public static final String USER_BOOKS_NR = "books_nr";
 }
