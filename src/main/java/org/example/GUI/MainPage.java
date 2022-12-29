@@ -12,15 +12,17 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+import lombok.Setter;
+import lombok.Getter;
 
 public class MainPage extends Page {
-    private JPanel cards;
     //content in center
     private JPanel center_panel;
+    private OptionPanel main_options;
     private OptionPanel search_options;
     private OptionPanel modify_options;
     private JPanel content_panel;
-    private JPanel current_options;
+    private OptionPanel current_options;
 
     public MainPage () {
         super(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
@@ -35,7 +37,6 @@ public class MainPage extends Page {
         this.initSearchOptions();
         this.initModifyOptions();
         this.initBottom();
-        this.initcards();
     }
 
     private void initCenter() {
@@ -54,66 +55,6 @@ public class MainPage extends Page {
         this.content_panel.setVisible(true);
     }
 
-    private void initcards(){
-        this.cards = new JPanel(new CardLayout());
-        this.initcard1();
-        this.initcard2();
-        this.initcard3();
-        this.initcard4();
-
-        //this.add(cards, BorderLayout.CENTER);
-        cardChanged("MAIN");
-    }
-    private void initcard1(){
-        JPanel card1 = new JPanel(new BorderLayout());
-        card1.setPreferredSize(new Dimension(300, 600));
-        JPanel top_panel = new JPanel();
-        JTextField searchtext = new JTextField();
-        searchtext.setPreferredSize(new Dimension(250, 30));
-        JButton searchbutton = new JButton("SEARCH");
-        top_panel.add(searchbutton);
-        top_panel.add(searchtext);
-        card1.add(top_panel, BorderLayout.NORTH);
-        this.cards.add(card1,"SEARCH");
-    }
-
-    private void initcard2(){
-        JPanel card2 = new JPanel(new BorderLayout());
-        JButton add = new JButton("ADD");
-        JButton delete = new JButton("DELETE");
-        JButton modify = new JButton("MODIFY");
-        JPanel top_panel = new JPanel();
-        top_panel.add(add);
-        top_panel.add(delete);
-        top_panel.add(modify);
-        card2.add(top_panel, BorderLayout.WEST);
-        this.cards.add(card2,"MODIFY");
-    }
-
-    private void initcard3(){
-        JPanel card3 = new JPanel(new BorderLayout());
-        JPanel top_panel = new JPanel();
-        card3.setPreferredSize(new Dimension(300, 600));
-        JLabel label= new JLabel("YOUR ACCOUNT");
-        label.setFont(new Font("Verdana", Font.BOLD,20));
-        top_panel.add(label);
-        card3.add(top_panel, BorderLayout.NORTH);
-        this.cards.add(card3,"ACCOUNT");
-    }
-
-    private void initcard4(){
-        JPanel card4 = new JPanel();
-        JLabel label = new JLabel("LIBRARY DATABASE");
-        label.setFont(new Font("Verdana", Font.BOLD,20));
-        card4.add(label);
-        this.cards.add(card4, "MAIN");
-    }
-
-    public void cardChanged(String name){
-        CardLayout cl = (CardLayout)(cards.getLayout());
-        cl.show(cards, name);
-    }
-
     private void initOptions() {
         String[]  option_text = {
                 "Search in database",
@@ -121,20 +62,22 @@ public class MainPage extends Page {
                 "Show my account",
                 "Exit"
         };
-        OptionPanel options = new OptionPanel(new Vector<>(List.of(option_text)));
-        for (var option : options.getOptions()) {
+        this.main_options = new OptionPanel(new Vector<>(List.of(option_text)));
+        for (var option : this.main_options.getOptions()) {
             option.addActionListener(this);
         }
-        options.getOptions().get(0).setActionType(OptionPanel.OptionButton.SEARCH_IN_DATABASE);
-        options.getOptions().get(1).setActionType(OptionPanel.OptionButton.MODIFY_DATABASE);
-        options.getOptions().get(2).setActionType(OptionPanel.OptionButton.SHOW_ACCOUNT);
-        options.getOptions().get(3).setActionType(OptionPanel.OptionButton.EXIT);
-        this.add(options, BorderLayout.WEST);
+        this.main_options.getOptions().get(0).setActionType(OptionPanel.OptionButton.ACTION.SEARCH_IN_DATABASE);
+        this.main_options.getOptions().get(1).setActionType(OptionPanel.OptionButton.ACTION.MODIFY_DATABASE);
+        this.main_options.getOptions().get(2).setActionType(OptionPanel.OptionButton.ACTION.SHOW_ACCOUNT);
+        this.main_options.getOptions().get(3).setActionType(OptionPanel.OptionButton.ACTION.EXIT);
+        this.add(this.main_options, BorderLayout.WEST);
     }
 
     private void initSearchOptions() {
         String[] search_options_text = {
-                "Show users"
+                "Show users",
+                "Search for user",
+                "Search for book",
         };
         OptionPanel srch_options = new OptionPanel(new Vector<>(List.of(search_options_text)));
         for (var option : srch_options.getOptions())
@@ -142,15 +85,25 @@ public class MainPage extends Page {
         this.search_options = srch_options;
         this.search_options.setBackground(this.getBackground());
         this.center_panel.add(this.search_options, BorderLayout.CENTER);
-        this.search_options.setBounds(0, 0, OptionPanel.OptionButton.BUTTON_WIDTH, OptionPanel.OptionButton.BUTTON_HEIGHT);
+        int panel_height =( OptionPanel.OptionButton.BUTTON_HEIGHT + OptionPanel.MARGIN_SIZE) * this.search_options.LENGTH - OptionPanel.MARGIN_SIZE;
+        this.search_options.setBounds(0, 0, OptionPanel.OptionButton.BUTTON_WIDTH, panel_height);
         this.search_options.setVisible(false);
 
-        this.search_options.getOptions().get(0).setActionType(OptionPanel.OptionButton.SHOW_USERS);
+        this.search_options.getOptions().get(0).setActionType(OptionPanel.OptionButton.ACTION.SHOW_USERS);
+        this.search_options.getOptions().get(0).setAction_manager(new UsersShower());
     }
 
     private void initModifyOptions() {
         String[] modify_options_text = {
-                "Add user"
+                "Add user",
+                "Modify user",
+                "Delete user",
+                "Add book",
+                "Modify book",
+                "Delete book",
+                "Add loan",
+                "Modify loan",
+                "Delete loan"
         };
         OptionPanel mod_options = new OptionPanel(new Vector<>(List.of(modify_options_text)));
         for (var option : mod_options.getOptions())
@@ -158,10 +111,11 @@ public class MainPage extends Page {
         this.modify_options = mod_options;
         this.modify_options.setBackground(this.getBackground());
         this.center_panel.add(this.modify_options, BorderLayout.CENTER);
-        this.modify_options.setBounds(0, 0, OptionPanel.OptionButton.BUTTON_WIDTH, OptionPanel.OptionButton.BUTTON_HEIGHT);
+        int panel_height =( OptionPanel.OptionButton.BUTTON_HEIGHT + OptionPanel.MARGIN_SIZE) * this.modify_options.LENGTH - OptionPanel.MARGIN_SIZE;
+        this.modify_options.setBounds(0, 0, OptionPanel.OptionButton.BUTTON_WIDTH, panel_height);
         this.modify_options.setVisible(false);
 
-        this.modify_options.getOptions().get(0).setActionType(OptionPanel.OptionButton.ADD_USER);
+        this.modify_options.getOptions().get(0).setActionType(OptionPanel.OptionButton.ACTION.ADD_USER);
     }
 
     private void showOptions(OptionPanel options) {
@@ -170,6 +124,7 @@ public class MainPage extends Page {
         }
         this.current_options = options;
         this.current_options.setVisible(true);
+        this.current_options.setBackground(Color.ORANGE);
         this.center_panel.validate();
     }
 
@@ -203,17 +158,33 @@ public class MainPage extends Page {
         LibraryDatabase.addUser(user_data.get(0), user_data.get(1), user_data.get(2), user_data.get(3));
     }
 
+    private void addBook() {}
+    private void addLoan() {}
+    private void deleteUser() {}
+    private void deleteBook() {}
+    private void deleteLoan() {}
+    private void updateUser() {}
+    private void updateBook() {}
+    private void updateLoan() {}
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() instanceof OptionPanel.OptionButton button) {
             switch (button.getActionType()) {
-                case OptionPanel.OptionButton.SEARCH_IN_DATABASE -> this.showOptions(this.search_options);
-                case OptionPanel.OptionButton.MODIFY_DATABASE -> this.showOptions(this.modify_options);
-                case OptionPanel.OptionButton.SHOW_ACCOUNT -> cardChanged("ACCOUNT");
-                case OptionPanel.OptionButton.EXIT -> Main.exit();
-                case OptionPanel.OptionButton.SHOW_USERS -> this.showUsers();
-                case OptionPanel.OptionButton.ADD_USER -> this.addUser();
-                case OptionPanel.OptionButton.ADD_TO_DATABASE -> this.addUserToDatabase();
+                case SEARCH_IN_DATABASE -> this.showOptions(this.search_options);
+                case MODIFY_DATABASE -> this.showOptions(this.modify_options);
+                case EXIT -> Main.exit();
+                case SHOW_USERS -> ((OptionPanel.OptionButton) e.getSource()).getAction_manager().manage(this.content_panel);
+                case ADD_USER -> this.addUser();
+                case ADD_BOOK -> this.addBook();
+                case ADD_LOAN -> this.addLoan();
+                case DELETE_USER -> this.deleteUser();
+                case DELETE_BOOK -> this.deleteBook();
+                case DELETE_LOAN -> this.deleteLoan();
+                case UPDATE_USER -> this.updateUser();
+                case UPDATE_BOOK -> this.updateBook();
+                case UPDATE_LOAN -> this.updateLoan();
+                case ADD_TO_DATABASE -> this.addUserToDatabase();
                 default -> {
                 }
             }
@@ -224,8 +195,12 @@ public class MainPage extends Page {
 class OptionPanel extends JPanel {
     final private Vector<String> options_text;
     private Vector<OptionButton> options;
+    public final int LENGTH;
+
+    public static final int MARGIN_SIZE = 5;
 
     public OptionPanel(final Vector<String> foptions) {
+        LENGTH = foptions.size();
         this.options_text = foptions;
         this.setLayout(null);
         this.setBackground(Color.ORANGE);
@@ -238,7 +213,7 @@ class OptionPanel extends JPanel {
         int i = 0;
         for(String option : this.options_text) {
             OptionButton button = new OptionButton(option);
-            button.setBounds(0, 55 * i, OptionButton.BUTTON_WIDTH, OptionButton.BUTTON_HEIGHT);
+            button.setBounds(0, (OptionButton.BUTTON_HEIGHT + OptionPanel.MARGIN_SIZE) * i, OptionButton.BUTTON_WIDTH, OptionButton.BUTTON_HEIGHT);
             this.options.add(button);
             this.add(button);
             i++;
@@ -250,19 +225,20 @@ class OptionPanel extends JPanel {
     }
 
     static class OptionButton extends JButton {
-        private int action;
-
-        public final static int MODIFY_DATABASE = 0;
-        public final static int SEARCH_IN_DATABASE = 1;
-        public final static int SHOW_ACCOUNT = 2;
-        public final static int EXIT = 3;
-        public final static int SHOW_USERS = 4;
-        public final static int ADD_USER = 5;
-        public final static int ADD_TO_DATABASE = 6;
-
-
+        private ACTION action;
+        public enum ACTION {
+            MODIFY_DATABASE, ADD_TO_DATABASE,
+                ADD_USER, ADD_BOOK, ADD_LOAN,
+                UPDATE_USER, UPDATE_BOOK, UPDATE_LOAN,
+                DELETE_USER, DELETE_BOOK, DELETE_LOAN,
+            SEARCH_IN_DATABASE,
+                SHOW_ACCOUNT, EXIT, SHOW_USERS
+        }
         public final static int BUTTON_WIDTH = 250;
         public final static int BUTTON_HEIGHT = 50;
+
+        @Getter @Setter
+        private FrameContentManager action_manager;
 
         OptionButton(final String text) {
             super(text);
@@ -274,21 +250,21 @@ class OptionPanel extends JPanel {
             this.setBorder(new LineBorder(Color.BLACK));
         }
 
-        public int getActionType() {
+        public ACTION getActionType() {
             return this.action;
         }
 
-        public void setActionType(final int new_action) {
+        public void setActionType(final ACTION new_action) {
             this.action = new_action;
         }
     }
 }
 
 class AddingPanel extends JPanel {
-    private JTextField id_fild;
-    private JTextField name_fild;
-    private JTextField surname_fild;
-    private JTextField mail_fild;
+    private final JTextField id_fild;
+    private final JTextField name_fild;
+    private final JTextField surname_fild;
+    private final JTextField mail_fild;
     private OptionPanel.OptionButton add_button;
     public AddingPanel(ActionListener listener) {
         this.setLayout(new GridLayout(5, 1));
@@ -302,17 +278,17 @@ class AddingPanel extends JPanel {
         this.add(this.mail_fild);
         this.add_button = new OptionPanel.OptionButton("Add");
         this.add_button.addActionListener(listener);
-        this.add_button.setActionType(OptionPanel.OptionButton.ADD_TO_DATABASE);
+        this.add_button.setActionType(OptionPanel.OptionButton.ACTION.ADD_TO_DATABASE);
         this.add(this.add_button);
         this.setBounds(200, 0, 400, 150);
     }
 
     public ArrayList<String> getData() {
         ArrayList<String> result = new ArrayList<>();
-        result.add(id_fild.getText());
-        result.add(name_fild.getText());
-        result.add(surname_fild.getText());
-        result.add(mail_fild.getText());
+        result.add(this.id_fild.getText());
+        result.add(this.name_fild.getText());
+        result.add(this.surname_fild.getText());
+        result.add(this.mail_fild.getText());
         return result;
     }
 }
