@@ -12,10 +12,16 @@ public class Book {
     @Getter
     private String category;
     @Getter @Setter
+    private String author;
+    @Getter @Setter
     private ZonedDateTime returnDate;
 
     @Getter
     private int bookId;
+    @Getter @Setter
+    private boolean available;
+    @Getter @Setter
+    private int userId;
 
     public void setName(String name) throws NullOrEmptyStringException
     {
@@ -65,13 +71,6 @@ public class Book {
         if (getClass() != obj.getClass())
             return false;
         Book otherBook = (Book) obj;
-        if(this.getBookId() == otherBook.getBookId())
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return this.getBookId() == otherBook.getBookId();
     }
 }

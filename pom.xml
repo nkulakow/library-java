@@ -26,7 +26,11 @@
             <version>1.18.24</version>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>com.jtransc</groupId>
+            <artifactId>jtransc-rt</artifactId>
+            <version>0.6.7</version>
+        </dependency>
     </dependencies>
 
     <properties>

@@ -61,10 +61,12 @@ class LogInPage extends Page {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == this.login_button) {
-            if(LibraryContext.checkLogging(this.login_field.getText(), this.password_field.getPassword()) == 1) {
+            String login = this.login_field.getText();
+            String password = String.valueOf(this.password_field.getPassword());
+            if(LibraryContext.checkLogging(login, password) == 1) {
                 LibraryGUI.changeAfterLoggedToAdminSite();
             }
-            else if(LibraryContext.checkLogging(this.login_field.getText(), this.password_field.getPassword()) == -1){
+            else if(LibraryContext.checkLogging(login, password) == -1){
                 this.prompt.setText("Incorrect login and/or password");
             }
         }

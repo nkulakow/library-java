@@ -1,9 +1,8 @@
 package org.example.LibraryContextPackage;
 
 import lombok.Getter;
-import java.util.Arrays;
 import java.util.HashSet;
-//import java.util.Hashtable;
+import java.util.Base64;
 
 public class LibraryContext {
     @Getter
@@ -17,22 +16,24 @@ public class LibraryContext {
         LibraryContext.books = new HashSet<>();
         LibraryContext.users = new HashSet<>();
         LibraryContext.admins = new HashSet<>();
-        LibraryContext.admins.add(new Admin("root", "root", 0));
+        LibraryContext.admins.add(new Admin("nkulakow", "bmt1bGFrb3c=", 0));
+        LibraryContext.admins.add(new Admin("mwawrzy1", "bXdhd3J6eTE=", 1));
+        LibraryContext.admins.add(new Admin("mkielbus", "bWtpZWxidXM=", 2));
+        LibraryContext.admins.add(new Admin("jhapunik", "amhhcHVuaWs=", 3));
     }
 
-    static public int checkLogging(String login, char[] password) {
+    static public int checkLogging(String login, String password) {
+        String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
         for(Admin ad: LibraryContext.getAdmins())
         {
-            char[] ad_password = ad.getPassword().toCharArray();
-            if(login.equals(ad.getLogin()) && Arrays.equals(password, ad_password))
+            if(login.equals(ad.getLogin()) && encodedPassword.equals(ad.getPassword()))
             {
                 return 1;
             }
         }
         for(User usr: LibraryContext.getUsers())
         {
-            char[] usr_password = usr.getPassword().toCharArray();
-            if(login.equals(usr.getLogin()) && Arrays.equals(password, usr_password))
+            if(login.equals(usr.getLogin()) && encodedPassword.equals(usr.getPassword()))
             {
                 return 0;
             }
