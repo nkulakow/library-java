@@ -22,23 +22,25 @@ public class LibraryContext {
         LibraryContext.admins.add(new Admin("jhapunik", "amhhcHVuaWs=", 3));
     }
 
-    static public int checkLogging(String login, String password) {
+    static public boolean checkLoggingAdmins(String login, String password) {
         String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
-        for(Admin ad: LibraryContext.getAdmins())
-        {
-            if(login.equals(ad.getLogin()) && encodedPassword.equals(ad.getPassword()))
-            {
-                return 1;
+        for (Admin ad : LibraryContext.getAdmins()) {
+            if (login.equals(ad.getLogin()) && encodedPassword.equals(ad.getPassword())) {
+                return true;
             }
         }
+        return false;
+    }
+    static public boolean checkLoggingUsers(String login, String password) {
+        String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
         for(User usr: LibraryContext.getUsers())
         {
             if(login.equals(usr.getLogin()) && encodedPassword.equals(usr.getPassword()))
             {
-                return 0;
+                return true;
             }
         }
-        return -1;
+        return false;
     }
 
     static public boolean addBook(Book book)
