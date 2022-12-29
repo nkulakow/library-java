@@ -13,10 +13,35 @@ public class Book {
     private String category;
     @Getter @Setter
     private ZonedDateTime returnDate;
-
+    @Getter
+    private String author;
     @Getter
     private int bookId;
+    @Getter
+    private Integer userId;
+    @Getter
+    private Boolean available;
 
+    public void setAvailable(boolean available)
+    {
+        this.available = available;
+    }
+    public void setUserId(Integer userId) throws InvalidIdException
+    {
+        if(userId != null && userId < 0)
+        {
+            throw new InvalidIdException("Niepoprawne id użytkownika.");
+        }
+        this.userId = userId;
+    }
+    public void setAuthor(String author) throws NullOrEmptyStringException
+    {
+        if(author != null && author.isEmpty())
+        {
+            throw new NullOrEmptyStringException("Brak autora.");
+        }
+        this.author = author;
+    }
     public void setName(String name) throws NullOrEmptyStringException
     {
         if(name == null || name.isEmpty())
@@ -43,12 +68,15 @@ public class Book {
         }
         this.bookId = id;
     }
-    public Book(String name, String category, int id) throws NullOrEmptyStringException, InvalidIdException
+    public Book(String name, String category, int id, String author, boolean available, Integer userId, ZonedDateTime date) throws NullOrEmptyStringException, InvalidIdException
     {
         this.setBookId(id);
         this.setName(name);
         this.setCategory(category);
-        this.returnDate = null;
+        this.setReturnDate(date);
+        this.setAuthor(author);
+        this.setAvailable(available);
+        this.setUserId(userId);
     }
 
     @Override
