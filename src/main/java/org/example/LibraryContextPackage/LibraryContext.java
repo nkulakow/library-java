@@ -12,6 +12,7 @@ public class LibraryContext {
 
     public static void LibContextInit() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
         currentAdmin = new Admin("root", "root", "root", "root", 0, "root@admin.lib.com", 0, 0);
+        Admin.getAdmins().add(currentAdmin);
     }
 
     static public int checkLogging(String login, char[] password) {
