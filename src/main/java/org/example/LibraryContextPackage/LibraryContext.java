@@ -11,21 +11,15 @@ public class LibraryContext {
     private static Admin currentAdmin = null;
     @Getter
     private static User currentUser = null;
-    @Getter
-    private static HashSet<User> users;
-    @Getter
-    private static HashSet<Admin> admins;
-    public static void LibContextInit() throws NullOrEmptyStringException, InvalidIdException
+
+    public static void LibContextInit() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException
     {
-        LibraryContext.books = new HashSet<>();
-        LibraryContext.users = new HashSet<>();
-        LibraryContext.admins = new HashSet<>();
-        currentAdmin = new Admin("root", "root", "root", "root", 0, "root@admin.lib.com", 0, 0);
+        currentAdmin = new Admin("root", "Null", "root", "root", 0, "root@admin.lib.com", 0, 0);
         Admin.getAdmins().add(currentAdmin);
-        LibraryContext.admins.add(new Admin("nkulakow", "bmt1bGFrb3c=", 0));
-        LibraryContext.admins.add(new Admin("mwawrzy1", "bXdhd3J6eTE=", 1));
-        LibraryContext.admins.add(new Admin("mkielbus", "bWtpZWxidXM=", 2));
-        LibraryContext.admins.add(new Admin("jhapunik", "amhhcHVuaWs=", 3));
+        Admin.getAdmins().add(new Admin("nkulakow", "bmt1bGFrb3c=", "Nel", "Kułakowska", 101, "01169201@pw.edu.pl", 0, 1));
+        Admin.getAdmins().add(new Admin("mwawrzy1", "bXdhd3J6eTE=", "Marcin", "Wawrzyniak", 102, "mail@pw.edu.pl", 0, 2));
+        Admin.getAdmins().add(new Admin("mkielbus", "bWtpZWxidXM=", "Mateusz", "Kielbus", 103, "mail.@pw.edu.pl", 0, 3));
+        Admin.getAdmins().add(new Admin("jhapunik", "amhhcHVuaWs=", "Janek", "Hapunik", 104, "mail@pw.edu.pl", 0 ,4));
     }
 
     static public boolean checkLoggingAdmins(String login, String password) {
