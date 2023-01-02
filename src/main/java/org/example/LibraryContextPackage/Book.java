@@ -110,7 +110,7 @@ public class Book implements LibraryContextActions{
 
     @Override
     public String describe() {
-        return null;
+        return Integer.valueOf(this.bookId).toString() + " " + this.name + " " + this.category + " " + " " + this.author + " " ;
     }
 
     @Override

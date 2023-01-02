@@ -171,7 +171,7 @@ public class Admin extends User implements LibraryContextActions{
 
     public HashSet<LibraryContextActions> searchForObject(Isearch searchObject, String searchPattern)
     {
-        return searchObject.searchLib(searchPattern);
+        return searchObject.searchLib(searchPattern, this);
     }
 
     @Override

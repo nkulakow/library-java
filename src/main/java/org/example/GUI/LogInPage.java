@@ -80,7 +80,7 @@ class LogInPage extends Page {
             String password = String.valueOf(this.password_field.getPassword());
             if (this.userbox.isSelected())
             {
-                if(LibraryContext.checkLoggingUsers(login, password)) {
+                if(LibraryContext.checkLogging(login, password.toCharArray()) == 1) {
                     //userpage
                 }
                 else {
@@ -88,7 +88,7 @@ class LogInPage extends Page {
                 }
             }
             else if (this.adminbox.isSelected()) {
-                if (LibraryContext.checkLoggingAdmins(login, password)) {
+                if (LibraryContext.checkLogging(login, password.toCharArray()) == -1) {
                     LibraryGUI.changeAfterLoggedToAdminSite();
                 }
                 else {
