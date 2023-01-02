@@ -1,12 +1,15 @@
 package org.example.Database;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.sql.Connection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Base64;
 
 public class LibraryDatabase {
-    //logging stuff
+    private static final Logger logger = LogManager.getLogger(org.example.Database.LibraryDatabase.class);
 
     private static final String URL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
     private static final String LOGIN = "nkulakow";
@@ -17,6 +20,7 @@ public class LibraryDatabase {
         ArrayList<UserInDB> users = new ArrayList<>();
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getPassword());
+            logger.info("Connected to database.");
             Statement query = CONNECTION.createStatement();
             ResultSet result = query.executeQuery(query_str);
             while (result.next()) {
@@ -27,8 +31,9 @@ public class LibraryDatabase {
                 int booksNumber = result.getInt(DatabaseConstants.USER_BOOKS_NR);
                 users.add(new UserInDB(id, name, surname, mail, booksNumber));
             }
+            logger.info("Executed query in searchUsers method.");
         } catch (java.sql.SQLException e) {
-            System.out.println("Could not execute query.");
+            logger.error("Could not execute query in searchUsers method.");
         }
         return users;
     }
@@ -48,18 +53,19 @@ public class LibraryDatabase {
 
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getPassword());
+            logger.info("Connected to database.");
             Statement query = CONNECTION.createStatement();
             query.executeUpdate(query_str);
+            logger.info("Executed update in addUser method.");
         } catch (java.sql.SQLException e) {
-            System.out.println("Could not execute query.");
+            logger.error("Could not execute query in addUser method.");
         }
     }
 
     private static String getPassword()
     {
         byte[] bytePasswd = Base64.getDecoder().decode(HASHEDPASSWORD);
-        String password = new String(bytePasswd);
-        return password;
+        return new String(bytePasswd);
     }
 }
 

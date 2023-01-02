@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="warn">
+
+    <Properties>
+        <Property name="logPath">target</Property>
+    </Properties>
+
+    <Appenders>
+    <RollingFile name="File" fileName="${logPath}/all_logs.log" filePattern="${logPath}/all_logs_prev.log">
+        <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        <Policies>
+            <OnStartupTriggeringPolicy />
+        </Policies>
+    </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="trace">
+            <AppenderRef ref="File"/>
+        </Root>
+    </Loggers>
+</Configuration>
