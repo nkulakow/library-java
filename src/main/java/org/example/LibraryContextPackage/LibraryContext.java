@@ -2,17 +2,37 @@ package org.example.LibraryContextPackage;
 
 import lombok.Getter;
 import java.util.Arrays;
-
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Vector;
 
 public class LibraryContext {
     @Getter
     private static Admin currentAdmin = null;
     @Getter
-    private static User currentUser = null;
+    private static CommonUser currentUser = null;
+    @Getter
+    private static Admin autoAdmin = null;
 
-    public static void LibContextInit() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
-        currentAdmin = new Admin("root", "root", "root", "root", 0, "root@admin.lib.com", 0, 0);
-        Admin.getAdmins().add(currentAdmin);
+    private static Hashtable<Integer, Vector<CommonUser>> takenBooks = new Hashtable<>();
+
+    private static void orderBook(Book book)
+    {
+        if(takenBooks.containsKey(book.getBookId()))
+        {
+            takenBooks.get(book.getBookId()).add(currentUser);
+        }
+        else
+        {
+            currentUser.orderBook(book);
+        }
+
+    }
+
+    public static void LibContextInit() throws NullOrEmptyStringException, InvalidIdException {
+        autoAdmin = new Admin("root", "root", "root", "root","root@admin.lib.com", 0);
+        autoAdmin.addObject(autoAdmin);
+        currentAdmin = autoAdmin;
     }
 
     static public int checkLogging(String login, char[] password) {
@@ -23,7 +43,7 @@ public class LibraryContext {
                 return 1;
             }
         }
-        for (User usr : Admin.getUsers()) {
+        for (CommonUser usr : Admin.getUsers()) {
             char[] usr_password = usr.getPassword().toCharArray();
             if (login.equals(usr.getLogin()) && Arrays.equals(password, usr_password)) {
                 currentUser = usr;
@@ -33,47 +53,28 @@ public class LibraryContext {
         return -1;
     }
 
-    static public void addBook(Book book) {
-        currentAdmin.addBook(book);
+    static public void addObject(LibraryContextActions libObject)
+    {
+        currentAdmin.addObject(libObject);
     }
 
-    static public void addUser(User user) {
-        currentAdmin.addUser(user);
+    static public void removeObject(LibraryContextActions libObject)
+    {
+        currentAdmin.removeObject(libObject);
     }
 
-    static public void addAdmin(Admin admin) {
-        currentAdmin.addAdmin(admin);
+    static HashSet<LibraryContextActions> searchForObject(Isearch searchObject, String searchPattern)
+    {
+        HashSet<LibraryContextActions> results;
+        if(currentUser != null)
+        {
+            results = autoAdmin.searchForObject(searchObject, searchPattern);
+        }
+        else
+        {
+            results = currentAdmin.searchForObject(searchObject, searchPattern);
+        }
+        return results;
     }
 
-    static public void removeBook(Book book) {
-        currentAdmin.removeBook(book);
-    }
-
-    static public void removeUser(User user) {
-        currentAdmin.removeUser(user);
-    }
-
-    static public void removeAdmin(Admin admin) {
-        currentAdmin.removeAdmin(admin);
-    }
-
-    static public void searchForBook(String name) {
-        Book book = currentAdmin.searchForBook(name);
-    }
-
-    static public void searchForBook(int id) {
-        Book book = currentAdmin.searchForBook(id);
-    }
-
-    static public void searchForUser(String login) {
-        User user = currentAdmin.searchForUser(login);
-    }
-
-    static public void searchForAdmin(int id) {
-        Admin admin = currentAdmin.searchForAdmin(id);
-    }
-
-    static public void searchForAdmin(String login) {
-        Admin admin = currentAdmin.searchForAdmin(login);
-    }
 }

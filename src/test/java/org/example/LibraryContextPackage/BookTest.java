@@ -3,7 +3,7 @@ package org.example.LibraryContextPackage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-class BookTest {
+public class BookTest {
 
     @Test
     public void testBook() throws NullOrEmptyStringException, InvalidIdException

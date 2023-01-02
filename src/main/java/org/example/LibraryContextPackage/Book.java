@@ -4,9 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Objects;
 
-public class Book {
+public class Book implements LibraryContextActions{
     @Getter
     private String name;
     @Getter
@@ -102,4 +103,38 @@ public class Book {
             return false;
         }
     }
+//    @Override
+//    public void prepareForSearch()
+//    {
+//        this.bookId = -1;
+//    }
+//
+//    @Override
+//    public String describe() {
+//        return null;
+//    }
+
+
+    @Override
+    public String describe() {
+        return null;
+    }
+
+    @Override
+    public boolean askToJoinCollection(Admin admin) {
+        Book book = (Book) this;
+        return admin.updateBooks(book, LibObjectsChangeMode.Add);
+    }
+
+    @Override
+    public boolean askToLeaveCollection(Admin admin) {
+        Book book = (Book) this;
+        return admin.updateBooks(book, LibObjectsChangeMode.Remove);
+    }
+
+//    public LibraryContextActions askToSearch(Admin admin)
+//    {
+//        Book book = (Book) this;
+//        return admin.search(book);
+//    }
 }

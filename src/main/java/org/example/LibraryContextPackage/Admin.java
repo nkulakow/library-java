@@ -3,18 +3,90 @@ package org.example.LibraryContextPackage;
 import lombok.Getter;
 
 import java.util.HashSet;
+
 import java.util.Objects;
 
-public class Admin extends User{
+public class Admin extends User implements LibraryContextActions{
 
-    @Getter
     private static HashSet<Book> books = new HashSet<>();
-    @Getter
-    private static HashSet<User> users = new HashSet<>();
-    @Getter
+
+    private static HashSet<CommonUser> users = new HashSet<>();
+
     private static HashSet<Admin> admins = new HashSet<>();
+
+    private HashSet<LibraryContextActions> toSearch;
     @Getter
     private int adminId;
+
+    public void setToSearch(HashSet<LibraryContextActions> set)
+    {
+        this.toSearch = set;
+    }
+    public static HashSet<Book> getBooks()
+    {
+        return new HashSet<Book>(books);
+    }
+
+    public static HashSet<CommonUser> getUsers()
+    {
+        return new HashSet<CommonUser>(users);
+    }
+
+    public static HashSet<Admin> getAdmins()
+    {
+        return new HashSet<Admin>(admins);
+    }
+
+    public boolean updateBooks(Book book, LibObjectsChangeMode mode)
+    {
+        boolean toReturn;
+        switch (mode)
+        {
+            case Add:
+                toReturn = Admin.books.add(book);
+                break;
+            case Remove:
+                toReturn = Admin.books.remove(book);
+                break;
+            default:
+                toReturn = false;
+        }
+        return toReturn;
+    }
+
+    public boolean updateUsers(CommonUser user, LibObjectsChangeMode mode)
+    {
+        boolean toReturn;
+        switch (mode)
+        {
+            case Add:
+                toReturn = Admin.users.add(user);
+                break;
+            case Remove:
+                toReturn = Admin.users.remove(user);
+                break;
+            default:
+                toReturn = false;
+        }
+        return toReturn;
+    }
+
+    public boolean updateAdmins(Admin admin, LibObjectsChangeMode mode)
+    {
+        boolean toReturn;
+        switch (mode)
+        {
+            case Add:
+                toReturn = Admin.admins.add(admin);
+                break;
+            case Remove:
+                toReturn = Admin.admins.remove(admin);
+                break;
+            default:
+                toReturn = false;
+        }
+        return toReturn;
+    }
     public void setAdminId(int id) throws InvalidIdException
     {
         if(id < 0)
@@ -23,96 +95,88 @@ public class Admin extends User{
         }
         this.adminId = id;
     }
-    public Admin(String login, String password, String name, String surname, int userId, String mail, Integer booksNr, int id) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException
+    public Admin(String login, String password, String name, String surname, String mail, int id) throws NullOrEmptyStringException, InvalidIdException
     {
-        super(login, password, name, surname, userId, mail, booksNr);
+        super(login, password, name, surname, mail);
         this.setAdminId(id);
     }
 
-    public boolean addBook(Book book) {return books.add(book); }
 
-    public boolean addUser(User user) {return users.add(user); }
-
-    public boolean addAdmin(Admin admin)
+    public HashSet<LibraryContextActions> search(String search_pattern)
     {
-        return admins.add(admin);
-    }
-
-    public boolean removeBook(Book book)
-    {
-        return books.remove(book);
-    }
-
-    public boolean removeUser(User user)
-    {
-        return users.remove(user);
-    }
-
-    public boolean removeAdmin(Admin admin)
-    {
-        return admins.remove(admin);
-    }
-
-    public Book searchForBook(String name)
-    {
-        for(Book book:books)
+        HashSet<LibraryContextActions> results = new HashSet<>();
+        String[] patterns = search_pattern.split(" ");
+        for(String pattern:patterns)
         {
-            if(book.getName().equals(name))
+            for(LibraryContextActions libObj: this.toSearch)
             {
-                return book;
+                if(libObj.describe().contains(pattern))
+                {
+                    results.add(libObj);
+                }
             }
         }
-        return null;
+        return results;
+    }
+//    public HashSet<LibraryContextActions> searchBooks(String search_pattern)
+//    {
+//        HashSet<LibraryContextActions> results = new HashSet<>();
+//        String[] patterns = search_pattern.split(" ");
+//        for(String pattern:patterns)
+//        {
+//            for(Book InBook: Admin.books)
+//            {
+//                if(InBook.describe().contains(pattern))
+//                {
+//                    results.add(InBook);
+//                }
+//            }
+//        }
+//    return results;
+//    }
+//
+//    public CommonUser searchUsers(String search_pattern)
+//    {
+//        for(CommonUser InUser: Admin.users)
+//        {
+//            if(search_pattern.equals(InUser.describe()))
+//            {
+//                return InUser;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    public Admin searchAdmins(String search_pattern)
+//    {
+//        for(Admin InAdmin:Admin.admins)
+//        {
+//            if(search_pattern.equals(InAdmin.describe()))
+//            {
+//                return InAdmin;
+//            }
+//        }
+//        return null;
+//    }
+
+    public void addObject(LibraryContextActions libObject)
+    {
+        libObject.askToJoinCollection(this);
     }
 
-    public Book searchForBook(int id)
+    public void removeObject(LibraryContextActions libObject)
     {
-        for(Book book:books)
-        {
-            if(book.getBookId() == id)
-            {
-                return book;
-            }
-        }
-        return null;
+        libObject.askToLeaveCollection(this);
     }
 
-    public User searchForUser(String login)
+    public HashSet<LibraryContextActions> searchForObject(Isearch searchObject, String searchPattern)
     {
-        for(User user:users)
-        {
-            if(user.getLogin().equals(login)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    public Admin searchForAdmin(int id)
-    {
-        for(Admin admin:admins)
-        {
-            if(admin.getAdminId() == id) {
-                return admin;
-            }
-        }
-        return null;
-    }
-
-    public Admin searchForAdmin(String login)
-    {
-        for(Admin admin:admins)
-        {
-            if(admin.getLogin().equals(login)) {
-                return admin;
-            }
-        }
-        return null;
+        return searchObject.searchLib(searchPattern);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getUserId(), this.getAdminId(), this.getLogin());
+        return Objects.hash(this.getAdminId(), this.getLogin());
     }
 
     @Override
@@ -124,10 +188,42 @@ public class Admin extends User{
         if (getClass() != obj.getClass())
             return false;
         Admin otherAdmin = (Admin) obj;
-        if(this.getLogin().equals(otherAdmin.getLogin()) || this.getAdminId() == otherAdmin.getAdminId() || this.getUserId() == otherAdmin.getUserId())
+        if(this.getLogin().equals(otherAdmin.getLogin()) || this.getAdminId() == otherAdmin.getAdminId())
         {
             return true;
         }
         return false;
     }
+
+    @Override
+    public String describe()
+    {
+        //TODO
+        return null;
+    }
+
+//    @Override
+//    public void prepareForSearch()
+//    {
+//        this.login = "";
+//        this.adminId = -1;
+//    }
+
+    @Override
+    public boolean askToJoinCollection(Admin admin) {
+        Admin newAdmin = (Admin) this;
+        return admin.updateAdmins(newAdmin, LibObjectsChangeMode.Add);
+    }
+
+    @Override
+    public boolean askToLeaveCollection(Admin admin) {
+        Admin newAdmin = (Admin) this;
+        return admin.updateAdmins(newAdmin, LibObjectsChangeMode.Remove);
+    }
+
+//    @Override
+//    public LibraryContextActions askToSearch(Admin admin) {
+//        Admin newAdmin = (Admin) this;
+//        return admin.search(newAdmin);
+//    }
 }
