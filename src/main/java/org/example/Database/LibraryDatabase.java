@@ -3,19 +3,20 @@ package org.example.Database;
 import java.sql.Connection;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Base64;
 
 public class LibraryDatabase {
     //logging stuff
 
     private static final String URL = "jdbc:oracle:thin:@//ora4.ii.pw.edu.pl:1521/pdb1.ii.pw.edu.pl";
     private static final String LOGIN = "nkulakow";
-    private static final String PASSWORD = "nkulakow";
+    private static final String HASHEDPASSWORD = "bmt1bGFrb3c=";
     private static Connection CONNECTION;
 
     private static ArrayList<UserInDB> searchUsers(final String query_str) {
         ArrayList<UserInDB> users = new ArrayList<>();
         try {
-            CONNECTION = DriverManager.getConnection(URL, LOGIN, PASSWORD);
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getPassword());
             Statement query = CONNECTION.createStatement();
             ResultSet result = query.executeQuery(query_str);
             while (result.next()) {
@@ -43,15 +44,22 @@ public class LibraryDatabase {
     }
 
     public static void addUser(String id, final String name, final String surname, final String mail) {
-        String query_str = "insert into nkulakow.pap_users values (" + id + ",'" + name + "','" + surname + "','" + mail+ "','" + 0  + "')";
+        String query_str = "insert into pap_users values (" + id + ",'" + name + "','" + surname + "','" + mail+ "','" + 0  + "')";
 
         try {
-            CONNECTION = DriverManager.getConnection(URL, LOGIN, PASSWORD);
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getPassword());
             Statement query = CONNECTION.createStatement();
             query.executeUpdate(query_str);
         } catch (java.sql.SQLException e) {
             System.out.println("Could not execute query.");
         }
+    }
+
+    private static String getPassword()
+    {
+        byte[] bytePasswd = Base64.getDecoder().decode(HASHEDPASSWORD);
+        String password = new String(bytePasswd);
+        return password;
     }
 }
 

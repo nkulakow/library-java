@@ -1,5 +1,4 @@
 package org.example;
-import org.example.Database.LibraryDatabase;
 import org.example.GUI.LibraryGUI;
 import org.example.LibraryContextPackage.InvalidBookNumberException;
 import org.example.LibraryContextPackage.InvalidIdException;

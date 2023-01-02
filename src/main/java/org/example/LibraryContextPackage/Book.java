@@ -94,14 +94,7 @@ public class Book implements LibraryContextActions{
         if (getClass() != obj.getClass())
             return false;
         Book otherBook = (Book) obj;
-        if(this.getBookId() == otherBook.getBookId())
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return this.getBookId() == otherBook.getBookId();
     }
 //    @Override
 //    public void prepareForSearch()

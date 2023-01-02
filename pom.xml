@@ -23,8 +23,13 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
+            <version>5.9.1</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jtransc</groupId>
+            <artifactId>jtransc-rt</artifactId>
+            <version>0.6.7</version>
         </dependency>
     </dependencies>
 
@@ -37,8 +42,8 @@
     <build>
         <resources>
             <resource>
-                <directory>src/main/resources</directory>
-                <includes><include>wiatrak.jpg</include></includes>
+                <directory>src/main/resources/images</directory>
+                <includes><include>winnie.jpeg</include></includes>
             </resource>
         </resources>
         <plugins>
