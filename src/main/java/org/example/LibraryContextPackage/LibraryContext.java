@@ -42,22 +42,20 @@ public class LibraryContext {
     }
 
 
-    public static void LibContextInit()
-    {
+    public static void LibContextInit() {
         try {
-            autoAdmin = new Admin("root", "root", "root", "root","root@admin.lib.com", 0);
+            autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
             autoAdmin.addObject(autoAdmin);
             currentAdmin = autoAdmin;
 
-
-            Admin.getAdmins().add(currentAdmin);
-            Admin.getAdmins().add(new Admin("nkulakow", "bmt1bGFrb3c=", "Nel", "Kułakowska", 101, "01169201@pw.edu.pl", 0, 1));
-            Admin.getAdmins().add(new Admin("mwawrzy1", "bXdhd3J6eTE=", "Marcin", "Wawrzyniak", 102, "mail@pw.edu.pl", 0, 2));
-            Admin.getAdmins().add(new Admin("mkielbus", "bWtpZWxidXM=", "Mateusz", "Kielbus", 103, "mail.@pw.edu.pl", 0, 3));
-            Admin.getAdmins().add(new Admin("jhapunik", "amhhcHVuaWs=", "Janek", "Hapunik", 104, "mail@pw.edu.pl", 0, 4));
-            // admin. get admins from db; admin.get users from db
+            autoAdmin.addObject(currentAdmin);
+            autoAdmin.addObject(new Admin("nkulakow", "bmt1bGFrb3c=", "Nel", "Kułakowska", "01169201@pw.edu.pl", 1));
+            autoAdmin.addObject(new Admin("mwawrzy1", "bXdhd3J6eTE=", "Marcin", "Wawrzyniak", "mail@pw.edu.pl", 2));
+            autoAdmin.addObject(new Admin("mkielbus", "bWtpZWxidXM=", "Mateusz", "Kielbus", "mail.@pw.edu.pl", 3));
+            autoAdmin.addObject(new Admin("jhapunik", "amhhcHVuaWs=", "Janek", "Hapunik", "mail@pw.edu.pl", 4));
+            // zamiast tego: get admins from db
         }
-        catch (NullOrEmptyStringException | InvalidIdException | InvalidBookNumberException e){
+        catch (NullOrEmptyStringException | InvalidIdException  e){
             logger.error("Error in LibContextInit: " + e.getMessage());
             Main.exit();
         }
@@ -71,7 +69,6 @@ public class LibraryContext {
         currentUser.returnBook(book);
     }
 
-    }
 
     public static Hashtable<Integer, Float> showPenalties()
     {
@@ -100,7 +97,8 @@ public class LibraryContext {
         return  null;
     }
 
-    static public boolean checkLoggingAdmins(String login, char[] password) {
+    static public boolean checkLoggingAdmins(String login, String password) {
+        String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
         for (Admin ad : Admin.getAdmins()) {
             if (login.equals(ad.getLogin()) && encodedPassword.equals(ad.getPassword())) {
                 currentAdmin = ad;
@@ -111,10 +109,10 @@ public class LibraryContext {
         return false;
     }
     static public boolean checkLoggingUsers(String login, String password) {
-        String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
-        for(User usr: Admin.getUsers())
+
+        for(CommonUser usr: Admin.getUsers())
         {
-            if(login.equals(usr.getLogin()) && encodedPassword.equals(usr.getPassword()))
+            if(login.equals(usr.getLogin()) && password.equals(usr.getPassword()))
             {
                 currentUser = usr;
                 logger.info("Logged in as a User.");
