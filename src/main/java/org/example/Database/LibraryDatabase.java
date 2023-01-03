@@ -31,9 +31,9 @@ public class LibraryDatabase {
                 int booksNumber = result.getInt(DatabaseConstants.USER_BOOKS_NR);
                 users.add(new UserInDB(id, name, surname, mail, booksNumber));
             }
-            logger.info("Executed query in searchUsers method.");
+            logger.info("Executed searchUsers method.");
         } catch (java.sql.SQLException e) {
-            logger.error("Could not execute query in searchUsers method.");
+            logger.warn("Could not execute query in searchUsers method." + e.getMessage());
         }
         return users;
     }
@@ -56,9 +56,9 @@ public class LibraryDatabase {
             logger.info("Connected to database.");
             Statement query = CONNECTION.createStatement();
             query.executeUpdate(query_str);
-            logger.info("Executed update in addUser method.");
+            logger.info("Executed addUser method.");
         } catch (java.sql.SQLException e) {
-            logger.error("Could not execute query in addUser method.");
+            logger.warn("Could not execute query in addUser method." + e.getMessage());
         }
     }
 

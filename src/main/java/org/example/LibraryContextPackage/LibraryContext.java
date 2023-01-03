@@ -1,9 +1,11 @@
 package org.example.LibraryContextPackage;
 
+import org.example.Main;
 import lombok.Getter;
-import java.util.HashSet;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.Base64;
-import java.util.Arrays;
 
 
 public class LibraryContext {
@@ -12,14 +14,22 @@ public class LibraryContext {
     @Getter
     private static User currentUser = null;
 
-    public static void LibContextInit() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException
+    private static final Logger logger = LogManager.getLogger(org.example.LibraryContextPackage.LibraryContext.class);
+    public static void LibContextInit()
     {
-        currentAdmin = new Admin("root", "Null", "root", "root", 0, "root@admin.lib.com", 0, 0);
-        Admin.getAdmins().add(currentAdmin);
-        Admin.getAdmins().add(new Admin("nkulakow", "bmt1bGFrb3c=", "Nel", "Kułakowska", 101, "01169201@pw.edu.pl", 0, 1));
-        Admin.getAdmins().add(new Admin("mwawrzy1", "bXdhd3J6eTE=", "Marcin", "Wawrzyniak", 102, "mail@pw.edu.pl", 0, 2));
-        Admin.getAdmins().add(new Admin("mkielbus", "bWtpZWxidXM=", "Mateusz", "Kielbus", 103, "mail.@pw.edu.pl", 0, 3));
-        Admin.getAdmins().add(new Admin("jhapunik", "amhhcHVuaWs=", "Janek", "Hapunik", 104, "mail@pw.edu.pl", 0 ,4));
+        try {
+            currentAdmin = new Admin("root", "Null", "root", "root", 0, "root@admin.lib.com", 0, 0);
+            Admin.getAdmins().add(currentAdmin);
+            Admin.getAdmins().add(new Admin("nkulakow", "bmt1bGFrb3c=", "Nel", "Kułakowska", 101, "01169201@pw.edu.pl", 0, 1));
+            Admin.getAdmins().add(new Admin("mwawrzy1", "bXdhd3J6eTE=", "Marcin", "Wawrzyniak", 102, "mail@pw.edu.pl", 0, 2));
+            Admin.getAdmins().add(new Admin("mkielbus", "bWtpZWxidXM=", "Mateusz", "Kielbus", 103, "mail.@pw.edu.pl", 0, 3));
+            Admin.getAdmins().add(new Admin("jhapunik", "amhhcHVuaWs=", "Janek", "Hapunik", 104, "mail@pw.edu.pl", 0, 4));
+            // admin. get admins from db; admin.get users from db
+        }
+        catch (NullOrEmptyStringException | InvalidIdException | InvalidBookNumberException e){
+            logger.error("Error in LibContextInit: " + e.getMessage());
+            Main.exit();
+        }
     }
 
     static public boolean checkLoggingAdmins(String login, String password) {
@@ -27,6 +37,7 @@ public class LibraryContext {
         for (Admin ad : Admin.getAdmins()) {
             if (login.equals(ad.getLogin()) && encodedPassword.equals(ad.getPassword())) {
                 currentAdmin = ad;
+                logger.info("Logged in as an Admin.");
                 return true;
             }
         }
@@ -39,6 +50,7 @@ public class LibraryContext {
             if(login.equals(usr.getLogin()) && encodedPassword.equals(usr.getPassword()))
             {
                 currentUser = usr;
+                logger.info("Logged in as a User.");
                 return true;
             }
         }

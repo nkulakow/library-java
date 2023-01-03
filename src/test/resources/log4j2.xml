@@ -6,12 +6,6 @@
     </Properties>
 
     <Appenders>
-    <RollingFile name="File" fileName="${logPath}/all_logs.log" filePattern="${logPath}/all_logs_prev.log">
-        <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-        <Policies>
-            <OnStartupTriggeringPolicy />
-        </Policies>
-    </RollingFile>
         <RollingFile name="TestFile" fileName="${logPath}/test_log.log" filePattern="${logPath}/test_log_prev.log">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
             <Policies>
@@ -26,7 +20,7 @@
         </Logger>
         to jak chcę gdzie indziej logi :)-->
         <Root level="trace">
-            <AppenderRef ref="File"/>
+            <AppenderRef ref="TestFile"/>
         </Root>
     </Loggers>
 </Configuration>
