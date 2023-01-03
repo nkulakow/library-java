@@ -96,21 +96,22 @@ public class Book implements LibraryContextActions{
         Book otherBook = (Book) obj;
         return this.getBookId() == otherBook.getBookId();
     }
-//    @Override
-//    public void prepareForSearch()
-//    {
-//        this.bookId = -1;
-//    }
-//
-//    @Override
-//    public String describe() {
-//        return null;
-//    }
-
 
     @Override
     public String describe() {
-        return Integer.valueOf(this.bookId).toString() + " " + this.name + " " + this.category + " " + " " + this.author + " " ;
+        String date;
+        String userId;
+        if(this.getReturnDate() == null || this.getUserId() == null)
+        {
+            date = "";
+            userId = "";
+        }
+        else
+        {
+            date = this.getReturnDate().toString();
+            userId = this.getUserId().toString();
+        }
+        return Integer.valueOf(this.bookId).toString() + " " + this.name + " " + this.category + " " + this.author + " " + userId + " " + date;
     }
 
     @Override
@@ -125,9 +126,4 @@ public class Book implements LibraryContextActions{
         return admin.updateBooks(book, LibObjectsChangeMode.Remove);
     }
 
-//    public LibraryContextActions askToSearch(Admin admin)
-//    {
-//        Book book = (Book) this;
-//        return admin.search(book);
-//    }
 }

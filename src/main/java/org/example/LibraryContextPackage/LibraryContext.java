@@ -1,10 +1,14 @@
 package org.example.LibraryContextPackage;
 
 import lombok.Getter;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Vector;
+
+import java.lang.reflect.Array;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class LibraryContext {
     @Getter
@@ -14,9 +18,11 @@ public class LibraryContext {
     @Getter
     private static Admin autoAdmin = null;
 
-    private static Hashtable<Integer, Vector<CommonUser>> takenBooks = new Hashtable<>();
+    private static float penalty = 0.5f;
 
-    private static void orderBook(Book book)
+    private static Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks = new Hashtable<>();
+
+    public static void orderBook(Book book, long months)
     {
         if(takenBooks.containsKey(book.getBookId()))
         {
@@ -24,9 +30,49 @@ public class LibraryContext {
         }
         else
         {
-            currentUser.orderBook(book);
+            currentUser.orderBook(book, months);
+            takenBooks.put(currentUser.getUserId(), new ArrayDeque<>());
         }
 
+    }
+
+    public static void returnBook(Book book)
+    {
+        ArrayDeque<CommonUser> users = takenBooks.get(book.getBookId());
+        users.remove();
+        if(users.isEmpty())
+        {
+            takenBooks.remove(book.getBookId());
+        }
+        currentUser.returnBook(book);
+
+    }
+
+    public static Hashtable<Integer, Float> showPenalties()
+    {
+        float penalty = 0;
+        Hashtable<Integer, Float> penalties = new Hashtable<>();
+        HashSet<Book> books = currentUser.showBooks(autoAdmin);
+        for(Book book:books)
+        {
+            Duration anydiff = Duration.between(book.getReturnDate(), ZonedDateTime.now());
+            long diff = ChronoUnit.DAYS.between(book.getReturnDate(), ZonedDateTime.now());
+            if(anydiff.isPositive())
+            {
+                penalty = diff*LibraryContext.penalty;
+            }
+            penalties.put(book.getBookId(), penalty);
+        }
+        return penalties;
+    }
+
+    private static HashSet<Book> showBooks()
+    {
+        if(currentUser != null)
+        {
+            return currentUser.showBooks(autoAdmin);
+        }
+        return  null;
     }
 
     public static void LibContextInit() throws NullOrEmptyStringException, InvalidIdException {

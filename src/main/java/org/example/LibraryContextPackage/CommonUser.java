@@ -2,7 +2,9 @@ package org.example.LibraryContextPackage;
 
 import lombok.Getter;
 
+import java.time.ZonedDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 public class CommonUser extends User implements LibraryContextActions{
@@ -36,17 +38,42 @@ public class CommonUser extends User implements LibraryContextActions{
         this.setBooksNr(booksNr);
     }
 
-    public void orderBook(Book book)
+    public void orderBook(Book book, long months)
     {
         try
         {
             book.setUserId(this.getUserId());
+            book.setReturnDate(ZonedDateTime.now().plusMonths(months));
         }
         catch (InvalidIdException e)
         {
             return;
         }
 
+    }
+
+    public HashSet<Book> showBooks(Admin admin)
+    {
+        HashSet<LibraryContextActions> books = admin.searchForObject(( String searchPattern ,Admin _admin)->{_admin.setToSearch(new HashSet<LibraryContextActions>(Admin.getBooks()));return _admin.search(searchPattern);}, Integer.valueOf(this.getUserId()).toString());
+        HashSet<Book> results = new HashSet<>();
+        for(LibraryContextActions libObj:books)
+        {
+            results.add((Book) libObj);
+        }
+        return results;
+    }
+
+    public void returnBook(Book book)
+    {
+        try
+        {
+            book.setUserId(null);
+            book.setReturnDate(null);
+        }
+        catch (InvalidIdException e)
+        {
+            return;
+        }
     }
 
     @Override
@@ -73,16 +100,16 @@ public class CommonUser extends User implements LibraryContextActions{
     @Override
     public String describe()
     {
-        //TODO
-        return null;
+        String mail;
+        if(this.getMail() == null)
+        {
+            mail = "";
+        }
+        else {
+            mail = this.getMail();
+        }
+        return Integer.valueOf(this.getUserId()).toString() + " " + this.getName() + " " + this.getSurname() + " " + mail;
     }
-
-//    @Override
-//    public void prepareForSearch()
-//    {
-//        this.login = "";
-//        this.userId = -1;
-//    }
 
     @Override
     public boolean askToJoinCollection(Admin admin) {
@@ -96,9 +123,4 @@ public class CommonUser extends User implements LibraryContextActions{
         return admin.updateUsers(user, LibObjectsChangeMode.Remove);
     }
 
-//    public LibraryContextActions askToSearch(Admin admin)
-//    {
-//        CommonUser user = (CommonUser) this;
-//        return admin.search(user);
-//    }
 }

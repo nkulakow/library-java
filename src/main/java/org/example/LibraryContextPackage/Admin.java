@@ -2,6 +2,7 @@ package org.example.LibraryContextPackage;
 
 import lombok.Getter;
 
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 
 import java.util.Objects;
@@ -118,46 +119,6 @@ public class Admin extends User implements LibraryContextActions{
         }
         return results;
     }
-//    public HashSet<LibraryContextActions> searchBooks(String search_pattern)
-//    {
-//        HashSet<LibraryContextActions> results = new HashSet<>();
-//        String[] patterns = search_pattern.split(" ");
-//        for(String pattern:patterns)
-//        {
-//            for(Book InBook: Admin.books)
-//            {
-//                if(InBook.describe().contains(pattern))
-//                {
-//                    results.add(InBook);
-//                }
-//            }
-//        }
-//    return results;
-//    }
-//
-//    public CommonUser searchUsers(String search_pattern)
-//    {
-//        for(CommonUser InUser: Admin.users)
-//        {
-//            if(search_pattern.equals(InUser.describe()))
-//            {
-//                return InUser;
-//            }
-//        }
-//        return null;
-//    }
-//
-//    public Admin searchAdmins(String search_pattern)
-//    {
-//        for(Admin InAdmin:Admin.admins)
-//        {
-//            if(search_pattern.equals(InAdmin.describe()))
-//            {
-//                return InAdmin;
-//            }
-//        }
-//        return null;
-//    }
 
     public void addObject(LibraryContextActions libObject)
     {
@@ -198,16 +159,13 @@ public class Admin extends User implements LibraryContextActions{
     @Override
     public String describe()
     {
-        //TODO
-        return null;
+        String mail;
+        if(this.getMail() == null)
+            mail = "";
+        else
+            mail = this.getMail();
+        return Integer.valueOf(this.getAdminId()).toString() + " " + this.getName() + " " + this.getSurname() + " " + mail;
     }
-
-//    @Override
-//    public void prepareForSearch()
-//    {
-//        this.login = "";
-//        this.adminId = -1;
-//    }
 
     @Override
     public boolean askToJoinCollection(Admin admin) {
@@ -221,9 +179,4 @@ public class Admin extends User implements LibraryContextActions{
         return admin.updateAdmins(newAdmin, LibObjectsChangeMode.Remove);
     }
 
-//    @Override
-//    public LibraryContextActions askToSearch(Admin admin) {
-//        Admin newAdmin = (Admin) this;
-//        return admin.search(newAdmin);
-//    }
 }
