@@ -4,9 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
+import java.util.Collection;
 import java.util.Objects;
 
-public class Book {
+public class Book implements LibraryContextActions{
     @Getter
     private String name;
     @Getter
@@ -95,4 +96,34 @@ public class Book {
         Book otherBook = (Book) obj;
         return this.getBookId() == otherBook.getBookId();
     }
+
+    @Override
+    public String describe() {
+        String date;
+        String userId;
+        if(this.getReturnDate() == null || this.getUserId() == null)
+        {
+            date = "";
+            userId = "";
+        }
+        else
+        {
+            date = this.getReturnDate().toString();
+            userId = this.getUserId().toString();
+        }
+        return Integer.valueOf(this.bookId).toString() + " " + this.name + " " + this.category + " " + this.author + " " + userId + " " + date;
+    }
+
+    @Override
+    public boolean askToJoinCollection(Admin admin) {
+        Book book = (Book) this;
+        return admin.updateBooks(book, LibObjectsChangeMode.Add);
+    }
+
+    @Override
+    public boolean askToLeaveCollection(Admin admin) {
+        Book book = (Book) this;
+        return admin.updateBooks(book, LibObjectsChangeMode.Remove);
+    }
+
 }

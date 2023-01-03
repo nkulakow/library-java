@@ -7,18 +7,49 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Base64;
 
+import java.lang.reflect.Array;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class LibraryContext {
     @Getter
     private static Admin currentAdmin = null;
     @Getter
-    private static User currentUser = null;
+    private static CommonUser currentUser = null;
+    @Getter
+    private static Admin autoAdmin = null;
 
+    private static float penalty = 0.5f;
+
+    private static Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks = new Hashtable<>();
     private static final Logger logger = LogManager.getLogger(org.example.LibraryContextPackage.LibraryContext.class);
+    public static void orderBook(Book book, long months)
+    {
+        if(takenBooks.containsKey(book.getBookId()))
+        {
+            takenBooks.get(book.getBookId()).add(currentUser);
+        }
+        else
+        {
+            currentUser.orderBook(book, months);
+            takenBooks.put(currentUser.getUserId(), new ArrayDeque<>());
+        }
+
+    }
+
+
     public static void LibContextInit()
     {
         try {
-            currentAdmin = new Admin("root", "Null", "root", "root", 0, "root@admin.lib.com", 0, 0);
+            autoAdmin = new Admin("root", "root", "root", "root","root@admin.lib.com", 0);
+            autoAdmin.addObject(autoAdmin);
+            currentAdmin = autoAdmin;
+
+
             Admin.getAdmins().add(currentAdmin);
             Admin.getAdmins().add(new Admin("nkulakow", "bmt1bGFrb3c=", "Nel", "Kułakowska", 101, "01169201@pw.edu.pl", 0, 1));
             Admin.getAdmins().add(new Admin("mwawrzy1", "bXdhd3J6eTE=", "Marcin", "Wawrzyniak", 102, "mail@pw.edu.pl", 0, 2));
@@ -31,9 +62,45 @@ public class LibraryContext {
             Main.exit();
         }
     }
+    public static void returnBook(Book book) {
+        ArrayDeque<CommonUser> users = takenBooks.get(book.getBookId());
+        users.remove();
+        if (users.isEmpty()) {
+            takenBooks.remove(book.getBookId());
+        }
+        currentUser.returnBook(book);
+    }
 
-    static public boolean checkLoggingAdmins(String login, String password) {
-        String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
+    }
+
+    public static Hashtable<Integer, Float> showPenalties()
+    {
+        float penalty = 0;
+        Hashtable<Integer, Float> penalties = new Hashtable<>();
+        HashSet<Book> books = currentUser.showBooks(autoAdmin);
+        for(Book book:books)
+        {
+            Duration anydiff = Duration.between(book.getReturnDate(), ZonedDateTime.now());
+            long diff = ChronoUnit.DAYS.between(book.getReturnDate(), ZonedDateTime.now());
+            if(anydiff.isPositive())
+            {
+                penalty = diff*LibraryContext.penalty;
+            }
+            penalties.put(book.getBookId(), penalty);
+        }
+        return penalties;
+    }
+
+    private static HashSet<Book> showBooks()
+    {
+        if(currentUser != null)
+        {
+            return currentUser.showBooks(autoAdmin);
+        }
+        return  null;
+    }
+
+    static public boolean checkLoggingAdmins(String login, char[] password) {
         for (Admin ad : Admin.getAdmins()) {
             if (login.equals(ad.getLogin()) && encodedPassword.equals(ad.getPassword())) {
                 currentAdmin = ad;
@@ -57,47 +124,28 @@ public class LibraryContext {
         return false;
     }
 
-    static public void addBook(Book book) {
-        currentAdmin.addBook(book);
+    static public void addObject(LibraryContextActions libObject)
+    {
+        currentAdmin.addObject(libObject);
     }
 
-    static public void addUser(User user) {
-        currentAdmin.addUser(user);
+    static public void removeObject(LibraryContextActions libObject)
+    {
+        currentAdmin.removeObject(libObject);
     }
 
-    static public void addAdmin(Admin admin) {
-        currentAdmin.addAdmin(admin);
+    static HashSet<LibraryContextActions> searchForObject(Isearch searchObject, String searchPattern)
+    {
+        HashSet<LibraryContextActions> results;
+        if(currentUser != null)
+        {
+            results = autoAdmin.searchForObject(searchObject, searchPattern);
+        }
+        else
+        {
+            results = currentAdmin.searchForObject(searchObject, searchPattern);
+        }
+        return results;
     }
 
-    static public void removeBook(Book book) {
-        currentAdmin.removeBook(book);
-    }
-
-    static public void removeUser(User user) {
-        currentAdmin.removeUser(user);
-    }
-
-    static public void removeAdmin(Admin admin) {
-        currentAdmin.removeAdmin(admin);
-    }
-
-    static public void searchForBook(String name) {
-        Book book = currentAdmin.searchForBook(name);
-    }
-
-    static public void searchForBook(int id) {
-        Book book = currentAdmin.searchForBook(id);
-    }
-
-    static public void searchForUser(String login) {
-        User user = currentAdmin.searchForUser(login);
-    }
-
-    static public void searchForAdmin(int id) {
-        Admin admin = currentAdmin.searchForAdmin(id);
-    }
-
-    static public void searchForAdmin(String login) {
-        Admin admin = currentAdmin.searchForAdmin(login);
-    }
 }
