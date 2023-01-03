@@ -15,14 +15,14 @@ public class LogTest {
     public void testLogToFile() throws Exception{
         logger.info("This is info.");
         logger.error("This is error.");
-        FileInputStream fileStream = new FileInputStream("target/test_log.log");
+        FileInputStream fileStream = new FileInputStream("target/logs/test_log.log");
         BufferedReader br = new BufferedReader(new InputStreamReader(fileStream));
         String strLine = br.readLine();
         Assertions.assertTrue(strLine.contains("INFO"));
         Assertions.assertTrue(strLine.contains("This is info."));
         strLine = br.readLine();
-        Assertions.assertTrue(strLine.contains("ERROR"));
-        Assertions.assertTrue(strLine.contains("This is error."));
+       Assertions.assertTrue(strLine.contains("ERROR"));
+       Assertions.assertTrue(strLine.contains("This is error."));
         fileStream.close();
     }
 }

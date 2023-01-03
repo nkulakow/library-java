@@ -2,6 +2,7 @@ package org.example.Database;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.example.LibraryContextPackage.*;
 
 import java.sql.Connection;
 import java.sql.*;
@@ -48,6 +49,53 @@ public class LibraryDatabase {
         return result;
     }
 
+    public static ArrayList<Admin> getAdmins(){
+        ArrayList<Admin> admins = new ArrayList<>();
+        try {
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getPassword());
+            logger.info("Connected to database.");
+            Statement query = CONNECTION.createStatement();
+            ResultSet result = query.executeQuery(DatabaseConstants.SELECT_ADMINS);
+            while (result.next()) {
+                int id = result.getInt(DatabaseConstants.ADMIN_ID);
+                String name = result.getString(DatabaseConstants.ADMIN_NAME);
+                String surname = result.getString(DatabaseConstants.ADMIN_SURNAME);
+                String mail = result.getString(DatabaseConstants.ADMIN_MAIL);
+                String login = result.getString(DatabaseConstants.ADMIN_LOGIN);
+                String password = result.getString(DatabaseConstants.ADMIN_PASSWORD);
+                admins.add(new Admin(login, password, name, surname, mail, id));
+            }
+            logger.info("Executed getAdmins method.");
+        } catch (java.sql.SQLException | NullOrEmptyStringException | InvalidIdException e) {
+            logger.warn("Could not execute query in getAdmins method " + e.getMessage());
+        }
+        return admins;
+    }
+
+    public static ArrayList<CommonUser> getCommonUsers(){
+        ArrayList<CommonUser> users = new ArrayList<>();
+        try {
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getPassword());
+            logger.info("Connected to database.");
+            Statement query = CONNECTION.createStatement();
+            ResultSet result = query.executeQuery(DatabaseConstants.SELECT_COMMON_USERS);
+            while (result.next()) {
+                int id = result.getInt(DatabaseConstants.USER_ID);
+                String name = result.getString(DatabaseConstants.USER_NAME);
+                String surname = result.getString(DatabaseConstants.USER_SURNAME);
+                String mail = result.getString(DatabaseConstants.USER_MAIL);
+                String login = result.getString(DatabaseConstants.USER_LOGIN);
+                String password = result.getString(DatabaseConstants.USER_PASSWORD);
+                int booksNumber = result.getInt(DatabaseConstants.USER_BOOKS_NR);
+                users.add(new CommonUser(login, password, name, surname, id, mail, booksNumber));
+            }
+            logger.info("Executed getAdmins method.");
+        } catch (java.sql.SQLException | NullOrEmptyStringException | InvalidIdException | InvalidBookNumberException e) {
+            logger.warn("Could not execute query in getAdmins method " + e.getMessage());
+        }
+        return users;
+    }
+
     public static void addUser(String id, final String name, final String surname, final String mail) {
         String query_str = "insert into pap_users values (" + id + ",'" + name + "','" + surname + "','" + mail+ "','" + 0  + "')";
 
@@ -78,4 +126,14 @@ class DatabaseConstants {
     public static final String USER_SURNAME = "last_name";
     public static final String USER_MAIL = "mail";
     public static final String USER_BOOKS_NR = "books_nr";
+    public static final String USER_LOGIN = "login";
+    public static final String USER_PASSWORD = "password";
+    public static final String SELECT_COMMON_USERS = "SELECT u.*, p.login, p.password from PAP_USERS u join PAP_USERS_PASSWD p on(u.user_id=p.user_id)";
+    public static final String ADMIN_ID = "admin_id";
+    public static final String ADMIN_NAME = "name";
+    public static final String ADMIN_SURNAME = "surname";
+    public static final String ADMIN_LOGIN = "login";
+    public static final String ADMIN_PASSWORD = "password";
+    public static final String ADMIN_MAIL = "mail";
+    public static final String SELECT_ADMINS = "SELECT a.*, p.login, p.password from PAP_ADMINS a join PAP_ADMINS_PASSWD p on(a.admin_id=p.admin_id)";
 }

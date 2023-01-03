@@ -2,7 +2,7 @@
 <Configuration status="warn">
 
     <Properties>
-        <Property name="logPath">target</Property>
+        <Property name="logPath">target/logs</Property>
     </Properties>
 
     <Appenders>
@@ -12,12 +12,6 @@
             <OnStartupTriggeringPolicy />
         </Policies>
     </RollingFile>
-        <RollingFile name="TestFile" fileName="${logPath}/test_log.log" filePattern="${logPath}/test_log_prev.log">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
-            <Policies>
-                <OnStartupTriggeringPolicy />
-            </Policies>
-        </RollingFile>
     </Appenders>
 
     <Loggers>

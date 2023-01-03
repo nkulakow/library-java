@@ -6,11 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.Base64;
-
-import java.lang.reflect.Array;
+import org.example.Database.LibraryDatabase;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -47,13 +44,18 @@ public class LibraryContext {
             autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
             autoAdmin.addObject(autoAdmin);
             currentAdmin = autoAdmin;
-
             autoAdmin.addObject(currentAdmin);
-            autoAdmin.addObject(new Admin("nkulakow", "bmt1bGFrb3c=", "Nel", "Kułakowska", "01169201@pw.edu.pl", 1));
-            autoAdmin.addObject(new Admin("mwawrzy1", "bXdhd3J6eTE=", "Marcin", "Wawrzyniak", "mail@pw.edu.pl", 2));
-            autoAdmin.addObject(new Admin("mkielbus", "bWtpZWxidXM=", "Mateusz", "Kielbus", "mail.@pw.edu.pl", 3));
-            autoAdmin.addObject(new Admin("jhapunik", "amhhcHVuaWs=", "Janek", "Hapunik", "mail@pw.edu.pl", 4));
-            // zamiast tego: get admins from db
+
+            var newAdmins = LibraryDatabase.getAdmins();
+            for (var admin : newAdmins){
+                autoAdmin.addObject(admin);
+            }
+
+            var newUsers = LibraryDatabase.getCommonUsers();
+            for(var user : newUsers){
+                autoAdmin.addObject(user);
+            }
+
         }
         catch (NullOrEmptyStringException | InvalidIdException  e){
             logger.error("Error in LibContextInit: " + e.getMessage());

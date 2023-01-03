@@ -2,11 +2,17 @@
 <Configuration status="warn">
 
     <Properties>
-        <Property name="logPath">target</Property>
+        <Property name="logPath">target/logs</Property>
     </Properties>
 
     <Appenders>
-        <RollingFile name="TestFile" fileName="${logPath}/test_log.log" filePattern="${logPath}/test_log_prev.log">
+        <RollingFile name="TestFile" fileName="${logPath}/test.log" filePattern="${logPath}/test_prev.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="LogTestFile" fileName="${logPath}/test_log.log" filePattern="${logPath}/test_log_prev.log">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
             <Policies>
                 <OnStartupTriggeringPolicy />
@@ -15,10 +21,10 @@
     </Appenders>
 
     <Loggers>
-      <!--  <Logger name="org.example.Database.LibraryDatabase">
-            <AppenderRef ref="TestFile"/>
+        <Logger name="org.example.TestLog.LogTest">
+            <AppenderRef ref="LogTestFile"/>
         </Logger>
-        to jak chcę gdzie indziej logi :)-->
+
         <Root level="trace">
             <AppenderRef ref="TestFile"/>
         </Root>
