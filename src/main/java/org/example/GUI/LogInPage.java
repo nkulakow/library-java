@@ -101,4 +101,9 @@ class LogInPage extends Page {
 
         }
     }
+
+    @Override
+    public void sendMessageToPrompt(final String mes){
+        this.prompt.setText(mes);
+    }
 }

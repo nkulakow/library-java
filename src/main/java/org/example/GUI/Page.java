@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 class Page extends JFrame implements ActionListener {
+
     public Page(final int width, final int height) {
         super();
         int x_pos = (Toolkit.getDefaultToolkit().getScreenSize().width - width) / 2;
@@ -19,4 +20,8 @@ class Page extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
     }
+
+    public void sendMessageToPrompt(final String mes) {
+    }
+
 }

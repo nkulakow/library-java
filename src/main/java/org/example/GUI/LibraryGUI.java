@@ -20,4 +20,8 @@ public class LibraryGUI {
         LibraryGUI.login_frame.setVisible(false);
         LibraryGUI.main_page.setVisible(true);
     }
+
+    public static void sendMessageToLoginPage(final String mes){
+        LibraryGUI.login_frame.sendMessageToPrompt(mes);
+    }
 }

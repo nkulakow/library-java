@@ -28,7 +28,7 @@
 - Wersja Mavena: 3.8.1+ (najlepiej 3.8.6) 
 
 <ins>Uruchamianie z linii komend w systemie Linux</ins>
-- utworzenie pliku jar: *mvn install* lub *mvn package*
+- utworzenie pliku jar: *mvn install* lub *mvn package* lub *mvn -Dmaven.test.skip=true install* (jeśli chcemy pominąć testy)
 - uruchomienie pliku jar: *java -jar target/pap22l-z01-1.0-SNAPSHOT.jar*
 
 ## Treść zadania:

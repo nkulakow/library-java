@@ -1,16 +1,17 @@
 package org.example.LibraryContextPackage;
 
-import org.example.Main;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.SQLException;
 import java.util.Base64;
 import org.example.Database.LibraryDatabase;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import org.example.GUI.LibraryGUI;
 
 public class LibraryContext {
     @Getter
@@ -57,9 +58,9 @@ public class LibraryContext {
             }
 
         }
-        catch (NullOrEmptyStringException | InvalidIdException  e){
+        catch (NullOrEmptyStringException | InvalidIdException | SQLException | InvalidBookNumberException e){
             logger.error("Error in LibContextInit: " + e.getMessage());
-            Main.exit();
+            LibraryGUI.sendMessageToLoginPage("Cannot initialize login process. Please exit and refer to all_logs.log file.");
         }
     }
     public static void returnBook(Book book) {

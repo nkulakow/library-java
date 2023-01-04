@@ -49,7 +49,7 @@ public class LibraryDatabase {
         return result;
     }
 
-    public static ArrayList<Admin> getAdmins(){
+    public static ArrayList<Admin> getAdmins() throws SQLException, NullOrEmptyStringException, InvalidIdException {
         ArrayList<Admin> admins = new ArrayList<>();
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getPassword());
@@ -68,11 +68,12 @@ public class LibraryDatabase {
             logger.info("Executed getAdmins method.");
         } catch (java.sql.SQLException | NullOrEmptyStringException | InvalidIdException e) {
             logger.warn("Could not execute query in getAdmins method " + e.getMessage());
+            throw e;
         }
         return admins;
     }
 
-    public static ArrayList<CommonUser> getCommonUsers(){
+    public static ArrayList<CommonUser> getCommonUsers() throws SQLException, InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException {
         ArrayList<CommonUser> users = new ArrayList<>();
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getPassword());
@@ -89,9 +90,10 @@ public class LibraryDatabase {
                 int booksNumber = result.getInt(DatabaseConstants.USER_BOOKS_NR);
                 users.add(new CommonUser(login, password, name, surname, id, mail, booksNumber));
             }
-            logger.info("Executed getAdmins method.");
+            logger.info("Executed getUsers method.");
         } catch (java.sql.SQLException | NullOrEmptyStringException | InvalidIdException | InvalidBookNumberException e) {
             logger.warn("Could not execute query in getAdmins method " + e.getMessage());
+            throw e;
         }
         return users;
     }
