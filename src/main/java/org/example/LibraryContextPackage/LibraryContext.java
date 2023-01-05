@@ -24,17 +24,20 @@ public class LibraryContext {
     private static float penalty = 0.5f;
 
     private static Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks = new Hashtable<>();
+    private static Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime = new Hashtable<>();
     private static final Logger logger = LogManager.getLogger(org.example.LibraryContextPackage.LibraryContext.class);
     public static void orderBook(Book book, long months)
     {
         if(takenBooks.containsKey(book.getBookId()))
         {
             takenBooks.get(book.getBookId()).add(currentUser);
+            takenBooksOrderedTime.get(book.getBookId()).add(months);
         }
         else
         {
             currentUser.orderBook(book, months);
-            takenBooks.put(currentUser.getUserId(), new ArrayDeque<>());
+            takenBooks.put(book.getBookId(), new ArrayDeque<>());
+            takenBooksOrderedTime.put(book.getBookId(), new ArrayDeque<>());
         }
 
     }
@@ -68,8 +71,22 @@ public class LibraryContext {
         users.remove();
         if (users.isEmpty()) {
             takenBooks.remove(book.getBookId());
+            takenBooksOrderedTime.remove(book.getBookId());
+            currentUser.returnBook(book);
         }
-        currentUser.returnBook(book);
+        else {
+            currentUser.returnBook(book);
+            try
+            {
+                book.setUserId(takenBooks.get(book.getBookId()).remove().getUserId());
+            }
+            catch (InvalidIdException e)
+            {
+
+            }
+            book.setReturnDate(ZonedDateTime.now().plusMonths(takenBooksOrderedTime.get(book.getBookId()).remove()));
+
+        }
     }
 
 
@@ -84,7 +101,14 @@ public class LibraryContext {
             long diff = ChronoUnit.DAYS.between(book.getReturnDate(), ZonedDateTime.now());
             if(anydiff.isPositive())
             {
-                penalty = diff*LibraryContext.penalty;
+                if(diff == 0)
+                {
+                    penalty = 1*LibraryContext.penalty;
+                }
+                else
+                {
+                    penalty = diff*LibraryContext.penalty;
+                }
             }
             penalties.put(book.getBookId(), penalty);
         }
