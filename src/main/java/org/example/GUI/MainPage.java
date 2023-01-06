@@ -65,7 +65,7 @@ public class MainPage extends Page {
         String[] search_options_text = {
                 "Show users",
                 "Search for user",
-                "Search for book",
+                "Search for book"
         };
         OptionPanel srch_options = new OptionPanel(new Vector<>(List.of(search_options_text)), OptionPanel.NOT_MAIN);
         for (var option : srch_options.getOptions())
@@ -81,9 +81,9 @@ public class MainPage extends Page {
         button = (OptionPanel.OptionButton) this.search_options.getOptions().get(0);
         button.setAction_manager(new UsersShower());
         button = (OptionPanel.OptionButton) this.search_options.getOptions().get(1);
-        button.setAction_manager(new MockManager());
+        button.setAction_manager(new SearchShower(SearchShower.USERS));
         button = (OptionPanel.OptionButton) this.search_options.getOptions().get(2);
-        button.setAction_manager(new MockManager());
+        button.setAction_manager(new SearchShower(SearchShower.BOOKS));
     }
 
     private void initModifyOptions() {
