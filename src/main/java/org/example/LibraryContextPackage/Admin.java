@@ -120,14 +120,15 @@ public class Admin extends User implements LibraryContextActions{
         return results;
     }
 
-    public void addObject(LibraryContextActions libObject)
+    public boolean addObject(LibraryContextActions libObject)
     {
-        libObject.askToJoinCollection(this);
+        return libObject.askToJoinCollection(this);
     }
 
-    public void removeObject(LibraryContextActions libObject)
+    public boolean removeObject(LibraryContextActions libObject)
     {
-        libObject.askToLeaveCollection(this);
+
+        return libObject.askToLeaveCollection(this);
     }
 
     public HashSet<LibraryContextActions> searchForObject(Isearch searchObject, String searchPattern)

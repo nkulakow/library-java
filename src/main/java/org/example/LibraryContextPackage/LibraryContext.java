@@ -1,6 +1,7 @@
 package org.example.LibraryContextPackage;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,6 +44,21 @@ public class LibraryContext {
 
     }
 
+    public static void LibContextInitForTests(){
+        try {
+            LibraryDatabase.initLoginInfoForTests();
+
+            autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
+            autoAdmin.addObject(autoAdmin);
+            currentAdmin = autoAdmin;
+            autoAdmin.addObject(currentAdmin);
+
+        }
+        catch (NullOrEmptyStringException | InvalidIdException e){
+            logger.error("Error in LibContextInit: " + e.getMessage());
+            LibraryGUI.sendMessageToLoginPage("Cannot initialize login process. Please exit and refer to all_logs.log file.");
+        }
+    }
 
     public static void LibContextInit() {
         try {
@@ -61,6 +77,11 @@ public class LibraryContext {
             var newUsers = LibraryDatabase.getCommonUsers();
             for(var user : newUsers){
                 autoAdmin.addObject(user);
+            }
+
+            var newBooks = LibraryDatabase.getBooks();
+            for(var book : newBooks){
+                autoAdmin.addObject(book);
             }
 
         }
@@ -153,14 +174,38 @@ public class LibraryContext {
         return false;
     }
 
-    static public void addObject(LibraryContextActions libObject)
+    static public boolean addObject(LibraryContextActions libObject)
     {
-        currentAdmin.addObject(libObject);
+        if (currentAdmin.addObject(libObject)) {
+            if (libObject.getClass().equals(CommonUser.class)) {
+                try {
+                    LibraryDatabase.addUser((CommonUser) libObject);
+                    logger.info("Added user to DB");
+                }
+                catch (SQLException e){
+                    logger.warn("Could not remove user in DB");
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
-    static public void removeObject(LibraryContextActions libObject)
+    static public boolean removeObject(LibraryContextActions libObject)
     {
-        currentAdmin.removeObject(libObject);
+        if (currentAdmin.removeObject(libObject)) {
+            if (libObject.getClass().equals(CommonUser.class)) {
+                try {
+                    LibraryDatabase.removeUser((CommonUser) libObject);
+                    logger.info("Removed user from DB");
+                }
+                catch (SQLException e){
+                    logger.warn("Could not remove user in DB");
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     static public HashSet<LibraryContextActions> searchForObject(Isearch searchObject, String searchPattern)

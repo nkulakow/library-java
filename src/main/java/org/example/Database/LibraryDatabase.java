@@ -7,8 +7,11 @@ import org.example.LibraryContextPackage.*;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.*;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
 
 public class LibraryDatabase {
     private static final Logger logger = LogManager.getLogger(org.example.Database.LibraryDatabase.class);
@@ -32,7 +35,12 @@ public class LibraryDatabase {
         }
     }
 
-    private static ArrayList<UserInDB> searchUsers(final String query_str) throws SQLException {
+    public static void initLoginInfoForTests()  {
+            LOGIN = "n";
+            HASHEDPASSWORD = "password";
+    }
+
+    private static ArrayList<UserInDB> showUsers(final String query_str) throws SQLException {
         ArrayList<UserInDB> users = new ArrayList<>();
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
@@ -59,7 +67,7 @@ public class LibraryDatabase {
         ArrayList<String> result = new ArrayList<>();
         ArrayList<UserInDB> users;
         try {
-            users = searchUsers(query_str);
+            users = showUsers(query_str);
             for(var user : users) {
                 String respresentation = user.getId() + " " + user.getName() + " " + user.getSurname() + " " + user.getMail() + " " + user.getBooksNumber();
                 result.add(respresentation);
@@ -95,6 +103,35 @@ public class LibraryDatabase {
         return admins;
     }
 
+    public static ArrayList<Book> getBooks() throws SQLException, NullOrEmptyStringException, InvalidIdException {
+        ArrayList<Book> books = new ArrayList<>();
+        try {
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
+            logger.info("Connected to database.");
+            Statement query = CONNECTION.createStatement();
+            ResultSet result = query.executeQuery(DatabaseConstants.InquiriesConstants.SELECT_BOOKS);
+            while (result.next()) {
+                int id = result.getInt(DatabaseConstants.BooksConstants.BOOK_ID);
+                String name = result.getString(DatabaseConstants.BooksConstants.NAME);
+                String author = result.getString(DatabaseConstants.BooksConstants.AUTHOR);
+                String category = result.getString(DatabaseConstants.BooksConstants.CATEGORY);
+                boolean available = result.getInt(DatabaseConstants.BooksConstants.AVAILABLE)==1;
+                Date return_date_demo = result.getDate(DatabaseConstants.BooksConstants.RETURN_DATE);
+                ZonedDateTime return_date = null;
+                if (return_date_demo!=null){
+                    return_date = ZonedDateTime.ofInstant(return_date_demo.toInstant(), ZoneId.systemDefault());
+                }
+                int user_id = result.getInt(DatabaseConstants.BooksConstants.USER_ID);
+                books.add(new Book(name, category, id, author, available, user_id, return_date));
+            }
+            logger.info("Executed getBooks method.");
+        } catch (java.sql.SQLException | NullOrEmptyStringException | InvalidIdException e) {
+            logger.warn("Could not execute query in getBooks method " + e.getMessage());
+            throw e;
+        }
+        return books;
+    }
+
     public static ArrayList<CommonUser> getCommonUsers() throws SQLException, InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException {
         ArrayList<CommonUser> users = new ArrayList<>();
         try {
@@ -120,17 +157,38 @@ public class LibraryDatabase {
         return users;
     }
 
-    public static void addUser(String id, final String name, final String surname, final String mail) {
-        String query_str = "insert into nkulakow.pap_users values (" + id + ",'" + name + "','" + surname + "','" + mail+ "','" + 0  + "')";
-
+    public static void addUser(CommonUser user) throws SQLException {
+        String id = String.valueOf(user.getUserId()), name = user.getName(), surname = user.getSurname(),
+                mail = user.getMail(), login = user.getLogin(), password= user.getPassword();
+        String query_str1 = "insert into nkulakow.pap_users values (" + id + ",'" + name + "','" + surname + "','" + mail+ "','" + 0  + "')";
+        String query_str2 = "insert into nkulakow.PAP_USERS_PASSWD values(" + id + ",'" + login + "','" + password+"')";
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
             logger.info("Connected to database.");
             Statement query = CONNECTION.createStatement();
-            query.executeUpdate(query_str);
+            query.executeUpdate(query_str1);
+            query.executeUpdate(query_str2);
             logger.info("Executed addUser method.");
         } catch (java.sql.SQLException e) {
             logger.warn("Could not execute query in addUser method " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public static void removeUser(CommonUser user) throws SQLException {
+        String id = String.valueOf(user.getUserId());
+        String query_str1 = "delete from nkulakow.PAP_USERS_PASSWD where user_id=" + id;
+        String query_str2 = "delete from nkulakow.PAP_USERS where user_id=" + id;
+        try {
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
+            logger.info("Connected to database.");
+            Statement query = CONNECTION.createStatement();
+            query.executeUpdate(query_str1);
+            query.executeUpdate(query_str2);
+            logger.info("Executed removeUser method.");
+        } catch (java.sql.SQLException e) {
+            logger.warn("Could not execute query in removeUser method " + e.getMessage());
+            throw e;
         }
     }
 
@@ -163,6 +221,21 @@ public class LibraryDatabase {
             throw e;
         }
     }
+
+//    public static void modifyBook(Book book){
+//        try {
+//            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
+//            logger.info("Connected to database.");
+//            Statement query = CONNECTION.createStatement();
+//            String query_str;
+//
+//            query.executeUpdate(query_str);
+//            logger.info("Executed addUser method.");
+//        } catch (java.sql.SQLException e) {
+//            logger.warn("Could not execute query in addUser method " + e.getMessage());
+//            throw e;
+//        }
+//    }
 }
 
 class DatabaseConstants {
@@ -189,9 +262,19 @@ class DatabaseConstants {
         public static final String ADMIN_PASSWORD = "password";
         public static final String ADMIN_MAIL = "mail";
     }
+    public static final class BooksConstants {
+        public static final String BOOK_ID = "book_id";
+        public static final String NAME = "name";
+        public static final String AUTHOR = "author";
+        public static final String CATEGORY = "cathegory";
+        public static final String AVAILABLE = "available";
+        public static final String RETURN_DATE = "return_date";
+        public static final String USER_ID = "user_id";
+    }
     public static final class InquiriesConstants {
         public static final String SELECT_COMMON_USERS = "SELECT u.*, p.login, p.password from nkulakow.PAP_USERS u join nkulakow.PAP_USERS_PASSWD p on(u.user_id=p.user_id)";
         public static final String SELECT_ADMINS = "SELECT a.*, p.login, p.password from nkulakow.PAP_ADMINS a join nkulakow.PAP_ADMINS_PASSWD p on(a.admin_id=p.admin_id)";
+        public static final String SELECT_BOOKS = "SELECT * from nkulakow.PAP_BOOKS";
         public static final String UPDATE_ADMIN_PASSWD = "UPDATE nkulakow.PAP_ADMINS_PASSWD set password=";
         public static final String UPDATE_USER_PASSWD = "UPDATE nkulakow.PAP_USERS_PASSWD set password=";
 

@@ -1,8 +1,10 @@
 package org.example.LibraryContextPackage;
 
+import org.example.Database.LibraryDatabase;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -10,8 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LibraryContextTest {
 
     @Test
-    public void testRemoveObject() throws InvalidIdException, InvalidBookNumberException, NullOrEmptyStringException
-    {
+    public void testRemoveObject() throws InvalidIdException, InvalidBookNumberException, NullOrEmptyStringException, IOException {
         int id = 0;
         String login = "asf";
         for(CommonUser user:Admin.getUsers())
@@ -27,7 +28,7 @@ public class LibraryContextTest {
         }
         id += 1;
         CommonUser user = new CommonUser(login, "alksnfka", "lasmf", "oahoa", id, "oiahfiau", 0);
-        LibraryContext.LibContextInit();
+        LibraryContext.LibContextInitForTests();
         LibraryContext.addObject(user);
         int size = Admin.getUsers().size();
         LibraryContext.removeObject(user);
@@ -70,8 +71,7 @@ public class LibraryContextTest {
         Assertions.assertEquals(size - 1, Admin.getBooks().size());
     }
     @Test
-    public void testSearchForObject() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException
-    {
+    public void testSearchForObject() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, IOException {
         int id = 0;
         for(Book book:Admin.getBooks())
         {
@@ -82,7 +82,7 @@ public class LibraryContextTest {
         }
         id += 1;
         Book book = new Book("asfa", "snfak", id, "aksfna", true, null, null);
-        LibraryContext.LibContextInit();
+        LibraryContext.LibContextInitForTests();
         LibraryContext.addObject(book);
         HashSet<LibraryContextActions> results = LibraryContext.searchForObject((String searchPattern, Admin admin)->{admin.setToSearch(new HashSet<LibraryContextActions>(Admin.getBooks()));return admin.search(searchPattern);},Integer.valueOf(id).toString());
         Book result = (Book) results.iterator().next();
@@ -128,8 +128,7 @@ public class LibraryContextTest {
         LibraryContext.removeObject(sAdmin);
     }
     @Test
-    public void testAddObject() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException
-    {
+    public void testAddObject() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, IOException {
         int id = 0;
         for(Book book:Admin.getBooks())
         {
@@ -140,7 +139,7 @@ public class LibraryContextTest {
         }
         id += 1;
         Book book1 = new Book("asfa", "snfak", id, "aksfna", true, null, null);
-        LibraryContext.LibContextInit();
+        LibraryContext.LibContextInitForTests();
         int size = Admin.getBooks().size();
         LibraryContext.addObject(book1);
         Assertions.assertFalse(Admin.getBooks().isEmpty());

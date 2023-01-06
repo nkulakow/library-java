@@ -51,7 +51,7 @@ class UserAdder extends FrameContentManager {
         int id          = Integer.parseInt(user_data.get(4));
         String mail     = user_data.get(5);
             try {
-                LibraryContext.addObject(new CommonUser(
+                boolean validInDB = LibraryContext.addObject(new CommonUser(
                         login,
                         password,
                         name,
@@ -60,6 +60,7 @@ class UserAdder extends FrameContentManager {
                         mail,
                         0   //books number
                 ));
+                //jak validinDB=false tzn ze sie w db cos nie udalo i zmiany sa wprowadzone jedynie lokalnie
             } catch (NullOrEmptyStringException e) {
                 panel.changePrompt("User data cannot be empty");
             } catch (InvalidIdException |  NumberFormatException e) {
