@@ -5,6 +5,7 @@ import org.example.LibraryContextPackage.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashSet;
 import java.util.Vector;
 
 abstract class FrameContentManager {
@@ -87,6 +88,7 @@ class SearchShower extends FrameContentManager {
         search_field.setBounds(content_panel.getSize().width / 2 - 150, 0, 300, 30);
 
         var button = new OptionPanel.OptionButton("Search");
+        button.addActionListener(LibraryGUI.main_page);
         button.setAction_manager(new Searcher(this.search_mode));
         button.setBounds(content_panel.getSize().width / 2 - 150, 30, 300, 30);
 
@@ -106,6 +108,24 @@ class Searcher extends FrameContentManager {
     void manage(JPanel content_panel) {
         JTextField field = (JTextField) content_panel.getComponent(0);
         String pattern = field.getText();
+        HashSet<LibraryContextActions> results;
+        if(this.search_mode == SearchShower.USERS)
+            results = LibraryContext.searchForObject((String searchPattern, Admin admin)->{admin.setToSearch(new HashSet<>(Admin.getUsers()));return admin.search(searchPattern);},pattern);
+        else
+            results = LibraryContext.searchForObject((String searchPattern, Admin admin)->{admin.setToSearch(new HashSet<>(Admin.getBooks()));return admin.search(searchPattern);},pattern);
+
+        var infos = new Vector<String>();
+        for(var result : results) {
+            infos.add(result.describe());
+        }
+        var list = new JList<>(infos);
+        list.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+
+        content_panel.removeAll();
+        content_panel.setLayout(new FlowLayout());
+        content_panel.add(list);
+        content_panel.validate();
+        content_panel.repaint();
     }
 }
 

@@ -162,7 +162,7 @@ public class LibraryContext {
         currentAdmin.removeObject(libObject);
     }
 
-    static HashSet<LibraryContextActions> searchForObject(Isearch searchObject, String searchPattern)
+    static public HashSet<LibraryContextActions> searchForObject(Isearch searchObject, String searchPattern)
     {
         HashSet<LibraryContextActions> results;
         if(currentUser != null)
