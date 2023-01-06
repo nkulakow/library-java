@@ -145,6 +145,7 @@ public class LibraryContext {
             if(login.equals(usr.getLogin()) && password.equals(usr.getPassword()))
             {
                 currentUser = usr;
+                currentAdmin = autoAdmin;
                 logger.info("Logged in as a User.");
                 return true;
             }
