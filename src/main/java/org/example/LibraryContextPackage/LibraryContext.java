@@ -145,6 +145,7 @@ public class LibraryContext {
             if(login.equals(usr.getLogin()) && password.equals(usr.getPassword()))
             {
                 currentUser = usr;
+                currentAdmin = autoAdmin;
                 logger.info("Logged in as a User.");
                 return true;
             }
@@ -162,7 +163,7 @@ public class LibraryContext {
         currentAdmin.removeObject(libObject);
     }
 
-    static HashSet<LibraryContextActions> searchForObject(Isearch searchObject, String searchPattern)
+    static public HashSet<LibraryContextActions> searchForObject(Isearch searchObject, String searchPattern)
     {
         HashSet<LibraryContextActions> results;
         if(currentUser != null)

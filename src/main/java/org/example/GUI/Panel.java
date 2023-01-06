@@ -106,9 +106,12 @@ class AddingPanel extends JPanel {
     private final JTextField name_fild;
     private final JTextField surname_fild;
     private final JTextField mail_fild;
+    private final JTextField password_field;
+    private final JTextField login_field;
+    private final JLabel prompt;
 
     public AddingPanel(ActionListener listener) {
-        this.setLayout(new GridLayout(5, 1));
+        this.setLayout(new GridLayout(8, 1));
         this.id_fild = new JTextField("Id");
         this.add(this.id_fild);
         this.name_fild = new JTextField("Name");
@@ -117,20 +120,34 @@ class AddingPanel extends JPanel {
         this.add(this.surname_fild);
         this.mail_fild = new JTextField("Mail");
         this.add(this.mail_fild);
+        this.login_field = new JTextField("Login");
+        this.add(this.login_field);
+        this.password_field = new JTextField("Password");
+        this.add(this.password_field);
+
         OptionPanel.OptionButton add_button = new OptionPanel.OptionButton("Add");
         add_button.addActionListener(listener);
         add_button.setAction_manager(new UserAdder());
         this.add(add_button);
-        this.setBounds(200, 0, 400, 150);
+
+        this.prompt = new JLabel("Enter user data");
+        this.add(this.prompt);
+        this.setBounds(200, 0, 400, 200);
     }
 
     public ArrayList<String> getData() {
         ArrayList<String> result = new ArrayList<>();
-        result.add(this.id_fild.getText());
+        result.add(this.login_field.getText());
+        result.add(this.password_field.getText());
         result.add(this.name_fild.getText());
         result.add(this.surname_fild.getText());
+        result.add(this.id_fild.getText());
         result.add(this.mail_fild.getText());
         return result;
+    }
+
+    public void changePrompt(final String text) {
+        this.prompt.setText(text);
     }
 }
 
