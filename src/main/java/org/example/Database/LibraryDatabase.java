@@ -35,7 +35,7 @@ public class LibraryDatabase {
     private static ArrayList<UserInDB> searchUsers(final String query_str) throws SQLException {
         ArrayList<UserInDB> users = new ArrayList<>();
         try {
-            CONNECTION = DriverManager.getConnection(URL, LOGIN, getPassword());
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
             logger.info("Connected to database.");
             Statement query = CONNECTION.createStatement();
             ResultSet result = query.executeQuery(query_str);
@@ -74,7 +74,7 @@ public class LibraryDatabase {
     public static ArrayList<Admin> getAdmins() throws SQLException, NullOrEmptyStringException, InvalidIdException {
         ArrayList<Admin> admins = new ArrayList<>();
         try {
-            CONNECTION = DriverManager.getConnection(URL, LOGIN, getPassword());
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
             logger.info("Connected to database.");
             Statement query = CONNECTION.createStatement();
             ResultSet result = query.executeQuery(DatabaseConstants.InquiriesConstants.SELECT_ADMINS);
@@ -98,7 +98,7 @@ public class LibraryDatabase {
     public static ArrayList<CommonUser> getCommonUsers() throws SQLException, InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException {
         ArrayList<CommonUser> users = new ArrayList<>();
         try {
-            CONNECTION = DriverManager.getConnection(URL, LOGIN, getPassword());
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
             logger.info("Connected to database.");
             Statement query = CONNECTION.createStatement();
             ResultSet result = query.executeQuery(DatabaseConstants.InquiriesConstants.SELECT_COMMON_USERS);
@@ -124,7 +124,7 @@ public class LibraryDatabase {
         String query_str = "insert into nkulakow.pap_users values (" + id + ",'" + name + "','" + surname + "','" + mail+ "','" + 0  + "')";
 
         try {
-            CONNECTION = DriverManager.getConnection(URL, LOGIN, getPassword());
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
             logger.info("Connected to database.");
             Statement query = CONNECTION.createStatement();
             query.executeUpdate(query_str);
@@ -134,10 +134,34 @@ public class LibraryDatabase {
         }
     }
 
-    private static String getPassword()
+    private static String getAutoPassword()
     {
         byte[] bytePasswd = Base64.getDecoder().decode(HASHEDPASSWORD);
         return new String(bytePasswd);
+    }
+
+    public static void changePassword(String newPasswd) throws SQLException {
+        try {
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
+            logger.info("Connected to database.");
+            Statement query = CONNECTION.createStatement();
+            String query_str;
+            if (LibraryContext.getCurrentUser() == null) {
+                byte[] bytePasswd = newPasswd.getBytes();
+                newPasswd = Base64.getEncoder().encodeToString(bytePasswd);
+                newPasswd = "'" + newPasswd + "'";
+                query_str = DatabaseConstants.InquiriesConstants.UPDATE_ADMIN_PASSWD + newPasswd + "WHERE admin_id=" + LibraryContext.getCurrentAdmin().getAdminId();
+            }
+            else {
+                newPasswd = "'" + newPasswd + "'";
+                query_str = DatabaseConstants.InquiriesConstants.UPDATE_USER_PASSWD + newPasswd + "WHERE user_id=" + LibraryContext.getCurrentUser().getUserId();
+            }
+            query.executeUpdate(query_str);
+            logger.info("Executed addUser method.");
+        } catch (java.sql.SQLException e) {
+            logger.warn("Could not execute query in addUser method " + e.getMessage());
+            throw e;
+        }
     }
 }
 
@@ -168,6 +192,9 @@ class DatabaseConstants {
     public static final class InquiriesConstants {
         public static final String SELECT_COMMON_USERS = "SELECT u.*, p.login, p.password from nkulakow.PAP_USERS u join nkulakow.PAP_USERS_PASSWD p on(u.user_id=p.user_id)";
         public static final String SELECT_ADMINS = "SELECT a.*, p.login, p.password from nkulakow.PAP_ADMINS a join nkulakow.PAP_ADMINS_PASSWD p on(a.admin_id=p.admin_id)";
+        public static final String UPDATE_ADMIN_PASSWD = "UPDATE nkulakow.PAP_ADMINS_PASSWD set password=";
+        public static final String UPDATE_USER_PASSWD = "UPDATE nkulakow.PAP_USERS_PASSWD set password=";
+
     }
 }
 

@@ -176,4 +176,24 @@ public class LibraryContext {
         return results;
     }
 
+    static public void changePassword(String newPasswd) throws NullOrEmptyStringException, CannotConnectToDBException {
+        try {
+            if (currentUser == null) {
+                currentAdmin.setPassword(newPasswd);
+            } else {
+                currentUser.setPassword(newPasswd);
+            }
+            LibraryDatabase.changePassword(newPasswd);
+        }
+        catch (NullOrEmptyStringException e)
+        {
+            logger.warn("Empty password in changePassword "+ e.getMessage());
+        }
+        catch (SQLException e)
+        {
+            logger.warn("Cannot execute query in database in changePassword" + e.getMessage());
+            throw new CannotConnectToDBException("Could not change password in database as " + e.getMessage());
+        }
+    }
+
 }
