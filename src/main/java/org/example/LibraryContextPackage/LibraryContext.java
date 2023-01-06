@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Base64;
 import org.example.Database.LibraryDatabase;
@@ -42,6 +43,8 @@ public class LibraryContext {
 
     public static void LibContextInit() {
         try {
+            LibraryDatabase.initLoginInfo();
+
             autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
             autoAdmin.addObject(autoAdmin);
             currentAdmin = autoAdmin;
@@ -58,7 +61,7 @@ public class LibraryContext {
             }
 
         }
-        catch (NullOrEmptyStringException | InvalidIdException | SQLException | InvalidBookNumberException e){
+        catch (NullOrEmptyStringException | InvalidIdException | SQLException | InvalidBookNumberException |IOException e){
             logger.error("Error in LibContextInit: " + e.getMessage());
             LibraryGUI.sendMessageToLoginPage("Cannot initialize login process. Please exit and refer to all_logs.log file.");
         }

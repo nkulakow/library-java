@@ -1,6 +1,8 @@
 package org.example.LibraryContextPackage;
 
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class User {
     @Getter
@@ -13,6 +15,7 @@ public abstract class User {
     private String surname;
     @Getter
     private String mail;
+    protected final Logger logger = LogManager.getLogger(org.example.LibraryContextPackage.User.class);
 
     public void setMail(String mail) throws NullOrEmptyStringException
     {

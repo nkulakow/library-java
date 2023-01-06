@@ -10,16 +10,16 @@
 <ins>Zrealizowane do te pory:</ins>
 - Prorotypy klas zarządzających aplikacją (LibraryContext, LibraryDatabase itp.)
 - Wstępne GUI
-- Prototypowa baza danych
+- Przestawienie się na Oracle
 - Dostęp do bazy danych i podstawowe operacje
 - Prototypowe logowanie (dla administratora)
+- Naprawiona ikonka
 
 <ins>Do zrobienia:</ins>
-- Naprawienie niedziałającej ikonki :(
 - Zrefaktoryzowanie kodu
-- Rozbudowanie i usprawnienie operacji na bazie danych
+- Rozbudowanie i usprawnienie operacji na bazie danych poprzez utworzenie klasy Database
 - Zrobienie ładniejszego GUI (temat przewodni: Kubuś Puchatek)
-- Przestawienie się z obecnej bazy danych na Oracle
+- Stworzenie "mail server" (spróbować)
 
 
 ## Instrukcja instalacji i obsługi
@@ -58,10 +58,11 @@ Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarząd
 4. Klasa LoginPage - klasa przedstawiająca elementy graficzne strony logowania.
 4. Klasa LibraryContext - klasa sterująca. Zawiera obiekty klas Admin, User na zasadzie kompozycji. Implementuje metody, które służą do komunikacji między obiektami zawartymi w jej atrybutach. Steruje całą aplikacją biblioteki łącznie z korzystaniem z bazy danych. 
 5. Klasa Book - reprezentuje książkę, ma atrybuty takie jak nazwa, kategoria, data zwrotu, etc., gettery, settery.
-6. Klasa User - klasa reprezentująca użytkownika, ma metody reprezentujące czynności: wypożyczanie, oddawanie, przedłużanie, opłacanie kar za nieoddane książki, ma atrybuty takie jak imię, nazwisko, id, liczba wypożyczonych książek, etc.
-7. Klasa Admin - ma uprawnienia zwykłego użytkownika, ale dodatkowo rozszerza jego możliwości dzięki zastosowaniu dziedziczenia. Może wykonywać czynności administracyjne na systemie zarządzania biblioteką.
-8. Klasa LibraryDatabase - klasa reprezentująca bazę danych.
-9. Klasy reprezentujące pewne wyjątki m.in. InvalidIdException, NullOrEmptyStringException
+6. Klasa User - abstrakcyjna klasa reprezentująca użytkownika, rozszerzana przez klasy CommonUser i Admin
+7. Klasa CommonUser - klasa reprezentująca zwykłego użytkownika, ma metody reprezentujące czynności: wypożyczanie, oddawanie, przedłużanie, opłacanie kar za nieoddane książki, ma atrybuty takie jak imię, nazwisko, id, liczba wypożyczonych książek, etc.
+8. Klasa Admin - ma uprawnienia zwykłego użytkownika, ale dodatkowo rozszerza jego możliwości dzięki zastosowaniu dziedziczenia. Może wykonywać czynności administracyjne na systemie zarządzania biblioteką.
+9. Klasa LibraryDatabase - klasa reprezentująca bazę danych.
+10. Klasy reprezentujące pewne wyjątki m.in. InvalidIdException, NullOrEmptyStringException
 
 **Testy:**  
 Do implementacji testów jednostkowych planujemy używać JUnit. Poszczególne metody i funkcjonalności będą sprawdzane oddzielnie.
@@ -71,6 +72,11 @@ Do implementacji testów jednostkowych planujemy używać JUnit. Poszczególne m
     - javax.swing - główne narzędzie do tworzenia okienka aplikacji
     - java.sql - wykorzystywana do operacji na bazach danych
     - java.awt - bilbioteka graficzna, używana obok biblioteki swing, m.in. do obsługi zdarzeń (np. zalogowanie) i kolorów 
+    - java.io - wykorzystywania do odczytywania treści plików np. info.txt zawierający dane logowania do bazy danych
     - javax.mail - wykorzystywana do automatycznego wysyłania maili 
+    - org.apache.logging.log4j - wykorzystywania do tworzenia logów
+    - java.util - podstawowe narzędzie do przechowywania danych lokalnie w kolekcjach oraz do dekodowania haseł adminów
+    - lombok - wykorzystywana do automatycznego tworzenia getterów i setterów
+    - java.time - wykorzystywana do reprezentowania danych typu czas/data
 - Maven
-- Sqldeveloper
+- Sqldeveloper / baza Oracle
