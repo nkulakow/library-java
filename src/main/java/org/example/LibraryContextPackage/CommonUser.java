@@ -120,6 +120,12 @@ public class CommonUser extends User implements LibraryContextActions{
     @Override
     public boolean askToLeaveCollection(Admin admin) {
         CommonUser user = (CommonUser) this;
+        admin.setToSearch(new HashSet<LibraryContextActions>(Admin.getUsers()));
+        HashSet<LibraryContextActions> results = admin.search(Integer.valueOf(this.getUserId()).toString());
+        if(!results.isEmpty())
+        {
+            return false;
+        }
         return admin.updateUsers(user, LibObjectsChangeMode.Remove);
     }
 

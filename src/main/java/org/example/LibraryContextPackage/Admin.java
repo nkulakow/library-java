@@ -111,7 +111,7 @@ public class Admin extends User implements LibraryContextActions{
         {
             for(LibraryContextActions libObj: this.toSearch)
             {
-                if(libObj.describe().contains(pattern))
+                if(libObj.describe().toLowerCase().contains(pattern.toLowerCase()))
                 {
                     results.add(libObj);
                 }
