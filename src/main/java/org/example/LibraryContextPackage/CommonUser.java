@@ -47,6 +47,7 @@ public class CommonUser extends User implements LibraryContextActions{
         }
         catch (InvalidIdException e)
         {
+            logger.warn("Invalid id in orderBook method " + e.getMessage());
             return;
         }
 
@@ -72,6 +73,7 @@ public class CommonUser extends User implements LibraryContextActions{
         }
         catch (InvalidIdException e)
         {
+            logger.warn("Invalid id in returnBook method " + e.getMessage());
             return;
         }
     }
