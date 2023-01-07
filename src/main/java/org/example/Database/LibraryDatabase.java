@@ -294,7 +294,12 @@ public class LibraryDatabase {
             Instant instant = date_zoned.toLocalDateTime().toInstant(ZoneOffset.UTC);
             return_date = Date.from(instant);
         }
-        String query_str = "update nkulakow.PAP_BOOKS set name='"+name+"', author='"+author+"', cathegory='"+category+"', available="+available+", return_date="+return_date+", user_id="+user_id+ " where book_id="+book_id;
+        String user_str = "";
+        if (user_id != 0){
+            user_str = ", user_id="+user_id;
+        }
+        System.out.println(user_id + user_str);
+        String query_str = "update nkulakow.PAP_BOOKS set name='"+name+"', author='"+author+"', cathegory='"+category+"', available="+available+", return_date="+return_date+user_str+ " where book_id="+book_id;
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
             logger.info("Connected to database.");

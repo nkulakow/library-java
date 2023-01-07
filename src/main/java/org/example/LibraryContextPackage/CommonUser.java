@@ -14,7 +14,7 @@ public class CommonUser extends User implements LibraryContextActions{
 
     public void setUserId(int id) throws InvalidIdException
     {
-        if(id < 0)
+        if(id <= 0)
         {
             throw new InvalidIdException("Niepoprawne id użytkownika.");
         }
