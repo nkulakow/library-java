@@ -194,6 +194,48 @@ public class LibraryDatabase {
         }
     }
 
+    public static void addBook(Book book) throws SQLException {
+        String name = book.getName(), author = book.getAuthor(), category = book.getCategory();
+        int book_id = book.getBookId(), available = book.getAvailable()?1:0;
+        Integer user_id = book.getUserId();
+        ZonedDateTime date_zoned = book.getReturnDate();
+        Date return_date;
+        if (date_zoned==null)
+        {
+            return_date =null;
+        }
+        else{
+            Instant instant = date_zoned.toLocalDateTime().toInstant(ZoneOffset.UTC);
+            return_date = Date.from(instant);
+        }
+        String query_str = "insert into nkulakow.pap_books values("+book_id+", '"+name+"', '"+author+"', '"+category+"', "+available+", "+return_date+", "+ user_id+")";
+        try {
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
+            logger.info("Connected to database.");
+            Statement query = CONNECTION.createStatement();
+            query.executeUpdate(query_str);
+            logger.info("Executed addBook method.");
+        } catch (java.sql.SQLException e) {
+            logger.warn("Could not execute query in addBook method " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public static void removeBook(Book book) throws SQLException {
+        String id = String.valueOf(book.getBookId());
+        String query_str = "delete from nkulakow.PAP_BOOKS where book_id=" + id;
+        try {
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
+            logger.info("Connected to database.");
+            Statement query = CONNECTION.createStatement();
+            query.executeUpdate(query_str);
+            logger.info("Executed removeUser method.");
+        } catch (java.sql.SQLException e) {
+            logger.warn("Could not execute query in removeUser method " + e.getMessage());
+            throw e;
+        }
+    }
+
     private static String getAutoPassword()
     {
         byte[] bytePasswd = Base64.getDecoder().decode(HASHEDPASSWORD);

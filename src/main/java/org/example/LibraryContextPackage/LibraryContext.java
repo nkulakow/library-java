@@ -26,6 +26,7 @@ public class LibraryContext {
 
     @Getter
     private static Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks = new Hashtable<>();
+    @Getter
     private static Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime = new Hashtable<>();
     private static final Logger logger = LogManager.getLogger(org.example.LibraryContextPackage.LibraryContext.class);
 
@@ -48,11 +49,14 @@ public class LibraryContext {
     public static void LibContextInitForTests(boolean AsUser) throws InvalidBookNumberException {
         try {
             LibraryDatabase.initLoginInfoForTests();
+
+
             autoAdmin = null;
             currentAdmin = null;
             currentUser = null;
 
             autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
+            Admin.clearAll();
             autoAdmin.addObject(autoAdmin);
             currentAdmin = autoAdmin;
             autoAdmin.addObject(currentAdmin);
@@ -60,6 +64,7 @@ public class LibraryContext {
                 currentUser = new CommonUser("user", "Null", "user", "Null", 1, "mail", 0);
                 autoAdmin.addObject(currentUser);
             }
+
 
         }
         catch (NullOrEmptyStringException | InvalidIdException e){
@@ -91,6 +96,7 @@ public class LibraryContext {
             for(var book : newBooks){
                 autoAdmin.addObject(book);
             }
+            logger.info("Executed LibraryContextInit.");
 
         }
         catch (NullOrEmptyStringException | InvalidIdException | SQLException | InvalidBookNumberException |IOException e){
@@ -101,6 +107,7 @@ public class LibraryContext {
     }
     public static void returnBook(Book book) {
         ArrayDeque<CommonUser> users = takenBooks.get(book.getBookId());
+        users.remove();
         if (users.isEmpty()) {
             takenBooks.remove(book.getBookId());
             takenBooksOrderedTime.remove(book.getBookId());
@@ -114,7 +121,7 @@ public class LibraryContext {
             }
             catch (InvalidIdException e)
             {
-
+                logger.warn("Exception in return Book: " + e.getMessage());
             }
             book.setReturnDate(ZonedDateTime.now().plusMonths(takenBooksOrderedTime.get(book.getBookId()).remove()));
 
@@ -185,9 +192,20 @@ public class LibraryContext {
     static public boolean addObject(LibraryContextActions libObject)
     {
         if (currentAdmin.addObject(libObject)) {
+            logger.info("Added object locally.");
             if (libObject.getClass().equals(CommonUser.class)) {
                 try {
                     LibraryDatabase.addUser((CommonUser) libObject);
+                    logger.info("Added user to DB");
+                }
+                catch (SQLException e){
+                    logger.warn("Could not remove user in DB");
+                    return false;
+                }
+            }
+            if (libObject.getClass().equals(Book.class)) {
+                try {
+                    LibraryDatabase.addBook((Book) libObject);
                     logger.info("Added user to DB");
                 }
                 catch (SQLException e){
@@ -202,6 +220,7 @@ public class LibraryContext {
     static public boolean removeObject(LibraryContextActions libObject)
     {
         if (currentAdmin.removeObject(libObject)) {
+            logger.info("Removed object locally.");
             if (libObject.getClass().equals(CommonUser.class)) {
                 try {
                     LibraryDatabase.removeUser((CommonUser) libObject);
@@ -209,6 +228,16 @@ public class LibraryContext {
                 }
                 catch (SQLException e){
                     logger.warn("Could not remove user in DB");
+                    return false;
+                }
+            }
+            if (libObject.getClass().equals(Book.class)) {
+                try {
+                    LibraryDatabase.removeBook((Book) libObject);
+                    logger.info("Removed book from DB");
+                }
+                catch (SQLException e){
+                    logger.warn("Could not remove book in DB");
                     return false;
                 }
             }
@@ -230,7 +259,47 @@ public class LibraryContext {
         return results;
     }
 
-    static public boolean modifyUser(AttributesNames attributeName, Object modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+    static public boolean modifyFewUserAttributes(Map<AttributesNames, String> attributes, int userId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException {
+        CommonUser user;
+        try {
+            user = Admin.findUserById(userId);
+        } catch (InvalidIdException e) {
+            logger.error("Could not find user by id");
+            return false;
+        }
+        for (var attributeName : attributes.keySet()){
+            user.modifyUser(attributeName, attributes.get(attributeName));
+        }
+        try{
+            LibraryDatabase.modifyCommonUser(user);
+        } catch (SQLException e) {
+            logger.warn("Could not execute query in DB in modifyFewUserAttributes "+ e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    static public boolean modifyFewBookAttributes(Map<AttributesNames, String> attributes, int bookId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException {
+        Book book;
+        try {
+            book = Admin.findBookById(bookId);
+        } catch (InvalidIdException e) {
+            logger.error("Could not find book by id");
+            return false;
+        }
+        for (var attributeName : attributes.keySet()){
+            book.modifyBook(attributeName, attributes.get(attributeName));
+        }
+        try{
+            LibraryDatabase.modifyBook(book);
+        } catch (SQLException e) {
+            logger.warn("Could not execute query in DB in modifyFewBookAttributes "+ e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    static public boolean modifyUser(AttributesNames attributeName, String modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
         modifiedUser.modifyUser(attributeName, modifiedVal);
         try{
         if (currentUser != null || modifiedUser.getClass().equals(CommonUser.class))
@@ -247,15 +316,22 @@ public class LibraryContext {
         return true;
     }
 
-    static public boolean modifyBook(AttributesNames attributeName, Object modifiedVal, Book modfiedBook) throws NullOrEmptyStringException, InvalidIdException {
-        modfiedBook.modifyBook(attributeName, modifiedVal);
+    static public boolean modifyBook(AttributesNames attributeName, String modifiedVal, Book modifiedBook) throws NullOrEmptyStringException, InvalidIdException {
+        modifiedBook.modifyBook(attributeName, modifiedVal);
         try{
-            LibraryDatabase.modifyBook(modfiedBook);
+            LibraryDatabase.modifyBook(modifiedBook);
         } catch (SQLException e) {
             logger.warn("Could not execute query in DB in modifyBook "+ e.getMessage());
             return false;
         }
         return true;
+    }
+    static public Vector<String> showUsers(){
+        Vector<String> users_rep = new Vector<>();
+        for (var user: Admin.getUsers()){
+            users_rep.add(user.describe());
+        }
+        return users_rep;
     }
 
 

@@ -1,6 +1,7 @@
 package org.example.LibraryContextPackage;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Base64;
 import java.util.HashSet;
@@ -25,7 +26,12 @@ public class Admin extends User implements LibraryContextActions{
     }
     public static HashSet<Book> getBooks()
     {
-        return new HashSet<Book>(books);
+        return books;
+    }
+
+    public static void clearAll(){
+        books.clear();
+        users.clear();
     }
 
     public static HashSet<CommonUser> getUsers()
@@ -185,18 +191,36 @@ public class Admin extends User implements LibraryContextActions{
     }
 
     @Override
-    public boolean modifyUser(AttributesNames attributeName, Object modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+    public boolean modifyUser(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
         if(super.modifyUser(attributeName, modifiedVal)){
             return true;
         }
         else {
             if (attributeName == AttributesNames.password) {
-                byte[] bytePasswd = ((String) modifiedVal).getBytes();
+                byte[] bytePasswd = (modifiedVal).getBytes();
                 setPassword(Base64.getEncoder().encodeToString(bytePasswd));
                 return true;
             }
             return false;
         }
+    }
+
+    public static CommonUser findUserById(int userID) throws InvalidIdException {
+        for (var user : Admin.getUsers()){
+            if(user.getUserId() == userID){
+                return user;
+            }
+        }
+        throw new InvalidIdException("No common user with given ID");
+    }
+
+    public static Book findBookById(int bookId) throws InvalidIdException {
+        for (var book : Admin.getBooks()){
+            if(book.getBookId() == bookId){
+                return book;
+            }
+        }
+        throw new InvalidIdException("No common book with given ID");
     }
 
 }

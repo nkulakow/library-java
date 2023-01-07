@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -160,7 +161,7 @@ public class LibraryContextTest {
         Book book1 = new Book("asfa", "snfak", id, "aksfna", true, null, null);
         LibraryContext.LibContextInitForTests(false);
         int size = Admin.getBooks().size();
-        LibraryContext.addObject(book1);
+        Assertions.assertFalse(LibraryContext.addObject(book1));
         Assertions.assertFalse(Admin.getBooks().isEmpty());
         Assertions.assertEquals(size + 1, Admin.getBooks().size());
         LibraryContext.addObject(book1);
@@ -212,7 +213,8 @@ public class LibraryContextTest {
         Book book = new Book("asfa", "snfak", 1, "aksfna", true, null, null);
         LibraryContext.LibContextInitForTests(true);
         LibraryContext.addObject(book);
-        LibraryContext.modifyBook(AttributesNames.name, "mybook", book);
+        var res = LibraryContext.modifyBook(AttributesNames.name, "mybook", book);
+        Assertions.assertFalse(res);
         Assertions.assertEquals("mybook", book.getName());
         Assertions.assertTrue(Admin.getBooks().contains(book));
         for(var book1 : Admin.getBooks()){
@@ -221,7 +223,8 @@ public class LibraryContextTest {
         LibraryContext.removeObject(book);
         CommonUser user = new CommonUser("asf", "alksnfka", "lasmf", "oahoa", 1, "oiahfiau", 0);
         LibraryContext.addObject(user);
-        LibraryContext.modifyUser(AttributesNames.password, "mypass", user);
+        res = LibraryContext.modifyUser(AttributesNames.password, "mypass", user);
+        Assertions.assertFalse(res);
         Assertions.assertEquals("mypass", user.getPassword());
         Assertions.assertTrue(Admin.getUsers().contains(user));
         LibraryContext.removeObject(user);
@@ -231,9 +234,31 @@ public class LibraryContextTest {
         LibraryContext.LibContextInitForTests(false);
         Admin sAdmin = new Admin("as", "asfkn", "aksnf", "aoishfaiu", "aoisha", 1);
         LibraryContext.addObject(sAdmin);
-        LibraryContext.modifyUser(AttributesNames.login, "mylogin", sAdmin);
+        var res = LibraryContext.modifyUser(AttributesNames.login, "mylogin", sAdmin);
+        Assertions.assertFalse(res);
         Assertions.assertEquals("mylogin", sAdmin.getLogin());
         Assertions.assertTrue(Admin.getAdmins().contains(sAdmin));
         LibraryContext.removeObject(sAdmin);
+    }
+
+    @Test
+    public void testOrderBook() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException{
+        LibraryContext.LibContextInitForTests(true);
+        Book book1 = new Book("book1", "cat1", 1, "author1", true, null, null);
+        Book book2 = new Book("book2", "cat2", 2, "author2", true, null, null);
+        LibraryContext.addObject(book1);
+        LibraryContext.addObject(book2);
+        LibraryContext.orderBook(book1, 2);
+        LibraryContext.orderBook(book2, 3);
+        Assertions.assertTrue(LibraryContext.getTakenBooks().containsKey(book1.getBookId()));
+        Assertions.assertEquals(0, LibraryContext.getTakenBooksOrderedTime().get(book2.getBookId()).size());
+        Assertions.assertEquals(ZonedDateTime.now().plusMonths(3).getMonth(), book2.getReturnDate().getMonth());
+        Assertions.assertEquals(ZonedDateTime.now().plusMonths(2).getDayOfMonth(), book1.getReturnDate().getDayOfMonth());
+        Assertions.assertEquals(LibraryContext.getCurrentUser().getUserId(), book1.getUserId());
+        LibraryContext.orderBook(book1, 4);
+        LibraryContext.orderBook(book2, 5);
+        Assertions.assertEquals(1, LibraryContext.getTakenBooksOrderedTime().get(book2.getBookId()).size());
+        Assertions.assertEquals(4, LibraryContext.getTakenBooksOrderedTime().get(book1.getBookId()).getFirst());
+        Assertions.assertEquals(1, LibraryContext.getTakenBooks().get(book2.getBookId()).getFirst().getUserId());
     }
 }
