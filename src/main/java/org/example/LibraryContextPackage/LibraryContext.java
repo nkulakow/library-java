@@ -47,11 +47,14 @@ public class LibraryContext {
     public static void LibContextInitForTests(boolean AsUser) throws InvalidBookNumberException {
         try {
             LibraryDatabase.initLoginInfoForTests();
+
+
             autoAdmin = null;
             currentAdmin = null;
             currentUser = null;
 
             autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
+            Admin.clearAll();
             autoAdmin.addObject(autoAdmin);
             currentAdmin = autoAdmin;
             autoAdmin.addObject(currentAdmin);
@@ -59,6 +62,7 @@ public class LibraryContext {
                 currentUser = new CommonUser("user", "Null", "user", "Null", 1, "mail", 0);
                 autoAdmin.addObject(currentUser);
             }
+
 
         }
         catch (NullOrEmptyStringException | InvalidIdException e){

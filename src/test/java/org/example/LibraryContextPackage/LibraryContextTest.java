@@ -142,7 +142,7 @@ public class LibraryContextTest {
         Book book1 = new Book("asfa", "snfak", id, "aksfna", true, null, null);
         LibraryContext.LibContextInitForTests(false);
         int size = Admin.getBooks().size();
-        LibraryContext.addObject(book1);
+        Assertions.assertTrue(LibraryContext.addObject(book1));
         Assertions.assertFalse(Admin.getBooks().isEmpty());
         Assertions.assertEquals(size + 1, Admin.getBooks().size());
         LibraryContext.addObject(book1);

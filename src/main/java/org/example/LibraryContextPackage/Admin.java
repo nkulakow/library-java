@@ -1,6 +1,7 @@
 package org.example.LibraryContextPackage;
 
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Base64;
 import java.util.HashSet;
@@ -25,7 +26,12 @@ public class Admin extends User implements LibraryContextActions{
     }
     public static HashSet<Book> getBooks()
     {
-        return new HashSet<Book>(books);
+        return books;
+    }
+
+    public static void clearAll(){
+        books.clear();
+        users.clear();
     }
 
     public static HashSet<CommonUser> getUsers()
