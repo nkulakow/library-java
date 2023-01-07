@@ -246,7 +246,7 @@ public class LibraryDatabase {
         String id = String.valueOf(user.getUserId()), name = user.getName(), surname = user.getSurname(),
                 mail = user.getMail(), login = user.getLogin(), password= user.getPassword();
         int books_nr = user.getBooksNr();
-        String query_str1 = "update nkulakow.PAP_USERS set name='"+name+"', surname='" +surname+ "', mail='"+mail+"', books_nr="+books_nr+" where user_id=" + id;
+        String query_str1 = "update nkulakow.PAP_USERS set first_name='"+name+"', last_name='" +surname+ "', mail='"+mail+"', books_nr="+books_nr+" where user_id=" + id;
         String query_str2 = "update nkulakow.PAP_USERS_PASSWD set login='"+login+"', password='" +password+ "'where user_id=" + id;
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());

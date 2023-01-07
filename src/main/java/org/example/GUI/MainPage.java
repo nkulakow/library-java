@@ -94,10 +94,7 @@ public class MainPage extends Page {
                 "Delete user",
                 "Add book",
                 "Modify book",
-                "Delete book",
-                "Add loan",
-                "Modify loan",
-                "Delete loan"
+                "Delete book"
         };
         OptionPanel mod_options = new OptionPanel(new Vector<>(List.of(modify_options_text)), OptionPanel.NOT_MAIN);
         for (var option : mod_options.getOptions())
@@ -120,15 +117,9 @@ public class MainPage extends Page {
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(3);
         button.setAction_manager(new BookAddingShower());
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(4);
-        button.setAction_manager(new MockManager());
+        button.setAction_manager(new ModifyShower(FrameContentManager.BOOKS));
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(5);
         button.setAction_manager(new DeleteShower(FrameContentManager.BOOKS));
-        button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(6);
-        button.setAction_manager(new MockManager());
-        button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(7);
-        button.setAction_manager(new MockManager());
-        button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(8);
-        button.setAction_manager(new MockManager());
     }
 
     private void showOptions(OptionPanel options) {

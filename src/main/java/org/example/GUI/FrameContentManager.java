@@ -112,7 +112,7 @@ class ModifyShower extends FrameContentManager {
 
         var button = new OptionPanel.OptionButton("Search for data to modify");
         button.addActionListener(LibraryGUI.main_page);
-        button.setAction_manager(new ModifyChooser(FrameContentManager.USERS));
+        button.setAction_manager(new ModifyChooser(this.search_mode));
         button.setBounds(content_panel.getSize().width / 2 - 150, 30, 300, 30);
 
         content_panel.removeAll();
@@ -142,7 +142,10 @@ class ModifyChooser extends FrameContentManager {
 
         var button = new OptionPanel.OptionButton("Select");
         button.addActionListener(LibraryGUI.main_page);
-        button.setAction_manager(new UsersModifier());
+        if (this.search_mode == FrameContentManager.USERS)
+            button.setAction_manager(new UsersModifier());
+        else
+            button.setAction_manager(new BooksModifier());
         button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
 
         content_panel.removeAll();
