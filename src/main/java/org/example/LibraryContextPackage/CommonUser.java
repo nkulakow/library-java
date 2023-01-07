@@ -3,7 +3,6 @@ package org.example.LibraryContextPackage;
 import lombok.Getter;
 
 import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -129,6 +128,24 @@ public class CommonUser extends User implements LibraryContextActions{
             return false;
         }
         return admin.updateUsers(user, LibObjectsChangeMode.Remove);
+    }
+
+    @Override
+    public boolean modifyUser(AttributesNames attributeName, Object modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+        if(super.modifyUser(attributeName, modifiedVal)){
+            return true;
+        }
+        else {
+             if (attributeName == AttributesNames.password) {
+                setPassword((String) modifiedVal);
+                return true;
+            }
+            if (attributeName == AttributesNames.booksNr) {
+                setBooksNr((int) modifiedVal);
+                return true;
+            }
+            return false;
+        }
     }
 
 }

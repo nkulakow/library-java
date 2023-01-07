@@ -2,7 +2,7 @@ package org.example.LibraryContextPackage;
 
 import lombok.Getter;
 
-import java.time.ZonedDateTime;
+import java.util.Base64;
 import java.util.HashSet;
 
 import java.util.Objects;
@@ -178,6 +178,21 @@ public class Admin extends User implements LibraryContextActions{
     public boolean askToLeaveCollection(Admin admin) {
         Admin newAdmin = (Admin) this;
         return admin.updateAdmins(newAdmin, LibObjectsChangeMode.Remove);
+    }
+
+    @Override
+    public boolean modifyUser(AttributesNames attributeName, Object modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+        if(super.modifyUser(attributeName, modifiedVal)){
+            return true;
+        }
+        else {
+            if (attributeName == AttributesNames.password) {
+                byte[] bytePasswd = ((String) modifiedVal).getBytes();
+                setPassword(Base64.getEncoder().encodeToString(bytePasswd));
+                return true;
+            }
+            return false;
+        }
     }
 
 }

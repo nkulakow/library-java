@@ -28,7 +28,7 @@ public class LibraryContextTest {
         }
         id += 1;
         CommonUser user = new CommonUser(login, "alksnfka", "lasmf", "oahoa", id, "oiahfiau", 0);
-        LibraryContext.LibContextInitForTests();
+        LibraryContext.LibContextInitForTests(false);
         LibraryContext.addObject(user);
         int size = Admin.getUsers().size();
         LibraryContext.removeObject(user);
@@ -82,7 +82,7 @@ public class LibraryContextTest {
         }
         id += 1;
         Book book = new Book("asfa", "snfak", id, "aksfna", true, null, null);
-        LibraryContext.LibContextInitForTests();
+        LibraryContext.LibContextInitForTests(false);
         LibraryContext.addObject(book);
         HashSet<LibraryContextActions> results = LibraryContext.searchForObject((String searchPattern, Admin admin)->{admin.setToSearch(new HashSet<LibraryContextActions>(Admin.getBooks()));return admin.search(searchPattern);},Integer.valueOf(id).toString());
         Book result = (Book) results.iterator().next();
@@ -139,7 +139,7 @@ public class LibraryContextTest {
         }
         id += 1;
         Book book1 = new Book("asfa", "snfak", id, "aksfna", true, null, null);
-        LibraryContext.LibContextInitForTests();
+        LibraryContext.LibContextInitForTests(false);
         int size = Admin.getBooks().size();
         LibraryContext.addObject(book1);
         Assertions.assertFalse(Admin.getBooks().isEmpty());
@@ -187,5 +187,34 @@ public class LibraryContextTest {
         LibraryContext.addObject(admin);
         Assertions.assertEquals(size + 1, Admin.getAdmins().size());
         LibraryContext.removeObject(admin);
+    }
+    @Test
+    public void testModifyBookAndUser() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+        Book book = new Book("asfa", "snfak", 1, "aksfna", true, null, null);
+        LibraryContext.LibContextInitForTests(true);
+        LibraryContext.addObject(book);
+        LibraryContext.modifyBook(AttributesNames.name, "mybook", book);
+        Assertions.assertEquals("mybook", book.getName());
+        Assertions.assertTrue(Admin.getBooks().contains(book));
+        for(var book1 : Admin.getBooks()){
+            Assertions.assertEquals(book, book1);
+        }
+        LibraryContext.removeObject(book);
+        CommonUser user = new CommonUser("asf", "alksnfka", "lasmf", "oahoa", 1, "oiahfiau", 0);
+        LibraryContext.addObject(user);
+        LibraryContext.modifyUser(AttributesNames.password, "mypass", user);
+        Assertions.assertEquals("mypass", user.getPassword());
+        Assertions.assertTrue(Admin.getUsers().contains(user));
+        LibraryContext.removeObject(user);
+    }
+    @Test
+    public void testModifyAdmin() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException{
+        LibraryContext.LibContextInitForTests(false);
+        Admin sAdmin = new Admin("as", "asfkn", "aksnf", "aoishfaiu", "aoisha", 1);
+        LibraryContext.addObject(sAdmin);
+        LibraryContext.modifyUser(AttributesNames.login, "mylogin", sAdmin);
+        Assertions.assertEquals("mylogin", sAdmin.getLogin());
+        Assertions.assertTrue(Admin.getAdmins().contains(sAdmin));
+        LibraryContext.removeObject(sAdmin);
     }
 }

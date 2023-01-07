@@ -130,4 +130,31 @@ public class Book implements LibraryContextActions{
         return admin.updateBooks(book, LibObjectsChangeMode.Remove);
     }
 
+    public boolean modifyBook(AttributesNames attributeName, Object modifiedVal) throws NullOrEmptyStringException, InvalidIdException {
+         if (attributeName == AttributesNames.name) {
+            setName((String) modifiedVal);
+            return true;
+        } else if (attributeName == AttributesNames.author) {
+            setAuthor((String) modifiedVal);
+            return true;
+        }
+        else if (attributeName == AttributesNames.category) {
+            setCategory((String) modifiedVal);
+            return true;
+        }
+         else if (attributeName == AttributesNames.returnDate) {
+             setReturnDate((ZonedDateTime) modifiedVal);
+             return true;
+         }
+         else if (attributeName == AttributesNames.available) {
+             setAvailable((boolean) modifiedVal);
+             return true;
+         }
+         else if (attributeName == AttributesNames.user_id) {
+             setUserId((int) modifiedVal);
+             return true;
+         }
+        return false;
+    }
+
 }

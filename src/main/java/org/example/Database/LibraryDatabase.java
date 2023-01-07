@@ -7,7 +7,9 @@ import org.example.LibraryContextPackage.*;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.*;
+import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -198,44 +200,70 @@ public class LibraryDatabase {
         return new String(bytePasswd);
     }
 
-    public static void changePassword(String newPasswd) throws SQLException {
+    public static void modifyCommonUser(CommonUser user) throws SQLException {
+        String id = String.valueOf(user.getUserId()), name = user.getName(), surname = user.getSurname(),
+                mail = user.getMail(), login = user.getLogin(), password= user.getPassword();
+        int books_nr = user.getBooksNr();
+        String query_str1 = "update nkulakow.PAP_USERS set name='"+name+"', surname='" +surname+ "', mail='"+mail+"', books_nr="+books_nr+" where user_id=" + id;
+        String query_str2 = "update nkulakow.PAP_USERS_PASSWD set login='"+login+"', password='" +password+ "'where user_id=" + id;
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
             logger.info("Connected to database.");
             Statement query = CONNECTION.createStatement();
-            String query_str;
-            if (LibraryContext.getCurrentUser() == null) {
-                byte[] bytePasswd = newPasswd.getBytes();
-                newPasswd = Base64.getEncoder().encodeToString(bytePasswd);
-                newPasswd = "'" + newPasswd + "'";
-                query_str = DatabaseConstants.InquiriesConstants.UPDATE_ADMIN_PASSWD + newPasswd + "WHERE admin_id=" + LibraryContext.getCurrentAdmin().getAdminId();
-            }
-            else {
-                newPasswd = "'" + newPasswd + "'";
-                query_str = DatabaseConstants.InquiriesConstants.UPDATE_USER_PASSWD + newPasswd + "WHERE user_id=" + LibraryContext.getCurrentUser().getUserId();
-            }
-            query.executeUpdate(query_str);
-            logger.info("Executed addUser method.");
+            query.executeUpdate(query_str1);
+            query.executeUpdate(query_str2);
+            logger.info("Executed modifyCommonUser method.");
         } catch (java.sql.SQLException e) {
-            logger.warn("Could not execute query in addUser method " + e.getMessage());
+            logger.warn("Could not execute query in modifyCommonUser method " + e.getMessage());
             throw e;
         }
     }
 
-//    public static void modifyBook(Book book){
-//        try {
-//            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
-//            logger.info("Connected to database.");
-//            Statement query = CONNECTION.createStatement();
-//            String query_str;
-//
-//            query.executeUpdate(query_str);
-//            logger.info("Executed addUser method.");
-//        } catch (java.sql.SQLException e) {
-//            logger.warn("Could not execute query in addUser method " + e.getMessage());
-//            throw e;
-//        }
-//    }
+    public static void modifyAdmin(Admin admin) throws SQLException {
+        String id = String.valueOf(admin.getAdminId()), name = admin.getName(), surname = admin.getSurname(),
+                mail = admin.getMail(), login = admin.getLogin(), password= admin.getPassword();
+        String query_str1 = "update nkulakow.PAP_ADMINS set name='"+name+"', surname='" +surname+ "', mail='"+mail+"' where admin_id=" + id;
+        String query_str2 = "update nkulakow.PAP_ADMINS_PASSWD set login='"+login+"', password='" +password+ "'where admin_id=" + id;
+        try {
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
+            logger.info("Connected to database.");
+            Statement query = CONNECTION.createStatement();
+            query.executeUpdate(query_str1);
+            query.executeUpdate(query_str2);
+            logger.info("Executed modifyAdmin method.");
+        } catch (java.sql.SQLException e) {
+            logger.warn("Could not execute query in modifyAdmin method " + e.getMessage());
+            throw e;
+        }
+    }
+
+
+    public static void modifyBook(Book book) throws SQLException {
+        String name = book.getName(), author = book.getAuthor(), category = book.getCategory();
+        int book_id = book.getBookId(), available = book.getAvailable()?1:0;
+        Integer user_id = book.getUserId();
+        ZonedDateTime date_zoned = book.getReturnDate();
+        Date return_date;
+        if (date_zoned==null)
+        {
+            return_date =null;
+        }
+        else{
+            Instant instant = date_zoned.toLocalDateTime().toInstant(ZoneOffset.UTC);
+            return_date = Date.from(instant);
+        }
+        String query_str = "update nkulakow.PAP_BOOKS set name='"+name+"', author='"+author+"', cathegory='"+category+"', available="+available+", return_date="+return_date+", user_id="+user_id+ " where book_id="+book_id;
+        try {
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
+            logger.info("Connected to database.");
+            Statement query = CONNECTION.createStatement();
+            query.executeUpdate(query_str);
+            logger.info("Executed modifyBook method.");
+        } catch (java.sql.SQLException e) {
+            logger.warn("Could not execute query in modifyBook method " + e.getMessage());
+            throw e;
+        }
+    }
 }
 
 class DatabaseConstants {
@@ -275,8 +303,6 @@ class DatabaseConstants {
         public static final String SELECT_COMMON_USERS = "SELECT u.*, p.login, p.password from nkulakow.PAP_USERS u join nkulakow.PAP_USERS_PASSWD p on(u.user_id=p.user_id)";
         public static final String SELECT_ADMINS = "SELECT a.*, p.login, p.password from nkulakow.PAP_ADMINS a join nkulakow.PAP_ADMINS_PASSWD p on(a.admin_id=p.admin_id)";
         public static final String SELECT_BOOKS = "SELECT * from nkulakow.PAP_BOOKS";
-        public static final String UPDATE_ADMIN_PASSWD = "UPDATE nkulakow.PAP_ADMINS_PASSWD set password=";
-        public static final String UPDATE_USER_PASSWD = "UPDATE nkulakow.PAP_USERS_PASSWD set password=";
 
     }
 }
