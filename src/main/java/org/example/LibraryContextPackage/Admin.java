@@ -107,14 +107,17 @@ public class Admin extends User implements LibraryContextActions{
     {
         HashSet<LibraryContextActions> results = new HashSet<>();
         String[] patterns = search_pattern.split(" ");
-        for(String pattern:patterns)
+        String toSearch = "";
+        for(String pattern: patterns)
         {
-            for(LibraryContextActions libObj: this.toSearch)
+            toSearch += pattern;
+            toSearch += " ";
+        }
+        for(LibraryContextActions libObj: this.toSearch)
+        {
+            if(libObj.describe().toLowerCase().contains(toSearch.toLowerCase()))
             {
-                if(libObj.describe().toLowerCase().contains(pattern.toLowerCase()))
-                {
-                    results.add(libObj);
-                }
+                results.add(libObj);
             }
         }
         return results;
