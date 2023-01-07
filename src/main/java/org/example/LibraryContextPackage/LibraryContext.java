@@ -47,11 +47,14 @@ public class LibraryContext {
     public static void LibContextInitForTests(boolean AsUser) throws InvalidBookNumberException {
         try {
             LibraryDatabase.initLoginInfoForTests();
+
+
             autoAdmin = null;
             currentAdmin = null;
             currentUser = null;
 
             autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
+            Admin.clearAll();
             autoAdmin.addObject(autoAdmin);
             currentAdmin = autoAdmin;
             autoAdmin.addObject(currentAdmin);
@@ -59,6 +62,7 @@ public class LibraryContext {
                 currentUser = new CommonUser("user", "Null", "user", "Null", 1, "mail", 0);
                 autoAdmin.addObject(currentUser);
             }
+
 
         }
         catch (NullOrEmptyStringException | InvalidIdException e){
@@ -91,6 +95,7 @@ public class LibraryContext {
                 autoAdmin.addObject(book);
             }
             logger.info("Executed LibraryContextInit.");
+
         }
         catch (NullOrEmptyStringException | InvalidIdException | SQLException | InvalidBookNumberException |IOException e){
             logger.error("Error in LibContextInit: " + e.getMessage());
@@ -185,9 +190,20 @@ public class LibraryContext {
     static public boolean addObject(LibraryContextActions libObject)
     {
         if (currentAdmin.addObject(libObject)) {
+            logger.info("Added object locally.");
             if (libObject.getClass().equals(CommonUser.class)) {
                 try {
                     LibraryDatabase.addUser((CommonUser) libObject);
+                    logger.info("Added user to DB");
+                }
+                catch (SQLException e){
+                    logger.warn("Could not remove user in DB");
+                    return false;
+                }
+            }
+            if (libObject.getClass().equals(Book.class)) {
+                try {
+                    LibraryDatabase.addBook((Book) libObject);
                     logger.info("Added user to DB");
                 }
                 catch (SQLException e){
@@ -202,6 +218,7 @@ public class LibraryContext {
     static public boolean removeObject(LibraryContextActions libObject)
     {
         if (currentAdmin.removeObject(libObject)) {
+            logger.info("Removed object locally.");
             if (libObject.getClass().equals(CommonUser.class)) {
                 try {
                     LibraryDatabase.removeUser((CommonUser) libObject);
@@ -209,6 +226,16 @@ public class LibraryContext {
                 }
                 catch (SQLException e){
                     logger.warn("Could not remove user in DB");
+                    return false;
+                }
+            }
+            if (libObject.getClass().equals(Book.class)) {
+                try {
+                    LibraryDatabase.removeBook((Book) libObject);
+                    logger.info("Removed book from DB");
+                }
+                catch (SQLException e){
+                    logger.warn("Could not remove book in DB");
                     return false;
                 }
             }
@@ -270,7 +297,7 @@ public class LibraryContext {
         return true;
     }
 
-    static public boolean modifyUser(AttributesNames attributeName, Object modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+    static public boolean modifyUser(AttributesNames attributeName, String modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
         modifiedUser.modifyUser(attributeName, modifiedVal);
         try{
         if (currentUser != null || modifiedUser.getClass().equals(CommonUser.class))
@@ -287,10 +314,10 @@ public class LibraryContext {
         return true;
     }
 
-    static public boolean modifyBook(AttributesNames attributeName, Object modifiedVal, Book modfiedBook) throws NullOrEmptyStringException, InvalidIdException {
-        modfiedBook.modifyBook(attributeName, modifiedVal);
+    static public boolean modifyBook(AttributesNames attributeName, String modifiedVal, Book modifiedBook) throws NullOrEmptyStringException, InvalidIdException {
+        modifiedBook.modifyBook(attributeName, modifiedVal);
         try{
-            LibraryDatabase.modifyBook(modfiedBook);
+            LibraryDatabase.modifyBook(modifiedBook);
         } catch (SQLException e) {
             logger.warn("Could not execute query in DB in modifyBook "+ e.getMessage());
             return false;
