@@ -23,8 +23,9 @@ public class LibraryContext {
     private static Admin autoAdmin = null;
 
     private static float penalty = 0.5f;
-
+    @Getter
     private static Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks = new Hashtable<>();
+    @Getter
     private static Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime = new Hashtable<>();
     private static final Logger logger = LogManager.getLogger(org.example.LibraryContextPackage.LibraryContext.class);
     public static void orderBook(Book book, long months)
@@ -89,7 +90,7 @@ public class LibraryContext {
             for(var book : newBooks){
                 autoAdmin.addObject(book);
             }
-
+            logger.info("Executed LibraryContextInit.");
         }
         catch (NullOrEmptyStringException | InvalidIdException | SQLException | InvalidBookNumberException |IOException e){
             logger.error("Error in LibContextInit: " + e.getMessage());
@@ -113,7 +114,7 @@ public class LibraryContext {
             }
             catch (InvalidIdException e)
             {
-
+                logger.warn("Exception in return Book: " + e.getMessage());
             }
             book.setReturnDate(ZonedDateTime.now().plusMonths(takenBooksOrderedTime.get(book.getBookId()).remove()));
 
@@ -229,6 +230,46 @@ public class LibraryContext {
         return results;
     }
 
+    static public boolean modifyFewUserAttributes(Map<AttributesNames, String> attributes, int userId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException {
+        CommonUser user;
+        try {
+            user = Admin.findUserById(userId);
+        } catch (InvalidIdException e) {
+            logger.error("Could not find user by id");
+            return false;
+        }
+        for (var attributeName : attributes.keySet()){
+            user.modifyUser(attributeName, attributes.get(attributeName));
+        }
+        try{
+            LibraryDatabase.modifyCommonUser(user);
+        } catch (SQLException e) {
+            logger.warn("Could not execute query in DB in modifyFewUserAttributes "+ e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    static public boolean modifyFewBookAttributes(Map<AttributesNames, String> attributes, int bookId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException {
+        Book book;
+        try {
+            book = Admin.findBookById(bookId);
+        } catch (InvalidIdException e) {
+            logger.error("Could not find book by id");
+            return false;
+        }
+        for (var attributeName : attributes.keySet()){
+            book.modifyBook(attributeName, attributes.get(attributeName));
+        }
+        try{
+            LibraryDatabase.modifyBook(book);
+        } catch (SQLException e) {
+            logger.warn("Could not execute query in DB in modifyFewBookAttributes "+ e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
     static public boolean modifyUser(AttributesNames attributeName, Object modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
         modifiedUser.modifyUser(attributeName, modifiedVal);
         try{
@@ -255,6 +296,13 @@ public class LibraryContext {
             return false;
         }
         return true;
+    }
+    static public Vector<String> showUsers(){
+        Vector<String> users_rep = new Vector<>();
+        for (var user: Admin.getUsers()){
+            users_rep.add(user.describe());
+        }
+        return users_rep;
     }
 
 
