@@ -1,7 +1,6 @@
 package org.example.LibraryContextPackage;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,14 +43,21 @@ public class LibraryContext {
 
     }
 
-    public static void LibContextInitForTests(){
+    public static void LibContextInitForTests(boolean AsUser) throws InvalidBookNumberException {
         try {
             LibraryDatabase.initLoginInfoForTests();
+            autoAdmin = null;
+            currentAdmin = null;
+            currentUser = null;
 
             autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
             autoAdmin.addObject(autoAdmin);
             currentAdmin = autoAdmin;
             autoAdmin.addObject(currentAdmin);
+            if(AsUser){
+                currentUser = new CommonUser("user", "Null", "user", "Null", 1, "mail", 0);
+                autoAdmin.addObject(currentUser);
+            }
 
         }
         catch (NullOrEmptyStringException | InvalidIdException e){
@@ -89,6 +95,7 @@ public class LibraryContext {
             logger.error("Error in LibContextInit: " + e.getMessage());
             LibraryGUI.sendMessageToLoginPage("Cannot initialize login process. Please exit and refer to all_logs.log file.");
         }
+
     }
     public static void returnBook(Book book) {
         ArrayDeque<CommonUser> users = takenBooks.get(book.getBookId());
@@ -222,24 +229,33 @@ public class LibraryContext {
         return results;
     }
 
-    static public void changePassword(String newPasswd) throws NullOrEmptyStringException, CannotConnectToDBException {
-        try {
-            if (currentUser == null) {
-                currentAdmin.setPassword(newPasswd);
-            } else {
-                currentUser.setPassword(newPasswd);
-            }
-            LibraryDatabase.changePassword(newPasswd);
-        }
-        catch (NullOrEmptyStringException e)
+    static public boolean modifyUser(AttributesNames attributeName, Object modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+        modifiedUser.modifyUser(attributeName, modifiedVal);
+        try{
+        if (currentUser != null || modifiedUser.getClass().equals(CommonUser.class))
         {
-            logger.warn("Empty password in changePassword "+ e.getMessage());
+            LibraryDatabase.modifyCommonUser((CommonUser) modifiedUser);
         }
-        catch (SQLException e)
-        {
-            logger.warn("Cannot execute query in database in changePassword" + e.getMessage());
-            throw new CannotConnectToDBException("Could not change password in database as " + e.getMessage());
+        else {
+            LibraryDatabase.modifyAdmin((Admin) modifiedUser);
+        }}
+        catch (SQLException e){
+            logger.warn("Could not execute query in DB in modifyUser "+ e.getMessage());
+            return false;
         }
+        return true;
     }
+
+    static public boolean modifyBook(AttributesNames attributeName, Object modifiedVal, Book modfiedBook) throws NullOrEmptyStringException, InvalidIdException {
+        modfiedBook.modifyBook(attributeName, modifiedVal);
+        try{
+            LibraryDatabase.modifyBook(modfiedBook);
+        } catch (SQLException e) {
+            logger.warn("Could not execute query in DB in modifyBook "+ e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
 
 }

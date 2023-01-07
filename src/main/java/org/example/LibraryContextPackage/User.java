@@ -4,6 +4,8 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Objects;
+
 public abstract class User {
     @Getter
     protected String login;
@@ -67,6 +69,24 @@ public abstract class User {
         this.setName(name);
         this.setSurname((surname));
         this.setMail(mail);
+    }
+
+    public boolean modifyUser(AttributesNames attributeName, Object modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+        if (attributeName == AttributesNames.login){
+            setLogin((String) modifiedVal);
+            return true;
+        } else if (attributeName == AttributesNames.name) {
+            setName((String) modifiedVal);
+            return true;
+        } else if (attributeName == AttributesNames.surname) {
+            setSurname((String) modifiedVal);
+            return true;
+        }
+        else if (attributeName == AttributesNames.mail) {
+            setMail((String) modifiedVal);
+            return true;
+        }
+        return false;
     }
 
 }
