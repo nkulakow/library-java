@@ -242,9 +242,29 @@ public class LibraryContext {
             user.modifyUser(attributeName, attributes.get(attributeName));
         }
         try{
-            LibraryDatabase.modifyCommonUser((CommonUser) user);
+            LibraryDatabase.modifyCommonUser(user);
         } catch (SQLException e) {
-            logger.warn("Could not execute query in DB in modifyAllUserAttributes "+ e.getMessage());
+            logger.warn("Could not execute query in DB in modifyFewUserAttributes "+ e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    static public boolean modifyFewBookAttributes(Map<AttributesNames, String> attributes, int bookId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException {
+        Book book;
+        try {
+            book = Admin.findBookById(bookId);
+        } catch (InvalidIdException e) {
+            logger.error("Could not find book by id");
+            return false;
+        }
+        for (var attributeName : attributes.keySet()){
+            book.modifyBook(attributeName, attributes.get(attributeName));
+        }
+        try{
+            LibraryDatabase.modifyBook(book);
+        } catch (SQLException e) {
+            logger.warn("Could not execute query in DB in modifyFewBookAttributes "+ e.getMessage());
             return false;
         }
         return true;

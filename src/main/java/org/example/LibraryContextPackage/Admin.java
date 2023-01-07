@@ -201,7 +201,16 @@ public class Admin extends User implements LibraryContextActions{
                 return user;
             }
         }
-        throw new InvalidIdException("No common user with that ID");
+        throw new InvalidIdException("No common user with given ID");
+    }
+
+    public static Book findBookById(int bookId) throws InvalidIdException {
+        for (var book : Admin.getBooks()){
+            if(book.getBookId() == bookId){
+                return book;
+            }
+        }
+        throw new InvalidIdException("No common book with given ID");
     }
 
 }
