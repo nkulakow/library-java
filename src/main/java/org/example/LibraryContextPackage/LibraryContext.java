@@ -107,7 +107,6 @@ public class LibraryContext {
     }
     public static void returnBook(Book book) {
         ArrayDeque<CommonUser> users = takenBooks.get(book.getBookId());
-        users.remove();
         if (users.isEmpty()) {
             takenBooks.remove(book.getBookId());
             takenBooksOrderedTime.remove(book.getBookId());
