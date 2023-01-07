@@ -84,6 +84,7 @@ class Searcher extends FrameContentManager {
             infos.add(result.describe());
         }
         var list = new JList<>(infos);
+//        list.setBounds(0, 0, content_panel.getWidth(), list.getModel().getSize() * 30);
         list.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
 
         return list;
@@ -111,7 +112,7 @@ class ModifyShower extends FrameContentManager {
 
         var button = new OptionPanel.OptionButton("Search for data to modify");
         button.addActionListener(LibraryGUI.main_page);
-        button.setAction_manager(new ModifyChooser(FrameContentManager.USERS));
+        button.setAction_manager(new ModifyChooser(this.search_mode));
         button.setBounds(content_panel.getSize().width / 2 - 150, 30, 300, 30);
 
         content_panel.removeAll();
@@ -141,7 +142,10 @@ class ModifyChooser extends FrameContentManager {
 
         var button = new OptionPanel.OptionButton("Select");
         button.addActionListener(LibraryGUI.main_page);
-        button.setAction_manager(new UsersModifier());
+        if (this.search_mode == FrameContentManager.USERS)
+            button.setAction_manager(new UsersModifier());
+        else
+            button.setAction_manager(new BooksModifier());
         button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
 
         content_panel.removeAll();
@@ -165,7 +169,7 @@ class DeleteShower extends FrameContentManager {
 
         var button = new OptionPanel.OptionButton("Search for data to delete");
         button.addActionListener(LibraryGUI.main_page);
-        button.setAction_manager(new DeleteChooser(FrameContentManager.USERS));
+        button.setAction_manager(new DeleteChooser(this.search_mode));
         button.setBounds(content_panel.getSize().width / 2 - 150, 30, 300, 30);
 
         content_panel.removeAll();
@@ -187,7 +191,7 @@ class DeleteChooser extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         var list = Searcher.getSearchList(content_panel, this.search_mode);
-        list.setBounds(content_panel.getSize().width / 2 - 300, 0, 600, 30 * list.getModel().getSize());
+        list.setBounds(0, 0, content_panel.getWidth(), 30 * list.getModel().getSize());
         DeleteChooser.last_results = list;
 
         var label = new JLabel("Select data to delete");
@@ -195,10 +199,14 @@ class DeleteChooser extends FrameContentManager {
 
         var button = new OptionPanel.OptionButton("Delete");
         button.addActionListener(LibraryGUI.main_page);
-        button.setAction_manager(new UsersDeleter());
+        if (this.search_mode == FrameContentManager.USERS)
+            button.setAction_manager(new UsersDeleter());
+        else
+            button.setAction_manager(new BooksDeleter());
         button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
 
         content_panel.removeAll();
+        content_panel.setLayout(null);
         content_panel.add(list);
         content_panel.add(label);
         content_panel.add(button);

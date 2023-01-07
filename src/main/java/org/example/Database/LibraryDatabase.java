@@ -246,7 +246,7 @@ public class LibraryDatabase {
         String id = String.valueOf(user.getUserId()), name = user.getName(), surname = user.getSurname(),
                 mail = user.getMail(), login = user.getLogin(), password= user.getPassword();
         int books_nr = user.getBooksNr();
-        String query_str1 = "update nkulakow.PAP_USERS set name='"+name+"', surname='" +surname+ "', mail='"+mail+"', books_nr="+books_nr+" where user_id=" + id;
+        String query_str1 = "update nkulakow.PAP_USERS set first_name='"+name+"', last_name='" +surname+ "', mail='"+mail+"', books_nr="+books_nr+" where user_id=" + id;
         String query_str2 = "update nkulakow.PAP_USERS_PASSWD set login='"+login+"', password='" +password+ "'where user_id=" + id;
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
@@ -294,7 +294,12 @@ public class LibraryDatabase {
             Instant instant = date_zoned.toLocalDateTime().toInstant(ZoneOffset.UTC);
             return_date = Date.from(instant);
         }
-        String query_str = "update nkulakow.PAP_BOOKS set name='"+name+"', author='"+author+"', cathegory='"+category+"', available="+available+", return_date="+return_date+", user_id="+user_id+ " where book_id="+book_id;
+        String user_str = "";
+        if (user_id != 0){
+            user_str = ", user_id="+user_id;
+        }
+        System.out.println(user_id + user_str);
+        String query_str = "update nkulakow.PAP_BOOKS set name='"+name+"', author='"+author+"', cathegory='"+category+"', available="+available+", return_date="+return_date+user_str+ " where book_id="+book_id;
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
             logger.info("Connected to database.");

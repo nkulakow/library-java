@@ -129,10 +129,10 @@ public class Book implements LibraryContextActions{
     @Override
     public boolean askToLeaveCollection(Admin admin) {
         Book book = (Book) this;
-        if(book.getUserId() != null)
-        {
-            return false;
-        }
+//        if(book.getUserId() != null)
+//        {
+//            return false;
+//        }
         return admin.updateBooks(book, LibObjectsChangeMode.Remove);
     }
 

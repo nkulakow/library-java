@@ -4,6 +4,8 @@ import org.example.LibraryContextPackage.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 class UserAddingShower extends FrameContentManager {
@@ -17,7 +19,7 @@ class UserAddingShower extends FrameContentManager {
         content_panel.setLayout(null);
         var panel = new AddingPanel(LibraryGUI.main_page);
         panel.setBounds(content_panel.getWidth() / 2 - panel.getSize().width, 0, panel.getSize().width, panel.getSize().height);
-        content_panel.add(new AddingPanel(LibraryGUI.main_page));
+        content_panel.add(panel);
         content_panel.validate();
         content_panel.repaint();
     }
@@ -77,11 +79,11 @@ class UsersModifier extends FrameContentManager {
         } catch (ArrayIndexOutOfBoundsException ignored) {
             return;
         }
+        UsersModificationApplier.last_modified_id = user.getUserId();
         repr.add(user.describe());
         list = new JList<>(repr);
         list.setBounds(content_panel.getSize().width / 2 - 300, 0, 600, 30 * list.getModel().getSize());
 
-        var id_field        = new JTextField(Integer.toString(user.getUserId()));
         var name_field      = new JTextField(user.getName());
         var surname_field   = new JTextField(user.getSurname());
         var mail_field      = new JTextField(user.getMail());
@@ -90,23 +92,26 @@ class UsersModifier extends FrameContentManager {
         var panel = new JPanel();
         panel.setLayout(new GridLayout(3, 2));
         panel.setBounds(content_panel.getSize().width / 2 - 300, list.getHeight(), 600, 30 * 3);
-        panel.add(id_field);
         panel.add(name_field);
         panel.add(surname_field);
         panel.add(mail_field);
         panel.add(login_field);
         panel.add(password_field);
 
-
         var button = new OptionPanel.OptionButton("Confirm");
         button.setBounds(content_panel.getSize().width / 2 - 300, list.getHeight() + panel.getHeight(), 150, 30);
+        button.addActionListener(LibraryGUI.main_page);
         button.setAction_manager(new UsersModificationApplier());
+
+        var prompt = new JLabel();
+        prompt.setBounds(content_panel.getSize().width / 2 - 150, list.getHeight() + panel.getHeight() + button.getHeight(), 300, 30);
 
         content_panel.removeAll();
         content_panel.setLayout(null);
         content_panel.add(list);
         content_panel.add(panel);
         content_panel.add(button);
+        content_panel.add(prompt);
         content_panel.validate();
         content_panel.repaint();
     }
@@ -117,9 +122,40 @@ class UsersModificationApplier extends FrameContentManager {
         super(0);
     }
 
+    public static int last_modified_id;
+
     @Override
     void manage(JPanel content_panel) {
+        var panel = (JPanel) content_panel.getComponent(1);
+        JTextField name_f, surname_f, mail_f, login_f, password_f;
+        String name, surname, mail, login, password;
 
+        name_f      = (JTextField) panel.getComponent(0);
+        name        = name_f.getText();
+        surname_f   = (JTextField) panel.getComponent(1);
+        surname     = surname_f.getText();
+        mail_f      = (JTextField) panel.getComponent(2);
+        mail        = mail_f.getText();
+        login_f     = (JTextField) panel.getComponent(3);
+        login       = login_f.getText();
+        password_f  = (JTextField) panel.getComponent(4);
+        password    = password_f.getText();
+
+        Map<AttributesNames, String> map= new HashMap<>();
+        map.put(AttributesNames.name, name);
+        map.put(AttributesNames.surname, surname);
+        map.put(AttributesNames.mail, mail);
+        map.put(AttributesNames.login, login);
+        map.put(AttributesNames.password, password);
+
+        try {
+            LibraryContext.modifyFewUserAttributes(map, UsersModificationApplier.last_modified_id);
+        } catch (NullOrEmptyStringException e) {
+            var prompt = (JLabel) content_panel.getComponent(3);
+            prompt.setText("User data cannot be empty");
+        } catch (InvalidBookNumberException | InvalidIdException ignored) {
+
+        }
     }
 }
 

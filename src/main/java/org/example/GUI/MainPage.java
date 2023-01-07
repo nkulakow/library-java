@@ -1,5 +1,6 @@
 package org.example.GUI;
 
+import org.example.LibraryContextPackage.LibraryContext;
 import org.example.Main;
 
 import javax.swing.*;
@@ -41,7 +42,7 @@ public class MainPage extends Page {
         this.content_panel.setBounds(
                 OptionPanel.OptionButton.BUTTON_WIDTH,
                 0,
-                800,
+                1200,
                 800);
         this.center_panel.add(this.content_panel);
         this.content_panel.setVisible(true);
@@ -93,10 +94,7 @@ public class MainPage extends Page {
                 "Delete user",
                 "Add book",
                 "Modify book",
-                "Delete book",
-                "Add loan",
-                "Modify loan",
-                "Delete loan"
+                "Delete book"
         };
         OptionPanel mod_options = new OptionPanel(new Vector<>(List.of(modify_options_text)), OptionPanel.NOT_MAIN);
         for (var option : mod_options.getOptions())
@@ -117,17 +115,11 @@ public class MainPage extends Page {
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(2);
         button.setAction_manager(new DeleteShower(FrameContentManager.USERS));
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(3);
-        button.setAction_manager(new MockManager());
+        button.setAction_manager(new BookAddingShower());
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(4);
-        button.setAction_manager(new MockManager());
+        button.setAction_manager(new ModifyShower(FrameContentManager.BOOKS));
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(5);
-        button.setAction_manager(new MockManager());
-        button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(6);
-        button.setAction_manager(new MockManager());
-        button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(7);
-        button.setAction_manager(new MockManager());
-        button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(8);
-        button.setAction_manager(new MockManager());
+        button.setAction_manager(new DeleteShower(FrameContentManager.BOOKS));
     }
 
     private void showOptions(OptionPanel options) {
@@ -138,6 +130,18 @@ public class MainPage extends Page {
         this.current_options.setVisible(true);
         this.current_options.setBackground(Color.ORANGE);
         this.center_panel.validate();
+    }
+
+    private void showAccount() {
+        var admin = LibraryContext.getCurrentAdmin();
+        JLabel info = new JLabel(admin.describe());
+        info.setBounds(this.content_panel.getWidth() - 400, 0, 800, 30);
+        info.setFont(new Font(info.getFont().getName(), info.getFont().getStyle(), 30));
+
+        this.content_panel.removeAll();
+        this.content_panel.add(info);
+        this.content_panel.validate();
+        this.content_panel.repaint();
     }
 
     private void initBottom() {
@@ -152,6 +156,7 @@ public class MainPage extends Page {
             switch (button.getAction_type()) {
                 case OptionPanel.MainOptionButton.SEARCH_IN_DATABASE -> this.showOptions(this.search_options);
                 case OptionPanel.MainOptionButton.MODIFY_DATABASE -> this.showOptions(this.modify_options);
+                case OptionPanel.MainOptionButton.SHOW_ACCOUNT -> this.showAccount();
                 case OptionPanel.MainOptionButton.EXIT -> Main.exit();
                 default -> {
 
