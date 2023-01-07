@@ -135,17 +135,17 @@ public class CommonUser extends User implements LibraryContextActions{
     }
 
     @Override
-    public boolean modifyUser(AttributesNames attributeName, Object modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+    public boolean modifyUser(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
         if(super.modifyUser(attributeName, modifiedVal)){
             return true;
         }
         else {
              if (attributeName == AttributesNames.password) {
-                setPassword((String) modifiedVal);
+                setPassword(modifiedVal);
                 return true;
             }
             if (attributeName == AttributesNames.booksNr) {
-                setBooksNr((int) modifiedVal);
+                setBooksNr(Integer.valueOf(modifiedVal));
                 return true;
             }
             return false;

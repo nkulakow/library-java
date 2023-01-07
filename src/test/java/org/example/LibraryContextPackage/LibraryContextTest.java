@@ -28,7 +28,17 @@ public class LibraryContextTest {
             }
         }
         id += 1;
+        int uid = id;
         CommonUser user = new CommonUser(login, "alksnfka", "lasmf", "oahoa", id, "oiahfiau", 0);
+        for(Book book:Admin.getBooks())
+        {
+            if(book.getBookId() > id)
+            {
+                id = book.getUserId();
+            }
+        }
+        id += 1;
+        Book bookTest = new Book("alksnf", "aslfn", id, "slakf", true, uid, null);
         LibraryContext.LibContextInitForTests(false);
         LibraryContext.addObject(user);
         int size = Admin.getUsers().size();
@@ -36,6 +46,13 @@ public class LibraryContextTest {
         Assertions.assertEquals(size - 1, Admin.getUsers().size());
         LibraryContext.removeObject(user);
         Assertions.assertEquals(size - 1, Admin.getUsers().size());
+        LibraryContext.addObject(user);
+        size = Admin.getAdmins().size();
+        LibraryContext.removeObject(user);
+        Assertions.assertEquals(size, Admin.getAdmins().size());
+        LibraryContext.removeObject(bookTest);
+        LibraryContext.removeObject(user);
+        Assertions.assertEquals(0, Admin.getUsers().size());
         for(Admin admin:Admin.getAdmins())
         {
             if(admin.getAdminId() > id)
@@ -142,7 +159,7 @@ public class LibraryContextTest {
         Book book1 = new Book("asfa", "snfak", id, "aksfna", true, null, null);
         LibraryContext.LibContextInitForTests(false);
         int size = Admin.getBooks().size();
-        LibraryContext.addObject(book1);
+        Assertions.assertFalse(LibraryContext.addObject(book1));
         Assertions.assertFalse(Admin.getBooks().isEmpty());
         Assertions.assertEquals(size + 1, Admin.getBooks().size());
         LibraryContext.addObject(book1);
