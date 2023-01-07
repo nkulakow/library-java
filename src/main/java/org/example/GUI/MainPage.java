@@ -115,7 +115,7 @@ public class MainPage extends Page {
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(1);
         button.setAction_manager(new ModifyShower(FrameContentManager.USERS));
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(2);
-        button.setAction_manager(new MockManager());
+        button.setAction_manager(new DeleteShower(FrameContentManager.USERS));
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(3);
         button.setAction_manager(new MockManager());
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(4);

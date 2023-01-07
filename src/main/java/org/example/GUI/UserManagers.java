@@ -121,3 +121,23 @@ class UsersModificationApplier extends FrameContentManager {
 
     }
 }
+
+class UsersDeleter extends FrameContentManager {
+    public UsersDeleter() {
+        super(FrameContentManager.USERS);
+    }
+
+    @Override
+    void manage(JPanel content_panel) {
+        int index = DeleteChooser.last_results.getSelectedIndex();
+        var selected = Searcher.last_results.toArray();
+        CommonUser user;
+        try {
+            user = (CommonUser) selected[index];
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+            return;
+        }
+        System.out.println(user.describe());
+        LibraryContext.removeObject(user);
+    }
+}

@@ -153,6 +153,60 @@ class ModifyChooser extends FrameContentManager {
     }
 }
 
+class DeleteShower extends FrameContentManager {
+    public DeleteShower(final int mode) {
+        super(mode);
+    }
+
+    @Override
+    void manage(JPanel content_panel) {
+        var search_field = new JTextField();
+        search_field.setBounds(content_panel.getSize().width / 2 - 150, 0, 300, 30);
+
+        var button = new OptionPanel.OptionButton("Search for data to delete");
+        button.addActionListener(LibraryGUI.main_page);
+        button.setAction_manager(new DeleteChooser(FrameContentManager.USERS));
+        button.setBounds(content_panel.getSize().width / 2 - 150, 30, 300, 30);
+
+        content_panel.removeAll();
+        content_panel.setLayout(null);
+        content_panel.add(search_field);
+        content_panel.add(button);
+        content_panel.validate();
+        content_panel.repaint();
+    }
+}
+
+class DeleteChooser extends FrameContentManager {
+    public DeleteChooser(final int mode) {
+        super(mode);
+    }
+
+    public static JList<String> last_results;
+
+    @Override
+    void manage(JPanel content_panel) {
+        var list = Searcher.getSearchList(content_panel, this.search_mode);
+        list.setBounds(content_panel.getSize().width / 2 - 300, 0, 600, 30 * list.getModel().getSize());
+        DeleteChooser.last_results = list;
+
+        var label = new JLabel("Select data to delete");
+        label.setBounds(list.getX(), list.getHeight(), 300, 30);
+
+        var button = new OptionPanel.OptionButton("Delete");
+        button.addActionListener(LibraryGUI.main_page);
+        button.setAction_manager(new UsersDeleter());
+        button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
+
+        content_panel.removeAll();
+        content_panel.add(list);
+        content_panel.add(label);
+        content_panel.add(button);
+        content_panel.validate();
+        content_panel.repaint();
+    }
+}
+
 class MockManager extends FrameContentManager {
 
     public MockManager() {
