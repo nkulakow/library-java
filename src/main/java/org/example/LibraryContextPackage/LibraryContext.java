@@ -24,9 +24,11 @@ public class LibraryContext {
 
     private static float penalty = 0.5f;
 
+    @Getter
     private static Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks = new Hashtable<>();
     private static Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime = new Hashtable<>();
     private static final Logger logger = LogManager.getLogger(org.example.LibraryContextPackage.LibraryContext.class);
+
     public static void orderBook(Book book, long months)
     {
         if(takenBooks.containsKey(book.getBookId()))
@@ -99,7 +101,6 @@ public class LibraryContext {
     }
     public static void returnBook(Book book) {
         ArrayDeque<CommonUser> users = takenBooks.get(book.getBookId());
-        users.remove();
         if (users.isEmpty()) {
             takenBooks.remove(book.getBookId());
             takenBooksOrderedTime.remove(book.getBookId());

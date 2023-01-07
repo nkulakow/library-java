@@ -3,6 +3,7 @@ package org.example.LibraryContextPackage;
 import lombok.Getter;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayDeque;
 import java.util.HashSet;
 import java.util.Objects;
 
@@ -43,6 +44,7 @@ public class CommonUser extends User implements LibraryContextActions{
         {
             book.setUserId(this.getUserId());
             book.setReturnDate(ZonedDateTime.now().plusMonths(months));
+            this.booksNr += 1;
         }
         catch (InvalidIdException e)
         {
@@ -69,6 +71,8 @@ public class CommonUser extends User implements LibraryContextActions{
         {
             book.setUserId(null);
             book.setReturnDate(null);
+            if(this.booksNr - 1 >= 0)
+                this.booksNr -= 1;
         }
         catch (InvalidIdException e)
         {
@@ -121,15 +125,12 @@ public class CommonUser extends User implements LibraryContextActions{
     @Override
     public boolean askToLeaveCollection(Admin admin) {
         CommonUser user = (CommonUser) this;
-        admin.setToSearch(new HashSet<LibraryContextActions>(Admin.getBooks()));
-        HashSet<LibraryContextActions> results = admin.search(Integer.valueOf(this.getUserId()).toString());
-        for(LibraryContextActions result:results)
+        if(this.booksNr > 0)
+            return false;
+        for(ArrayDeque<CommonUser> queue:LibraryContext.getTakenBooks().values())
         {
-            Book book = (Book) result;
-            if(book.getUserId() != null && book.getUserId() == this.getUserId())
-            {
+            if(queue.contains(user))
                 return false;
-            }
         }
         return admin.updateUsers(user, LibObjectsChangeMode.Remove);
     }

@@ -110,9 +110,10 @@ public class Admin extends User implements LibraryContextActions{
         String toSearch = "";
         for(String pattern: patterns)
         {
-            toSearch += pattern;
-            toSearch += " ";
+            toSearch = toSearch.concat(pattern + " ");
         }
+        if(toSearch.length() > 0)
+            toSearch = toSearch.substring(0, toSearch.length() - 1);
         for(LibraryContextActions libObj: this.toSearch)
         {
             if(libObj.describe().toLowerCase().contains(toSearch.toLowerCase()))
