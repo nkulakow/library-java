@@ -95,6 +95,7 @@ public class LibraryContext {
                 autoAdmin.addObject(book);
             }
             logger.info("Executed LibraryContextInit.");
+
         }
         catch (NullOrEmptyStringException | InvalidIdException | SQLException | InvalidBookNumberException |IOException e){
             logger.error("Error in LibContextInit: " + e.getMessage());
@@ -189,6 +190,7 @@ public class LibraryContext {
     static public boolean addObject(LibraryContextActions libObject)
     {
         if (currentAdmin.addObject(libObject)) {
+            logger.info("Added object locally.");
             if (libObject.getClass().equals(CommonUser.class)) {
                 try {
                     LibraryDatabase.addUser((CommonUser) libObject);
@@ -216,6 +218,7 @@ public class LibraryContext {
     static public boolean removeObject(LibraryContextActions libObject)
     {
         if (currentAdmin.removeObject(libObject)) {
+            logger.info("Removed object locally.");
             if (libObject.getClass().equals(CommonUser.class)) {
                 try {
                     LibraryDatabase.removeUser((CommonUser) libObject);
