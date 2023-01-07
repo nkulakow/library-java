@@ -270,7 +270,7 @@ public class LibraryContext {
         return true;
     }
 
-    static public boolean modifyUser(AttributesNames attributeName, Object modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+    static public boolean modifyUser(AttributesNames attributeName, String modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
         modifiedUser.modifyUser(attributeName, modifiedVal);
         try{
         if (currentUser != null || modifiedUser.getClass().equals(CommonUser.class))
@@ -287,10 +287,10 @@ public class LibraryContext {
         return true;
     }
 
-    static public boolean modifyBook(AttributesNames attributeName, Object modifiedVal, Book modfiedBook) throws NullOrEmptyStringException, InvalidIdException {
-        modfiedBook.modifyBook(attributeName, modifiedVal);
+    static public boolean modifyBook(AttributesNames attributeName, String modifiedVal, Book modifiedBook) throws NullOrEmptyStringException, InvalidIdException {
+        modifiedBook.modifyBook(attributeName, modifiedVal);
         try{
-            LibraryDatabase.modifyBook(modfiedBook);
+            LibraryDatabase.modifyBook(modifiedBook);
         } catch (SQLException e) {
             logger.warn("Could not execute query in DB in modifyBook "+ e.getMessage());
             return false;

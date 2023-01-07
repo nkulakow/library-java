@@ -71,19 +71,19 @@ public abstract class User {
         this.setMail(mail);
     }
 
-    public boolean modifyUser(AttributesNames attributeName, Object modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+    public boolean modifyUser(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
         if (attributeName == AttributesNames.login){
-            setLogin((String) modifiedVal);
+            setLogin( modifiedVal);
             return true;
         } else if (attributeName == AttributesNames.name) {
-            setName((String) modifiedVal);
+            setName( modifiedVal);
             return true;
         } else if (attributeName == AttributesNames.surname) {
-            setSurname((String) modifiedVal);
+            setSurname( modifiedVal);
             return true;
         }
         else if (attributeName == AttributesNames.mail) {
-            setMail((String) modifiedVal);
+            setMail( modifiedVal);
             return true;
         }
         return false;

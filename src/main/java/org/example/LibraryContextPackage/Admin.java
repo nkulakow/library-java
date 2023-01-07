@@ -181,13 +181,13 @@ public class Admin extends User implements LibraryContextActions{
     }
 
     @Override
-    public boolean modifyUser(AttributesNames attributeName, Object modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+    public boolean modifyUser(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
         if(super.modifyUser(attributeName, modifiedVal)){
             return true;
         }
         else {
             if (attributeName == AttributesNames.password) {
-                byte[] bytePasswd = ((String) modifiedVal).getBytes();
+                byte[] bytePasswd = (modifiedVal).getBytes();
                 setPassword(Base64.getEncoder().encodeToString(bytePasswd));
                 return true;
             }
