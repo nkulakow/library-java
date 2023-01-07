@@ -1,5 +1,6 @@
 package org.example.GUI;
 
+import org.example.LibraryContextPackage.LibraryContext;
 import org.example.Main;
 
 import javax.swing.*;
@@ -140,6 +141,18 @@ public class MainPage extends Page {
         this.center_panel.validate();
     }
 
+    private void showAccount() {
+        var admin = LibraryContext.getCurrentAdmin();
+        JLabel info = new JLabel(admin.describe());
+        info.setBounds(this.content_panel.getWidth() - 400, 0, 800, 30);
+        info.setFont(new Font(info.getFont().getName(), info.getFont().getStyle(), 30));
+
+        this.content_panel.removeAll();
+        this.content_panel.add(info);
+        this.content_panel.validate();
+        this.content_panel.repaint();
+    }
+
     private void initBottom() {
         this.add(new BottomPanel(), BorderLayout.SOUTH);
     }
@@ -152,6 +165,7 @@ public class MainPage extends Page {
             switch (button.getAction_type()) {
                 case OptionPanel.MainOptionButton.SEARCH_IN_DATABASE -> this.showOptions(this.search_options);
                 case OptionPanel.MainOptionButton.MODIFY_DATABASE -> this.showOptions(this.modify_options);
+                case OptionPanel.MainOptionButton.SHOW_ACCOUNT -> this.showAccount();
                 case OptionPanel.MainOptionButton.EXIT -> Main.exit();
                 default -> {
 
