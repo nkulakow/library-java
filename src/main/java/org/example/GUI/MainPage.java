@@ -42,7 +42,7 @@ public class MainPage extends Page {
         this.content_panel.setBounds(
                 OptionPanel.OptionButton.BUTTON_WIDTH,
                 0,
-                800,
+                1200,
                 800);
         this.center_panel.add(this.content_panel);
         this.content_panel.setVisible(true);
@@ -118,11 +118,11 @@ public class MainPage extends Page {
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(2);
         button.setAction_manager(new DeleteShower(FrameContentManager.USERS));
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(3);
-        button.setAction_manager(new MockManager());
+        button.setAction_manager(new BookAddingShower());
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(4);
         button.setAction_manager(new MockManager());
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(5);
-        button.setAction_manager(new MockManager());
+        button.setAction_manager(new DeleteShower(FrameContentManager.BOOKS));
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(6);
         button.setAction_manager(new MockManager());
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(7);

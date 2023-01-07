@@ -17,7 +17,7 @@ class UserAddingShower extends FrameContentManager {
         content_panel.setLayout(null);
         var panel = new AddingPanel(LibraryGUI.main_page);
         panel.setBounds(content_panel.getWidth() / 2 - panel.getSize().width, 0, panel.getSize().width, panel.getSize().height);
-        content_panel.add(new AddingPanel(LibraryGUI.main_page));
+        content_panel.add(panel);
         content_panel.validate();
         content_panel.repaint();
     }

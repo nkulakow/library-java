@@ -151,6 +151,54 @@ class AddingPanel extends JPanel {
     }
 }
 
+class BookAddingPanel extends JPanel {
+
+    private final JTextField name;
+
+    private final JTextField category;
+
+    private final JTextField author;
+
+    private final JTextField bookId;
+
+    private final JLabel prompt;
+
+
+    public BookAddingPanel(ActionListener listener) {
+        this.setLayout(new GridLayout(6, 1));
+        this.name = new JTextField("Name");
+        this.add(this.name);
+        this.category = new JTextField("Category");
+        this.add(this.category);
+        this.author = new JTextField("Author");
+        this.add(this.author);
+        this.bookId = new JTextField("Id");
+        this.add(this.bookId);
+
+        OptionPanel.OptionButton add_button = new OptionPanel.OptionButton("Add");
+        add_button.addActionListener(listener);
+        add_button.setAction_manager(new BookAdder());
+        this.add(add_button);
+
+        this.prompt = new JLabel("Enter book data");
+        this.add(this.prompt);
+        this.setBounds(200, 0, 400, 200);
+    }
+
+    public ArrayList<String> getData() {
+        ArrayList<String> result = new ArrayList<>();
+        result.add(this.name.getText());
+        result.add(this.category.getText());
+        result.add(this.author.getText());
+        result.add(this.bookId.getText());
+        return result;
+    }
+
+    public void changePrompt(final String text) {
+        this.prompt.setText(text);
+    }
+}
+
 class BottomPanel extends JPanel {
     public BottomPanel() {
         this.setBackground(new Color(94, 94, 94));
