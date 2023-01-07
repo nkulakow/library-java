@@ -195,4 +195,13 @@ public class Admin extends User implements LibraryContextActions{
         }
     }
 
+    public static CommonUser findUserById(int userID) throws InvalidIdException {
+        for (var user : Admin.getUsers()){
+            if(user.getUserId() == userID){
+                return user;
+            }
+        }
+        throw new InvalidIdException("No common user with that ID");
+    }
+
 }

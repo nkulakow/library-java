@@ -230,6 +230,26 @@ public class LibraryContext {
         return results;
     }
 
+    static public boolean modifyFewUserAttributes(Map<AttributesNames, String> attributes, int userId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException {
+        CommonUser user;
+        try {
+            user = Admin.findUserById(userId);
+        } catch (InvalidIdException e) {
+            logger.error("Could not find user by id");
+            return false;
+        }
+        for (var attributeName : attributes.keySet()){
+            user.modifyUser(attributeName, attributes.get(attributeName));
+        }
+        try{
+            LibraryDatabase.modifyCommonUser((CommonUser) user);
+        } catch (SQLException e) {
+            logger.warn("Could not execute query in DB in modifyAllUserAttributes "+ e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
     static public boolean modifyUser(AttributesNames attributeName, Object modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
         modifiedUser.modifyUser(attributeName, modifiedVal);
         try{
