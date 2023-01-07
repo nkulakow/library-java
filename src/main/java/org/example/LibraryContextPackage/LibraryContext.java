@@ -199,6 +199,16 @@ public class LibraryContext {
                     return false;
                 }
             }
+            if (libObject.getClass().equals(Book.class)) {
+                try {
+                    LibraryDatabase.addBook((Book) libObject);
+                    logger.info("Added user to DB");
+                }
+                catch (SQLException e){
+                    logger.warn("Could not remove user in DB");
+                    return false;
+                }
+            }
         }
         return true;
     }
@@ -213,6 +223,16 @@ public class LibraryContext {
                 }
                 catch (SQLException e){
                     logger.warn("Could not remove user in DB");
+                    return false;
+                }
+            }
+            if (libObject.getClass().equals(Book.class)) {
+                try {
+                    LibraryDatabase.removeBook((Book) libObject);
+                    logger.info("Removed book from DB");
+                }
+                catch (SQLException e){
+                    logger.warn("Could not remove book in DB");
                     return false;
                 }
             }

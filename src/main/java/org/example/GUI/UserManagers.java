@@ -97,6 +97,7 @@ class UsersModifier extends FrameContentManager {
         panel.add(login_field);
         panel.add(password_field);
 
+
         var button = new OptionPanel.OptionButton("Confirm");
         button.setBounds(content_panel.getSize().width / 2 - 300, list.getHeight() + panel.getHeight(), 150, 30);
         button.setAction_manager(new UsersModificationApplier());
