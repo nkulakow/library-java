@@ -123,9 +123,13 @@ public class CommonUser extends User implements LibraryContextActions{
         CommonUser user = (CommonUser) this;
         admin.setToSearch(new HashSet<LibraryContextActions>(Admin.getBooks()));
         HashSet<LibraryContextActions> results = admin.search(Integer.valueOf(this.getUserId()).toString());
-        if(!results.isEmpty())
+        for(LibraryContextActions result:results)
         {
-            return false;
+            Book book = (Book) result;
+            if(book.getUserId() != null && book.getUserId() == this.getUserId())
+            {
+                return false;
+            }
         }
         return admin.updateUsers(user, LibObjectsChangeMode.Remove);
     }
