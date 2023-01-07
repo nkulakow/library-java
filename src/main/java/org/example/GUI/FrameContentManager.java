@@ -16,7 +16,7 @@ class UsersShower extends FrameContentManager{
     @Override
     void manage(JPanel content_panel) {
         content_panel.removeAll();
-        var users_repr = new Vector<>(LibraryDatabase.getUsers("select * from nkulakow.pap_users"));
+        var users_repr = new Vector<>(LibraryContext.showUsers());
         var list = new JList<>(users_repr);
         list.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
         content_panel.add(list);
