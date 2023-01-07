@@ -79,11 +79,11 @@ public class MainPage extends Page {
 
         OptionPanel.OptionButton button;
         button = (OptionPanel.OptionButton) this.search_options.getOptions().get(0);
-        button.setAction_manager(new UsersShower());
+        button.setAction_manager(new Shower());
         button = (OptionPanel.OptionButton) this.search_options.getOptions().get(1);
-        button.setAction_manager(new SearchShower(SearchShower.USERS));
+        button.setAction_manager(new SearchShower(FrameContentManager.USERS));
         button = (OptionPanel.OptionButton) this.search_options.getOptions().get(2);
-        button.setAction_manager(new SearchShower(SearchShower.BOOKS));
+        button.setAction_manager(new SearchShower(FrameContentManager.BOOKS));
     }
 
     private void initModifyOptions() {
@@ -111,11 +111,11 @@ public class MainPage extends Page {
 
         OptionPanel.OptionButton button;
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(0);
-        button.setAction_manager(new UserAddingShower());
+        button.setAction_manager(new UserAddingShower(FrameContentManager.USERS));
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(1);
-        button.setAction_manager(new MockManager());
+        button.setAction_manager(new ModifyShower(FrameContentManager.USERS));
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(2);
-        button.setAction_manager(new MockManager());
+        button.setAction_manager(new DeleteShower(FrameContentManager.USERS));
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(3);
         button.setAction_manager(new MockManager());
         button = (OptionPanel.OptionButton) this.modify_options.getOptions().get(4);

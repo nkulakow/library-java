@@ -127,7 +127,7 @@ class AddingPanel extends JPanel {
 
         OptionPanel.OptionButton add_button = new OptionPanel.OptionButton("Add");
         add_button.addActionListener(listener);
-        add_button.setAction_manager(new UserAdder());
+        add_button.setAction_manager(new UserAdder(FrameContentManager.USERS));
         this.add(add_button);
 
         this.prompt = new JLabel("Enter user data");
