@@ -184,7 +184,14 @@ class BooksReturner extends FrameContentManager {
             return;
         }
         System.out.println(book.describe());
-        LibraryContext.returnBook(book);
+        try {
+            LibraryContext.returnBook(book);
+        }
+        catch (CannotReturnBookException e){
+            var meslabel = (JLabel) content_panel.getComponent(1);
+            meslabel.setText("Could not return book, please contact administrator");
+            content_panel.add(meslabel);
+        }
     }
 }
 
@@ -196,7 +203,16 @@ class BooksOrderer extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         int index = OrderChooser.last_results.getSelectedIndex();
+        JLabel label = (JLabel) content_panel.getComponent(1);
         var selected = Searcher.last_results.toArray();
+        long months;
+        try {
+            months = Long.parseLong(OrderChooser.months_field.getText());
+        }
+        catch (java.lang.NumberFormatException e){
+            label.setText("Input valid months.");
+            return;
+        }
         Book book;
         try {
             book = (Book) selected[index];
@@ -204,6 +220,6 @@ class BooksOrderer extends FrameContentManager {
             return;
         }
         System.out.println(book.describe());
-        LibraryContext.orderBook(book, 2);
+        LibraryContext.orderBook(book, months);
     }
 }

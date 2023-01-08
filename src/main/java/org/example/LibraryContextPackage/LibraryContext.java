@@ -36,12 +36,14 @@ public class LibraryContext {
         {
             takenBooks.get(book.getBookId()).add(currentUser);
             takenBooksOrderedTime.get(book.getBookId()).add(months);
+            logger.info("Ordered book and got into queue.");
         }
         else
         {
             currentUser.orderBook(book, months);
             takenBooks.put(book.getBookId(), new ArrayDeque<>());
             takenBooksOrderedTime.put(book.getBookId(), new ArrayDeque<>());
+            logger.info("Borrowed book.");
         }
 
     }
@@ -67,7 +69,7 @@ public class LibraryContext {
 
 
         }
-        catch (NullOrEmptyStringException | InvalidIdException e){
+        catch (NullOrEmptyStringException | InvalidIdException | InvalidLoginException e){
             logger.error("Error in LibContextInit: " + e.getMessage());
             LibraryGUI.sendMessageToLoginPage("Cannot initialize login process. Please exit and refer to all_logs.log file.");
         }
@@ -99,19 +101,21 @@ public class LibraryContext {
             logger.info("Executed LibraryContextInit.");
 
         }
-        catch (NullOrEmptyStringException | InvalidIdException | SQLException | InvalidBookNumberException |IOException e){
+        catch (NullOrEmptyStringException | InvalidIdException | SQLException | InvalidBookNumberException |
+               IOException | InvalidLoginException e){
             logger.error("Error in LibContextInit: " + e.getMessage());
             LibraryGUI.sendMessageToLoginPage("Cannot initialize login process. Please exit and refer to all_logs.log file.");
         }
 
     }
-    public static void returnBook(Book book) {
+    public static void returnBook(Book book) throws CannotReturnBookException {
         try{
         ArrayDeque<CommonUser> users = takenBooks.get(book.getBookId());
         if (users.isEmpty()) {
             takenBooks.remove(book.getBookId());
             takenBooksOrderedTime.remove(book.getBookId());
             currentUser.returnBook(book);
+            logger.info("Returned book, it is now available.");
         }
         else {
             currentUser.returnBook(book);
@@ -121,11 +125,12 @@ public class LibraryContext {
                 logger.warn("Exception in return Book: " + e.getMessage());
             }
             book.setReturnDate(ZonedDateTime.now().plusMonths(takenBooksOrderedTime.get(book.getBookId()).remove()));
+            logger.info("Returned book, it is now borrowed by next user.");
         }
         }
         catch (NoSuchElementException | java.lang.NullPointerException e){
             logger.error("In returnBook: " + e.getMessage());
-            System.out.println("aaaaaaaaaaaaaa u cannot >:( ");
+            throw new CannotReturnBookException("Exception in returnBook occurred.");
         }
     }
 
@@ -260,7 +265,7 @@ public class LibraryContext {
         return results;
     }
 
-    static public boolean modifyFewUserAttributes(Map<AttributesNames, String> attributes, int userId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException {
+    static public boolean modifyFewUserAttributes(Map<AttributesNames, String> attributes, int userId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
         CommonUser user;
         try {
             user = Admin.findUserById(userId);
@@ -268,8 +273,14 @@ public class LibraryContext {
             logger.error("Could not find user by id");
             return false;
         }
-        for (var attributeName : attributes.keySet()){
-            user.modifyUser(attributeName, attributes.get(attributeName));
+        try {
+            for (var attributeName : attributes.keySet()) {
+                user.modifyUser(attributeName, attributes.get(attributeName));
+            }
+        }
+        catch (NullOrEmptyStringException | InvalidLoginException e){
+            logger.error("Could not change attribute/s  " + e.getMessage());
+            throw e;
         }
         try{
             LibraryDatabase.modifyCommonUser(user);
@@ -300,7 +311,7 @@ public class LibraryContext {
         return true;
     }
 
-    static public boolean modifyUser(AttributesNames attributeName, String modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+    static public boolean modifyUser(AttributesNames attributeName, String modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
         modifiedUser.modifyUser(attributeName, modifiedVal);
         try{
         if (currentUser != null || modifiedUser.getClass().equals(CommonUser.class))

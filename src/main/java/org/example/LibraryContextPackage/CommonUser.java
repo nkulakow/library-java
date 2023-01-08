@@ -31,8 +31,7 @@ public class CommonUser extends User implements LibraryContextActions{
         this.booksNr = booksNr;
     }
 
-    public CommonUser(String login, String password, String name, String surname, int userId, String mail, Integer booksNr) throws NullOrEmptyStringException, InvalidBookNumberException, InvalidIdException
-    {
+    public CommonUser(String login, String password, String name, String surname, int userId, String mail, Integer booksNr) throws NullOrEmptyStringException, InvalidBookNumberException, InvalidIdException, InvalidLoginException {
         super(login, password, name, surname, mail);
         this.setUserId(userId);
         this.setBooksNr(booksNr);
@@ -136,7 +135,7 @@ public class CommonUser extends User implements LibraryContextActions{
     }
 
     @Override
-    public boolean modifyUser(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+    public boolean modifyUser(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
         if(super.modifyUser(attributeName, modifiedVal)){
             return true;
         }

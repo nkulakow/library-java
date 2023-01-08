@@ -57,6 +57,8 @@ class UserAdder extends FrameContentManager {
             panel.changePrompt("Incorrect user id");
         } catch (InvalidBookNumberException ignored) {
 
+        } catch (InvalidLoginException e) {
+            panel.changePrompt("Login already exists");
         }
     }
 }
@@ -157,9 +159,22 @@ class UsersModificationApplier extends FrameContentManager {
         try {
             LibraryContext.modifyFewUserAttributes(map, UsersModificationApplier.last_modified_id);
         } catch (NullOrEmptyStringException e) {
-            var prompt = (JLabel) content_panel.getComponent(3);
+            JLabel prompt;
+            if (this.search_mode == FrameContentManager.ADMIN_USER_MOD){
+            prompt = (JLabel) content_panel.getComponent(3);}
+            else {prompt = (JLabel) content_panel.getComponent(2);}
             prompt.setText("User data cannot be empty");
-        } catch (InvalidBookNumberException | InvalidIdException ignored) {
+            content_panel.add(prompt);
+            }
+        catch (InvalidLoginException e) {
+            JLabel prompt;
+            if (this.search_mode == FrameContentManager.ADMIN_USER_MOD){
+                prompt = (JLabel) content_panel.getComponent(3);}
+            else {prompt = (JLabel) content_panel.getComponent(2);}
+            prompt.setText("Login already exists");
+            content_panel.add(prompt);
+        }
+         catch (InvalidBookNumberException | InvalidIdException ignored) {
 
         }
     }

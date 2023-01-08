@@ -108,14 +108,15 @@ public class UserPage extends Page {
         button.addActionListener(LibraryGUI.user_page);
         button.setAction_manager(new UsersModificationApplier(FrameContentManager.USER_USER_MOD));
 
-        var prompt = new JLabel();
-        prompt.setBounds(content_panel.getSize().width / 2 - 150,  panel.getHeight() + button.getHeight(), 300, 30);
+
+        var prompt2 = new JLabel("");
+        prompt2.setBounds(content_panel.getSize().width / 2 - 300,  panel.getHeight() + button.getHeight() , 300, 30);
 
         content_panel.removeAll();
         content_panel.setLayout(null);
         content_panel.add(panel);
         content_panel.add(button);
-        content_panel.add(prompt);
+        content_panel.add(prompt2);
         content_panel.validate();
         content_panel.repaint();
     }
@@ -150,7 +151,7 @@ public class UserPage extends Page {
         JList<String> list = new JList<>(infos);
         list.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
         list.setBounds(content_panel.getSize().width / 2 - 300, 0, 600, 30 * list.getModel().getSize());
-
+        content_panel.setLayout(null);
         this.content_panel.add(list);
         this.content_panel.validate();
         this.content_panel.repaint();

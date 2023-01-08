@@ -255,7 +255,7 @@ class ReturnChooser extends FrameContentManager {
 
 
         var label = new JLabel("Select book ");
-        label.setBounds(list.getX(), list.getHeight(), 300, 30);
+        label.setBounds(list.getX(), list.getHeight(), 600, 30);
 
         var button = new UserOptionPanel.OptionButton("Return");
         button.addActionListener(LibraryGUI.user_page);
@@ -278,7 +278,7 @@ class OrderChooser extends FrameContentManager {
         super(0);
     }
     public static JList<String> last_results;
-    public static HashSet<LibraryContextActions> last_books;
+    public static JTextField months_field = new JTextField();
 
     @Override
     void manage(JPanel content_panel) {
@@ -289,16 +289,22 @@ class OrderChooser extends FrameContentManager {
         var label = new JLabel("Select book to order");
         label.setBounds(list.getX(), list.getHeight(), 300, 30);
 
+        var label_months = new JLabel("Select months: ");
+        label_months.setBounds(list.getX(), list.getHeight()+30, 200, 30);
+
+        months_field.setBounds(list.getX() + 200, list.getHeight()+30, 100, 30);
+
         var button = new UserOptionPanel.OptionButton("Order");
         button.addActionListener(LibraryGUI.user_page);
         button.setAction_manager(new BooksOrderer());
-        button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
+        button.setBounds(list.getX(), list.getHeight() + 60, 150, 30);
 
         content_panel.removeAll();
         content_panel.setLayout(null);
         content_panel.add(list);
         content_panel.add(label);
         content_panel.add(button);
+        content_panel.add(months_field);
         content_panel.validate();
         content_panel.repaint();
     }
