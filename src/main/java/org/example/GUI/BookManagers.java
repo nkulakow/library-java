@@ -4,6 +4,7 @@ import org.example.LibraryContextPackage.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -164,5 +165,45 @@ class BookModificationApplier extends FrameContentManager {
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
         }
+    }
+}
+
+class BooksReturner extends FrameContentManager {
+    public BooksReturner() {
+        super(0);
+    }
+
+    @Override
+    void manage(JPanel content_panel) {
+        var selected = ReturnChooser.last_books.toArray();
+        int index = ReturnChooser.last_results.getSelectedIndex();
+        Book book;
+        try {
+            book = (Book) selected[index];
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+            return;
+        }
+        System.out.println(book.describe());
+        LibraryContext.returnBook(book);
+    }
+}
+
+class BooksOrderer extends FrameContentManager {
+    public BooksOrderer() {
+        super(0);
+    }
+
+    @Override
+    void manage(JPanel content_panel) {
+        int index = OrderChooser.last_results.getSelectedIndex();
+        var selected = Searcher.last_results.toArray();
+        Book book;
+        try {
+            book = (Book) selected[index];
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+            return;
+        }
+        System.out.println(book.describe());
+        LibraryContext.orderBook(book, 2);
     }
 }

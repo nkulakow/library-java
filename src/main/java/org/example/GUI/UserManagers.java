@@ -101,7 +101,7 @@ class UsersModifier extends FrameContentManager {
         var button = new OptionPanel.OptionButton("Confirm");
         button.setBounds(content_panel.getSize().width / 2 - 300, list.getHeight() + panel.getHeight(), 150, 30);
         button.addActionListener(LibraryGUI.main_page);
-        button.setAction_manager(new UsersModificationApplier());
+        button.setAction_manager(new UsersModificationApplier(FrameContentManager.ADMIN_USER_MOD));
 
         var prompt = new JLabel();
         prompt.setBounds(content_panel.getSize().width / 2 - 150, list.getHeight() + panel.getHeight() + button.getHeight(), 300, 30);
@@ -118,15 +118,21 @@ class UsersModifier extends FrameContentManager {
 }
 
 class UsersModificationApplier extends FrameContentManager {
-    public UsersModificationApplier() {
-        super(0);
+    public UsersModificationApplier(final int mode) {
+        super(mode);
     }
 
     public static int last_modified_id;
 
     @Override
     void manage(JPanel content_panel) {
-        var panel = (JPanel) content_panel.getComponent(1);
+        JPanel panel;
+        if (this.search_mode == FrameContentManager.ADMIN_USER_MOD) {
+            panel = (JPanel) content_panel.getComponent(1);
+        }
+        else{
+            panel = (JPanel) content_panel.getComponent(0);
+        }
         JTextField name_f, surname_f, mail_f, login_f, password_f;
         String name, surname, mail, login, password;
 
