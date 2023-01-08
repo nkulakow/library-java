@@ -72,7 +72,6 @@ class BooksDeleter extends FrameContentManager {
         } catch (ArrayIndexOutOfBoundsException ignored) {
             return;
         }
-        System.out.println(book.describe());
         LibraryContext.removeObject(book);
     }
 }

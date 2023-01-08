@@ -135,10 +135,11 @@ public class MainPage extends Page {
     private void showAccount() {
         var admin = LibraryContext.getCurrentAdmin();
         JLabel info = new JLabel(admin.describe());
-        info.setBounds(this.content_panel.getWidth() - 400, 0, 800, 30);
+        info.setBounds(this.content_panel.getWidth() / 2 - 400, 0, 800, 30);
         info.setFont(new Font(info.getFont().getName(), info.getFont().getStyle(), 30));
 
         this.content_panel.removeAll();
+        this.content_panel.setLayout(null);
         this.content_panel.add(info);
         this.content_panel.validate();
         this.content_panel.repaint();
