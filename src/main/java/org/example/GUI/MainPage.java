@@ -80,7 +80,7 @@ public class MainPage extends Page {
 
         OptionPanel.OptionButton button;
         button = (OptionPanel.OptionButton) this.search_options.getOptions().get(0);
-        button.setAction_manager(new Shower());
+        button.setAction_manager(new Shower(FrameContentManager.USERS));
         button = (OptionPanel.OptionButton) this.search_options.getOptions().get(1);
         button.setAction_manager(new SearchShower(FrameContentManager.USERS));
         button = (OptionPanel.OptionButton) this.search_options.getOptions().get(2);

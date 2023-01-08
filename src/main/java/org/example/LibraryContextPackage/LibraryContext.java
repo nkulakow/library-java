@@ -106,6 +106,7 @@ public class LibraryContext {
 
     }
     public static void returnBook(Book book) {
+        try{
         ArrayDeque<CommonUser> users = takenBooks.get(book.getBookId());
         if (users.isEmpty()) {
             takenBooks.remove(book.getBookId());
@@ -114,16 +115,17 @@ public class LibraryContext {
         }
         else {
             currentUser.returnBook(book);
-            try
-            {
+            try {
                 book.setUserId(takenBooks.get(book.getBookId()).remove().getUserId());
-            }
-            catch (InvalidIdException e)
-            {
+            } catch (InvalidIdException e) {
                 logger.warn("Exception in return Book: " + e.getMessage());
             }
             book.setReturnDate(ZonedDateTime.now().plusMonths(takenBooksOrderedTime.get(book.getBookId()).remove()));
-
+        }
+        }
+        catch (NoSuchElementException | java.lang.NullPointerException e){
+            logger.error("In returnBook: " + e.getMessage());
+            System.out.println("aaaaaaaaaaaaaa u cannot >:( ");
         }
     }
 
@@ -331,6 +333,30 @@ public class LibraryContext {
             users_rep.add(user.describe());
         }
         return users_rep;
+    }
+
+    static public Vector<Book> getBorrowedBooks(){
+        Vector<Book> borrowed = new Vector<>();
+        for (var book: Admin.getBooks()){
+            if(book.getUserId() != null){
+            if(currentUser.getUserId() == book.getUserId()){
+                borrowed.add(book);
+            }}
+        }
+        return borrowed;
+    }
+    static public Vector<Book> getOrderedBooks(){
+        Vector<Book> borrowed = new Vector<>();
+        for (var bookInt: takenBooks.keySet()){
+            if(takenBooks.get(bookInt).contains(currentUser)){
+                try {
+                    borrowed.add(Admin.findBookById(bookInt));
+                } catch (InvalidIdException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return borrowed;
     }
 
 
