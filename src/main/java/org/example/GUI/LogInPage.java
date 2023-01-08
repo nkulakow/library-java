@@ -81,7 +81,7 @@ class LogInPage extends Page {
             if (this.userbox.isSelected())
             {
                 if(LibraryContext.checkLoggingUsers(login, password)) {
-                    //userpage
+                    LibraryGUI.changeAfterLoggedToUserSite();
                 }
                 else {
                     this.prompt.setText("Incorrect login and/or password");

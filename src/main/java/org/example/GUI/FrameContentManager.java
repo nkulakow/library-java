@@ -11,6 +11,11 @@ import java.util.Vector;
 abstract class FrameContentManager {
     public static final int USERS = 0;
     public static final int BOOKS = 1;
+
+    public static final int ORDERED_BOOKS = 2;
+    public static final int BORROWED_BOOKS = 3;
+    public static final int ADMIN_USER_MOD = 4;
+    public static final int USER_USER_MOD = 5;
     protected final int search_mode;
 
     public FrameContentManager(final int mode) {
@@ -21,14 +26,22 @@ abstract class FrameContentManager {
 
 class Shower extends FrameContentManager {
 
-    public Shower() {
-        super(0);
-    }
+    public Shower(final int mode) {super(mode);}
     @Override
     void manage(JPanel content_panel) {
         content_panel.removeAll();
         Vector<String> repr;
-        repr = new Vector<>(LibraryDatabase.getUsers("select * from nkulakow.pap_users"));
+        if (search_mode == FrameContentManager.USERS) {
+            repr = new Vector<>(LibraryDatabase.getUsers("select * from nkulakow.pap_users"));
+        }
+        else if (search_mode == FrameContentManager.ORDERED_BOOKS){
+            repr = new Vector<>();
+            var books = LibraryContext.getOrderedBooks();
+            for (var book : books){repr.add(book.describe());}
+        }
+        else{
+            repr = new Vector<>(LibraryDatabase.getUsers("select * from nkulakow.pap_users"));
+        }
         var list = new JList<>(repr);
         list.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
         content_panel.add(list);
@@ -203,6 +216,82 @@ class DeleteChooser extends FrameContentManager {
             button.setAction_manager(new UsersDeleter());
         else
             button.setAction_manager(new BooksDeleter());
+        button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
+
+        content_panel.removeAll();
+        content_panel.setLayout(null);
+        content_panel.add(list);
+        content_panel.add(label);
+        content_panel.add(button);
+        content_panel.validate();
+        content_panel.repaint();
+    }
+}
+
+class ReturnChooser extends FrameContentManager {
+    public ReturnChooser() {
+        super(0);
+    }
+    public static JList<String> last_results;
+    public static Vector<Book> last_books;
+
+    JList<String> getBooksToReturn() {
+
+        var results = LibraryContext.getBorrowedBooks();
+        last_books = results;
+        var infos = new Vector<String>();
+        for(var result : results) {
+            infos.add(result.describe());
+        }
+        var list = new JList<>(infos);
+        list.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+        return list;
+    }
+    @Override
+    void manage(JPanel content_panel) {
+        var list = getBooksToReturn();
+        list.setBounds(0, 0, content_panel.getWidth(), 30 * list.getModel().getSize());
+        ReturnChooser.last_results = list;
+
+
+        var label = new JLabel("Select book ");
+        label.setBounds(list.getX(), list.getHeight(), 300, 30);
+
+        var button = new UserOptionPanel.OptionButton("Return");
+        button.addActionListener(LibraryGUI.user_page);
+
+        button.setAction_manager(new BooksReturner());
+        button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
+
+        content_panel.removeAll();
+        content_panel.setLayout(null);
+        content_panel.add(list);
+        content_panel.add(label);
+        content_panel.add(button);
+        content_panel.validate();
+        content_panel.repaint();
+    }
+}
+
+class OrderChooser extends FrameContentManager {
+    public OrderChooser() {
+        super(0);
+    }
+    public static JList<String> last_results;
+    public static HashSet<LibraryContextActions> last_books;
+
+    @Override
+    void manage(JPanel content_panel) {
+        var list = Searcher.getSearchList(content_panel, Shower.BOOKS);
+        list.setBounds(0, 0, content_panel.getWidth(), 30 * list.getModel().getSize());
+        OrderChooser.last_results = list;
+
+        var label = new JLabel("Select book to order");
+        label.setBounds(list.getX(), list.getHeight(), 300, 30);
+
+        var button = new UserOptionPanel.OptionButton("Order");
+        button.addActionListener(LibraryGUI.user_page);
+        button.setAction_manager(new BooksOrderer());
         button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
 
         content_panel.removeAll();
