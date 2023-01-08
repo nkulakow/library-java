@@ -56,22 +56,21 @@ public class LibraryContext {
             autoAdmin = null;
             currentAdmin = null;
             currentUser = null;
-
-            autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
             Admin.clearAll();
+            autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
             autoAdmin.addObject(autoAdmin);
             currentAdmin = autoAdmin;
             autoAdmin.addObject(currentAdmin);
+
             if(AsUser){
                 currentUser = new CommonUser("user", "Null", "user", "Null", 1, "mail", 0);
-                autoAdmin.addObject(currentUser);
+                currentAdmin.addObject(currentUser);
             }
 
 
         }
         catch (NullOrEmptyStringException | InvalidIdException | InvalidLoginException e){
-            logger.error("Error in LibContextInit: " + e.getMessage());
-            LibraryGUI.sendMessageToLoginPage("Cannot initialize login process. Please exit and refer to all_logs.log file.");
+            logger.error("Error in LibContextInitForTests: " + e.getMessage());
         }
     }
 

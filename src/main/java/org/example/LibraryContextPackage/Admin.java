@@ -32,6 +32,7 @@ public class Admin extends User implements LibraryContextActions{
     public static void clearAll(){
         books.clear();
         users.clear();
+        admins.clear();
     }
 
     public static HashSet<CommonUser> getUsers()

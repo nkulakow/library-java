@@ -229,6 +229,7 @@ public class LibraryContextTest {
         Assertions.assertTrue(Admin.getUsers().contains(user));
         LibraryContext.removeObject(user);
     }
+
     @Test
     public void testModifyAdmin() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
         LibraryContext.LibContextInitForTests(false);

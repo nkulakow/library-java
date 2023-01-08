@@ -52,13 +52,13 @@ public abstract class User {
         if( this.getClass() == CommonUser.class){
         for( var user : Admin.getUsers()){
             if( login.equals(user.getLogin())){
-                throw new InvalidLoginException("Login already exists");
+                throw new InvalidLoginException("CommonUser login already exists");
             }
         }}
         else{
             for( var user : Admin.getAdmins()){
                 if( login.equals(user.getLogin())){
-                    throw new InvalidLoginException("Login already exists");
+                    throw new InvalidLoginException("Admin login already exists");
                 }
             }
         }
