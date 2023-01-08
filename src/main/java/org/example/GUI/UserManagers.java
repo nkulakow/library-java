@@ -52,13 +52,13 @@ class UserAdder extends FrameContentManager {
             ));
             //jak validinDB=false tzn ze sie w db cos nie udalo i zmiany sa wprowadzone jedynie lokalnie
         } catch (NullOrEmptyStringException e) {
-            panel.changePrompt("User data cannot be empty");
+            LibraryGUI.main_page.getPrompt().setText("User data cannot be empty");
         } catch (InvalidIdException | NumberFormatException e) {
-            panel.changePrompt("Incorrect user id");
+            LibraryGUI.main_page.getPrompt().setText("Incorrect user id");
         } catch (InvalidBookNumberException ignored) {
 
         } catch (InvalidLoginException e) {
-            panel.changePrompt("Login already exists");
+            LibraryGUI.main_page.getPrompt().setText("Login already exists");
         }
     }
 }
@@ -126,15 +126,7 @@ class UsersModificationApplier extends FrameContentManager {
 
     public static int last_modified_id;
 
-    @Override
-    void manage(JPanel content_panel) {
-        JPanel panel;
-        if (this.search_mode == FrameContentManager.ADMIN_USER_MOD) {
-            panel = (JPanel) content_panel.getComponent(1);
-        }
-        else{
-            panel = (JPanel) content_panel.getComponent(0);
-        }
+    public static Map<AttributesNames, String> getDataMap(JPanel panel) {
         JTextField name_f, surname_f, mail_f, login_f, password_f;
         String name, surname, mail, login, password;
 
@@ -156,6 +148,19 @@ class UsersModificationApplier extends FrameContentManager {
         map.put(AttributesNames.login, login);
         map.put(AttributesNames.password, password);
 
+        return map;
+    }
+
+    @Override
+    void manage(JPanel content_panel) {
+        JPanel panel;
+        if (this.search_mode == FrameContentManager.ADMIN_USER_MOD) {
+            panel = (JPanel) content_panel.getComponent(1);
+        }
+        else{
+            panel = (JPanel) content_panel.getComponent(0);
+        }
+        var map = UsersModificationApplier.getDataMap(panel);
         try {
             LibraryContext.modifyFewUserAttributes(map, UsersModificationApplier.last_modified_id);
         } catch (NullOrEmptyStringException e) {
@@ -197,5 +202,27 @@ class UsersDeleter extends FrameContentManager {
         }
         System.out.println(user.describe());
         LibraryContext.removeObject(user);
+    }
+}
+
+class AdminModificationApplier extends FrameContentManager {
+    public AdminModificationApplier() {
+        super(FrameContentManager.USERS);
+    }
+
+    @Override
+    void manage(JPanel content_panel) {
+        var map = UsersModificationApplier.getDataMap(content_panel);
+        JLabel prompt = (JLabel) content_panel.getComponent(6);
+        try {
+            LibraryContext.modifyFewAdminAttributes(map);
+            prompt.setText("Successfully changed your data");
+        } catch (NullOrEmptyStringException e) {
+            prompt.setText("Admin data cannot be empty");
+        } catch (InvalidLoginException e) {
+            prompt.setText("Incorrect login");
+        } catch (InvalidIdException | InvalidBookNumberException ignored) {
+
+        }
     }
 }

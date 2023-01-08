@@ -1,11 +1,13 @@
 package org.example.GUI;
 
+import lombok.Getter;
 import org.example.LibraryContextPackage.LibraryContext;
 import org.example.Main;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.util.Base64;
 import java.util.List;
 import java.util.Vector;
 
@@ -16,15 +18,21 @@ public class MainPage extends Page {
     private OptionPanel modify_options;
     private JPanel content_panel;
     private OptionPanel current_options;
+    private JLabel prompt;
 
     public MainPage () {
         super(Toolkit.getDefaultToolkit().getScreenSize().width, Toolkit.getDefaultToolkit().getScreenSize().height);
         this.init();
     }
 
+    public JLabel getPrompt() {
+        return prompt;
+    }
+
     private void init() {
         this.setLayout(new BorderLayout());
         this.current_options = null;
+        this.prompt = new JLabel();
         this.initCenter();
         this.initOptions();
         this.initSearchOptions();
@@ -134,13 +142,35 @@ public class MainPage extends Page {
 
     private void showAccount() {
         var admin = LibraryContext.getCurrentAdmin();
-        JLabel info = new JLabel(admin.describe());
-        info.setBounds(this.content_panel.getWidth() / 2 - 400, 0, 800, 30);
-        info.setFont(new Font(info.getFont().getName(), info.getFont().getStyle(), 30));
+
+        var name_field = new JTextField(admin.getName());
+        name_field.setBounds(this.content_panel.getWidth() / 2 - 150, 0, 300, 40);
+        var surname_field = new JTextField(admin.getSurname());
+        surname_field.setBounds(this.content_panel.getWidth() / 2 - 150, 40, 300, 40);
+        var mail_field = new JTextField(admin.getMail());
+        mail_field.setBounds(this.content_panel.getWidth() / 2 - 150, 80, 300, 40);
+        var login_field = new JTextField(admin.getLogin());
+        login_field.setBounds(this.content_panel.getWidth() / 2 - 150, 120, 300, 40);
+        byte[] bytePasswd = Base64.getDecoder().decode(admin.getPassword());
+        var password = new String(bytePasswd);
+        var password_field = new JPasswordField(password);
+        password_field.setBounds(this.content_panel.getWidth() / 2 - 150, 160, 300, 40);
+        var button = new OptionPanel.OptionButton("Confirm");
+        button.setBounds(name_field.getX(), 200, 150, 40);
+        button.addActionListener(this);
+        button.setAction_manager(new AdminModificationApplier());
+        var prompt = new JLabel();
+        prompt.setBounds(name_field.getX(), 240, 300, 40);
 
         this.content_panel.removeAll();
         this.content_panel.setLayout(null);
-        this.content_panel.add(info);
+        this.content_panel.add(name_field);
+        this.content_panel.add(surname_field);
+        this.content_panel.add(mail_field);
+        this.content_panel.add(login_field);
+        this.content_panel.add(password_field);
+        this.content_panel.add(button);
+        this.content_panel.add(prompt);
         this.content_panel.validate();
         this.content_panel.repaint();
     }

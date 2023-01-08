@@ -108,7 +108,6 @@ class AddingPanel extends JPanel {
     private final JTextField mail_fild;
     private final JTextField password_field;
     private final JTextField login_field;
-    private final JLabel prompt;
 
     public AddingPanel(ActionListener listener) {
         this.setLayout(new GridLayout(8, 1));
@@ -130,8 +129,6 @@ class AddingPanel extends JPanel {
         add_button.setAction_manager(new UserAdder(FrameContentManager.USERS));
         this.add(add_button);
 
-        this.prompt = new JLabel("Enter user data");
-        this.add(this.prompt);
         this.setBounds(200, 0, 400, 200);
     }
 
@@ -144,10 +141,6 @@ class AddingPanel extends JPanel {
         result.add(this.id_fild.getText());
         result.add(this.mail_fild.getText());
         return result;
-    }
-
-    public void changePrompt(final String text) {
-        this.prompt.setText(text);
     }
 }
 

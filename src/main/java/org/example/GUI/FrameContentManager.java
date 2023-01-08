@@ -32,15 +32,12 @@ class Shower extends FrameContentManager {
         content_panel.removeAll();
         Vector<String> repr;
         if (search_mode == FrameContentManager.USERS) {
-            repr = new Vector<>(LibraryDatabase.getUsers("select * from nkulakow.pap_users"));
+            repr = new Vector<>(LibraryContext.showUsers());
         }
-        else if (search_mode == FrameContentManager.ORDERED_BOOKS){
+        else {
             repr = new Vector<>();
             var books = LibraryContext.getOrderedBooks();
             for (var book : books){repr.add(book.describe());}
-        }
-        else{
-            repr = new Vector<>(LibraryDatabase.getUsers("select * from nkulakow.pap_users"));
         }
         var list = new JList<>(repr);
         list.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
@@ -304,6 +301,7 @@ class OrderChooser extends FrameContentManager {
         content_panel.add(list);
         content_panel.add(label);
         content_panel.add(button);
+        content_panel.add(label_months);
         content_panel.add(months_field);
         content_panel.validate();
         content_panel.repaint();
