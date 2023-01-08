@@ -264,6 +264,9 @@ public class LibraryContext {
         return results;
     }
 
+    /**
+     * Allows CommonUser to modify his attributes and Admin to change selected CommonUser's attributes. Returns true if attributes were successfully modified in DB, otherwise returns false.
+     */
     static public boolean modifyFewUserAttributes(Map<AttributesNames, String> attributes, int userId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
         CommonUser user;
         try {
@@ -290,6 +293,31 @@ public class LibraryContext {
         return true;
     }
 
+    /**
+     * Allows Admin to modify his attributes. Returns true if attributes were successfully modified in DB, otherwise returns false.
+     */
+    static public boolean modifyFewAdminAttributes(Map<AttributesNames, String> attributes) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
+        try {
+            for (var attributeName : attributes.keySet()) {
+                currentAdmin.modifyUser(attributeName, attributes.get(attributeName));
+            }
+        }
+        catch (NullOrEmptyStringException | InvalidLoginException e){
+            logger.error("Could not change attribute/s  " + e.getMessage());
+            throw e;
+        }
+        try{
+            LibraryDatabase.modifyAdmin(currentAdmin);
+        } catch (SQLException e) {
+            logger.warn("Could not execute query in DB in modifyFewUserAttributes "+ e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Allows Admin to modify selected Book's attributes. Returns true if attributes were successfully modified in DB, otherwise returns false.
+     */
     static public boolean modifyFewBookAttributes(Map<AttributesNames, String> attributes, int bookId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException {
         Book book;
         try {
@@ -310,6 +338,9 @@ public class LibraryContext {
         return true;
     }
 
+    /**
+     * Allows to modify User's selected attribute. Returns true if attributes were successfully modified in DB, otherwise returns false.
+     */
     static public boolean modifyUser(AttributesNames attributeName, String modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
         modifiedUser.modifyUser(attributeName, modifiedVal);
         try{
@@ -327,6 +358,9 @@ public class LibraryContext {
         return true;
     }
 
+    /**
+     * Allows to modify Book's selected attribute. Returns true if attributes were successfully modified in DB, otherwise returns false.
+     */
     static public boolean modifyBook(AttributesNames attributeName, String modifiedVal, Book modifiedBook) throws NullOrEmptyStringException, InvalidIdException {
         modifiedBook.modifyBook(attributeName, modifiedVal);
         try{
@@ -345,6 +379,9 @@ public class LibraryContext {
         return users_rep;
     }
 
+    /**
+     * Returns borrowed books of currentUser.
+     */
     static public Vector<Book> getBorrowedBooks(){
         Vector<Book> borrowed = new Vector<>();
         for (var book: Admin.getBooks()){
@@ -355,6 +392,10 @@ public class LibraryContext {
         }
         return borrowed;
     }
+
+    /**
+     * Returns ordered books of currentUser.
+     */
     static public Vector<Book> getOrderedBooks(){
         Vector<Book> borrowed = new Vector<>();
         for (var bookInt: takenBooks.keySet()){
