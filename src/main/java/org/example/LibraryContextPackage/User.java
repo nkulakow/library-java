@@ -44,11 +44,23 @@ public abstract class User {
         }
         this.name = name;
     }
-    public void setLogin(String login) throws NullOrEmptyStringException
-    {
+    public void setLogin(String login) throws NullOrEmptyStringException, InvalidLoginException {
         if(login == null || login.isEmpty())
         {
             throw new NullOrEmptyStringException("Login użytkownika nie może być pusty.");
+        }
+        if( this.getClass() == CommonUser.class){
+        for( var user : Admin.getUsers()){
+            if( login.equals(user.getLogin())){
+                throw new InvalidLoginException("Login already exists");
+            }
+        }}
+        else{
+            for( var user : Admin.getAdmins()){
+                if( login.equals(user.getLogin())){
+                    throw new InvalidLoginException("Login already exists");
+                }
+            }
         }
         this.login = login;
     }
@@ -62,8 +74,7 @@ public abstract class User {
         this.password = password;
     }
 
-    public User(String login, String password, String name, String surname, String mail) throws NullOrEmptyStringException
-    {
+    public User(String login, String password, String name, String surname, String mail) throws NullOrEmptyStringException, InvalidLoginException {
         this.setLogin(login);
         this.setPassword(password);
         this.setName(name);
@@ -71,7 +82,7 @@ public abstract class User {
         this.setMail(mail);
     }
 
-    public boolean modifyUser(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+    public boolean modifyUser(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
         if (attributeName == AttributesNames.login){
             setLogin( modifiedVal);
             return true;

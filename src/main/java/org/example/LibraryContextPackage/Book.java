@@ -101,14 +101,20 @@ public class Book implements LibraryContextActions{
     public String describe() {
         String date;
         String userId;
-        if(this.getReturnDate() == null || this.getUserId() == null)
+        if(this.getReturnDate() == null)
         {
             date = "";
-            userId = "";
         }
         else
         {
             date = this.getReturnDate().toString();
+        }
+        if(this.getUserId() == null)
+        {
+            userId = "";
+        }
+        else
+        {
             userId = this.getUserId().toString();
         }
         return Integer.valueOf(this.bookId).toString() + " " + this.name + " " + this.category + " " + this.author + " " + userId + " " + date;

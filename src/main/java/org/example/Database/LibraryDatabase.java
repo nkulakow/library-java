@@ -81,7 +81,7 @@ public class LibraryDatabase {
         return result;
     }
 
-    public static ArrayList<Admin> getAdmins() throws SQLException, NullOrEmptyStringException, InvalidIdException {
+    public static ArrayList<Admin> getAdmins() throws SQLException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
         ArrayList<Admin> admins = new ArrayList<>();
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
@@ -134,7 +134,7 @@ public class LibraryDatabase {
         return books;
     }
 
-    public static ArrayList<CommonUser> getCommonUsers() throws SQLException, InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException {
+    public static ArrayList<CommonUser> getCommonUsers() throws SQLException, InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
         ArrayList<CommonUser> users = new ArrayList<>();
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
