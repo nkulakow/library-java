@@ -13,30 +13,42 @@ public class CommonUser extends User implements LibraryContextActions{
     @Getter
     private int userId;
 
+    /**
+     * Sets User ID.
+     */
     public void setUserId(int id) throws InvalidIdException
     {
         if(id <= 0)
         {
-            throw new InvalidIdException("Niepoprawne id użytkownika.");
+            throw new InvalidIdException("Invalid User ID.");
         }
         this.userId = id;
     }
 
+    /**
+     * Sets number of the books.
+     */
     public void setBooksNr(Integer booksNr) throws InvalidBookNumberException
     {
         if(booksNr != null && booksNr < 0)
         {
-            throw new InvalidBookNumberException("Ujemna liczba książek.");
+            throw new InvalidBookNumberException("Negative books number.");
         }
         this.booksNr = booksNr;
     }
 
+    /**
+     * Creates CommonUser Object.
+     */
     public CommonUser(String login, String password, String name, String surname, int userId, String mail, Integer booksNr) throws NullOrEmptyStringException, InvalidBookNumberException, InvalidIdException, InvalidLoginException {
         super(login, password, name, surname, mail);
         this.setUserId(userId);
         this.setBooksNr(booksNr);
     }
 
+    /**
+     * Allows this CommonUser to borrow ordered earlier book for given months.
+     */
     public void orderBook(Book book, long months)
     {
         try
@@ -64,6 +76,9 @@ public class CommonUser extends User implements LibraryContextActions{
         return results;
     }
 
+    /**
+     * Allows this CommonUser to return borrowed earlier book.
+     */
     public void returnBook(Book book)
     {
         try
@@ -101,6 +116,9 @@ public class CommonUser extends User implements LibraryContextActions{
         return false;
     }
 
+    /**
+     * Returns string description of this CommonUser.
+     */
     @Override
     public String describe()
     {
@@ -134,6 +152,9 @@ public class CommonUser extends User implements LibraryContextActions{
         return admin.updateUsers(user, LibObjectsChangeMode.Remove);
     }
 
+    /**
+     * Modifies this CommonUser selected attribute.
+     */
     @Override
     public boolean modifyUser(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
         if(super.modifyUser(attributeName, modifiedVal)){

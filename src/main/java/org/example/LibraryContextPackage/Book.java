@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.ZonedDateTime;
-import java.util.Collection;
 import java.util.Objects;
 
 public class Book implements LibraryContextActions{
@@ -23,52 +22,77 @@ public class Book implements LibraryContextActions{
     @Getter
     private Boolean available;
 
+    /**
+     * Sets attribute available.
+     */
     public void setAvailable(boolean available)
     {
         this.available = available;
     }
+
+    /**
+     * Sets ID of the CommonUser borrowing this Book.
+     */
     public void setUserId(Integer userId) throws InvalidIdException
     {
         if(userId != null && userId < 0)
         {
-            throw new InvalidIdException("Niepoprawne id użytkownika.");
+            throw new InvalidIdException("Invalid User ID.");
         }
         this.userId = userId;
     }
+
+    /**
+     * Sets Book's author.
+     */
     public void setAuthor(String author) throws NullOrEmptyStringException
     {
         if(author != null && author.isEmpty())
         {
-            throw new NullOrEmptyStringException("Brak autora.");
+            throw new NullOrEmptyStringException("Author cannot be null or empty.");
         }
         this.author = author;
     }
+
+    /**
+     * Sets Book's name.
+     */
     public void setName(String name) throws NullOrEmptyStringException
     {
         if(name == null || name.isEmpty())
         {
-            throw new NullOrEmptyStringException("Nazwa książki nie może być pusta.");
+            throw new NullOrEmptyStringException("Name cannot be null or empty.");
         }
         this.name = name;
     }
 
+    /**
+     * Sets Book's category.
+     */
     public void setCategory(String category) throws NullOrEmptyStringException
     {
         if(category == null || category.isEmpty())
         {
-            throw new NullOrEmptyStringException("Nazwa kategorii nie może być pusta.");
+            throw new NullOrEmptyStringException("Category cannot be null or empty.");
         }
         this.category = category;
     }
 
+    /**
+     * Sets Book's ID.
+     */
     public void setBookId(int id) throws InvalidIdException
     {
         if(id < 0)
         {
-            throw new InvalidIdException("Niepoprawne id książki.");
+            throw new InvalidIdException("Invalid Book ID.");
         }
         this.bookId = id;
     }
+
+    /**
+     * Creates Book Object.
+     */
     public Book(String name, String category, int id, String author, boolean available, Integer userId, ZonedDateTime date) throws NullOrEmptyStringException, InvalidIdException
     {
         this.setBookId(id);
@@ -122,20 +146,19 @@ public class Book implements LibraryContextActions{
 
     @Override
     public boolean askToJoinCollection(Admin admin) {
-        Book book = (Book) this;
+        Book book = this;
         return admin.updateBooks(book, LibObjectsChangeMode.Add);
     }
 
     @Override
     public boolean askToLeaveCollection(Admin admin) {
-        Book book = (Book) this;
-//        if(book.getUserId() != null)
-//        {
-//            return false;
-//        }
+        Book book = this;
         return admin.updateBooks(book, LibObjectsChangeMode.Remove);
     }
 
+    /**
+    Modifies Book's selected attribute.
+     */
     public boolean modifyBook(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException {
          if (attributeName == AttributesNames.name) {
             setName(modifiedVal);

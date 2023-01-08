@@ -1,11 +1,8 @@
 package org.example.LibraryContextPackage;
 
 import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Base64;
 import java.util.HashSet;
-
 import java.util.Objects;
 
 public class Admin extends User implements LibraryContextActions{
@@ -29,80 +26,79 @@ public class Admin extends User implements LibraryContextActions{
         return books;
     }
 
+    /**
+     * Used for tests to clear all books, admins and users as they're static attributes.
+     */
     public static void clearAll(){
         books.clear();
         users.clear();
         admins.clear();
     }
 
+    /**
+     * Returns all CommonUsers.
+     */
     public static HashSet<CommonUser> getUsers()
     {
-        return new HashSet<CommonUser>(users);
+        return new HashSet<>(users);
     }
 
+    /**
+     * Returns all Admins.
+     */
     public static HashSet<Admin> getAdmins()
     {
-        return new HashSet<Admin>(admins);
+        return new HashSet<>(admins);
     }
 
+    /**
+     * Adds or removes Books from local data. Returns true if succeeded.
+     */
     public boolean updateBooks(Book book, LibObjectsChangeMode mode)
     {
-        boolean toReturn;
-        switch (mode)
-        {
-            case Add:
-                toReturn = Admin.books.add(book);
-                break;
-            case Remove:
-                toReturn = Admin.books.remove(book);
-                break;
-            default:
-                toReturn = false;
-        }
-        return toReturn;
+        return switch (mode) {
+            case Add -> Admin.books.add(book);
+            case Remove -> Admin.books.remove(book);
+        };
     }
 
+    /**
+     * Adds or removes CommonUsers from local data. Returns true if succeeded.
+     */
     public boolean updateUsers(CommonUser user, LibObjectsChangeMode mode)
     {
-        boolean toReturn;
-        switch (mode)
-        {
-            case Add:
-                toReturn = Admin.users.add(user);
-                break;
-            case Remove:
-                toReturn = Admin.users.remove(user);
-                break;
-            default:
-                toReturn = false;
-        }
-        return toReturn;
+        return switch (mode) {
+            case Add -> Admin.users.add(user);
+            case Remove -> Admin.users.remove(user);
+        };
     }
 
+    /**
+     * Adds or removes Admins from local data. Returns true if succeeded.
+     */
     public boolean updateAdmins(Admin admin, LibObjectsChangeMode mode)
     {
-        boolean toReturn;
-        switch (mode)
-        {
-            case Add:
-                toReturn = Admin.admins.add(admin);
-                break;
-            case Remove:
-                toReturn = Admin.admins.remove(admin);
-                break;
-            default:
-                toReturn = false;
-        }
-        return toReturn;
+        return switch (mode) {
+            case Add -> Admin.admins.add(admin);
+            case Remove -> Admin.admins.remove(admin);
+        };
     }
+
+    /**
+     * Sets Admin ID
+     */
     public void setAdminId(int id) throws InvalidIdException
     {
         if(id < 0)
         {
-            throw new InvalidIdException("Nieprawidłowe id admina.");
+            throw new InvalidIdException("Invalid Admin ID.");
         }
         this.adminId = id;
     }
+
+    /**
+     * Creates Admin Object.
+     */
     public Admin(String login, String password, String name, String surname, String mail, int id) throws NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
         super(login, password, name, surname, mail);
         this.setAdminId(id);
@@ -160,13 +156,12 @@ public class Admin extends User implements LibraryContextActions{
         if (getClass() != obj.getClass())
             return false;
         Admin otherAdmin = (Admin) obj;
-        if(this.getLogin().equals(otherAdmin.getLogin()) || this.getAdminId() == otherAdmin.getAdminId())
-        {
-            return true;
-        }
-        return false;
+        return this.getLogin().equals(otherAdmin.getLogin()) || this.getAdminId() == otherAdmin.getAdminId();
     }
 
+    /**
+     * Returns string description of this Admin.
+     */
     @Override
     public String describe()
     {
@@ -180,16 +175,19 @@ public class Admin extends User implements LibraryContextActions{
 
     @Override
     public boolean askToJoinCollection(Admin admin) {
-        Admin newAdmin = (Admin) this;
+        Admin newAdmin = this;
         return admin.updateAdmins(newAdmin, LibObjectsChangeMode.Add);
     }
 
     @Override
     public boolean askToLeaveCollection(Admin admin) {
-        Admin newAdmin = (Admin) this;
+        Admin newAdmin = this;
         return admin.updateAdmins(newAdmin, LibObjectsChangeMode.Remove);
     }
 
+    /**
+     * Modifies this Admin selected attribute.
+     */
     @Override
     public boolean modifyUser(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
         if(super.modifyUser(attributeName, modifiedVal)){
@@ -205,6 +203,9 @@ public class Admin extends User implements LibraryContextActions{
         }
     }
 
+    /**
+     * Finds CommonUser by given ID.
+     */
     public static CommonUser findUserById(int userID) throws InvalidIdException {
         for (var user : Admin.getUsers()){
             if(user.getUserId() == userID){
@@ -214,6 +215,9 @@ public class Admin extends User implements LibraryContextActions{
         throw new InvalidIdException("No common user with given ID");
     }
 
+    /**
+     * Finds Book by given ID.
+     */
     public static Book findBookById(int bookId) throws InvalidIdException {
         for (var book : Admin.getBooks()){
             if(book.getBookId() == bookId){

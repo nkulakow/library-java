@@ -45,13 +45,14 @@ public class LibraryContext {
             takenBooksOrderedTime.put(book.getBookId(), new ArrayDeque<>());
             logger.info("Borrowed book.");
         }
-
     }
 
+    /**
+    * Initializes LibContext specifically for tests - without allowing to connect do DB and without any Gui initialization.
+     */
     public static void LibContextInitForTests(boolean AsUser) throws InvalidBookNumberException {
         try {
             LibraryDatabase.initLoginInfoForTests();
-
 
             autoAdmin = null;
             currentAdmin = null;
@@ -66,14 +67,15 @@ public class LibraryContext {
                 currentUser = new CommonUser("user", "Null", "user", "Null", 1, "mail", 0);
                 currentAdmin.addObject(currentUser);
             }
-
-
         }
         catch (NullOrEmptyStringException | InvalidIdException | InvalidLoginException e){
             logger.error("Error in LibContextInitForTests: " + e.getMessage());
         }
     }
 
+    /**
+     * Initializes LibContext. Using LibraryDatabase gets Admins, Books, Users and books orders info and creates objects corresponding to them.
+     */
     public static void LibContextInit() {
         try {
             LibraryDatabase.initLoginInfo();
@@ -107,6 +109,10 @@ public class LibraryContext {
         }
 
     }
+
+    /**
+     * Allows currentUser to return borrowed Book.
+     */
     public static void returnBook(Book book) throws CannotReturnBookException {
         try{
         ArrayDeque<CommonUser> users = takenBooks.get(book.getBookId());
@@ -133,7 +139,9 @@ public class LibraryContext {
         }
     }
 
-
+    /**
+     * Returns hash table of penalties for borrowed by currentUser books
+     */
     public static Hashtable<Integer, Float> showPenalties()
     {
         float penalty = 0;
@@ -168,6 +176,9 @@ public class LibraryContext {
         return  null;
     }
 
+    /**
+     * Returns true if Admins login information are correct. Sets currentAdmin to the one logged in.
+     */
     static public boolean checkLoggingAdmins(String login, String password) {
         String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
         for (Admin ad : Admin.getAdmins()) {
@@ -179,6 +190,10 @@ public class LibraryContext {
         }
         return false;
     }
+
+    /**
+     * Returns true if Users login information are correct. Sets currentUser to the one logged in.
+     */
     static public boolean checkLoggingUsers(String login, String password) {
 
         for(CommonUser usr: Admin.getUsers())
@@ -194,6 +209,9 @@ public class LibraryContext {
         return false;
     }
 
+    /**
+     * Add Object to local data and to Database. Returns true if object was added to Database, false if only locally.
+     */
     static public boolean addObject(LibraryContextActions libObject)
     {
         if (currentAdmin.addObject(libObject)) {
@@ -222,6 +240,9 @@ public class LibraryContext {
         return true;
     }
 
+    /**
+     * Remove Object from local data and from Database. Returns true if object was removed Database, false if only locally.
+     */
     static public boolean removeObject(LibraryContextActions libObject)
     {
         if (currentAdmin.removeObject(libObject)) {
@@ -250,6 +271,9 @@ public class LibraryContext {
         return true;
     }
 
+    /**
+     * Searches for Object by given pattern. Return set of matching Objects.
+     */
     static public HashSet<LibraryContextActions> searchForObject(Isearch searchObject, String searchPattern)
     {
         HashSet<LibraryContextActions> results;
@@ -371,6 +395,10 @@ public class LibraryContext {
         }
         return true;
     }
+
+    /**
+     * Returns all CommonUsers descriptions.
+     */
     static public Vector<String> showUsers(){
         Vector<String> users_rep = new Vector<>();
         for (var user: Admin.getUsers()){
