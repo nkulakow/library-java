@@ -102,8 +102,7 @@ public class Admin extends User implements LibraryContextActions{
         }
         this.adminId = id;
     }
-    public Admin(String login, String password, String name, String surname, String mail, int id) throws NullOrEmptyStringException, InvalidIdException
-    {
+    public Admin(String login, String password, String name, String surname, String mail, int id) throws NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
         super(login, password, name, surname, mail);
         this.setAdminId(id);
     }
@@ -191,7 +190,7 @@ public class Admin extends User implements LibraryContextActions{
     }
 
     @Override
-    public boolean modifyUser(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+    public boolean modifyUser(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
         if(super.modifyUser(attributeName, modifiedVal)){
             return true;
         }
