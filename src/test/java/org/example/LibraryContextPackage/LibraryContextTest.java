@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LibraryContextTest {
 
     @Test
-    public void testRemoveObject() throws InvalidIdException, InvalidBookNumberException, NullOrEmptyStringException, IOException {
+    public void testRemoveObject() throws InvalidIdException, InvalidBookNumberException, NullOrEmptyStringException, IOException, InvalidLoginException {
         int id = 0;
         String login = "asf";
         for(CommonUser user:Admin.getUsers())
@@ -91,7 +91,7 @@ public class LibraryContextTest {
         Assertions.assertEquals(size - 1, Admin.getBooks().size());
     }
     @Test
-    public void testSearchForObject() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, IOException {
+    public void testSearchForObject() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, IOException, InvalidLoginException {
         int id = 0;
         for(Book book:Admin.getBooks())
         {
@@ -148,7 +148,7 @@ public class LibraryContextTest {
         LibraryContext.removeObject(sAdmin);
     }
     @Test
-    public void testAddObject() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, IOException {
+    public void testAddObject() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, IOException, InvalidLoginException {
         int id = 0;
         for(Book book:Admin.getBooks())
         {
@@ -209,7 +209,7 @@ public class LibraryContextTest {
         LibraryContext.removeObject(admin);
     }
     @Test
-    public void testModifyBookAndUser() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException {
+    public void testModifyBookAndUser() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
         Book book = new Book("asfa", "snfak", 1, "aksfna", true, null, null);
         LibraryContext.LibContextInitForTests(true);
         LibraryContext.addObject(book);
@@ -229,8 +229,9 @@ public class LibraryContextTest {
         Assertions.assertTrue(Admin.getUsers().contains(user));
         LibraryContext.removeObject(user);
     }
+
     @Test
-    public void testModifyAdmin() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException{
+    public void testModifyAdmin() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
         LibraryContext.LibContextInitForTests(false);
         Admin sAdmin = new Admin("as", "asfkn", "aksnf", "aoishfaiu", "aoisha", 1);
         LibraryContext.addObject(sAdmin);

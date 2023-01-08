@@ -281,7 +281,7 @@ public class LibraryDatabase {
 
 
     public static void modifyBook(Book book) throws SQLException {
-        String name = book.getName(), author = book.getAuthor(), category = book.getCategory();
+        String name = book.getName(), author = book.getAuthor(), category = book.getCategory(), user_str="";
         int book_id = book.getBookId(), available = book.getAvailable()?1:0;
         Integer user_id = book.getUserId();
         ZonedDateTime date_zoned = book.getReturnDate();
@@ -294,11 +294,10 @@ public class LibraryDatabase {
             Instant instant = date_zoned.toLocalDateTime().toInstant(ZoneOffset.UTC);
             return_date = Date.from(instant);
         }
-        String user_str = "";
+        if (user_id != null) {
         if (user_id != 0){
             user_str = ", user_id="+user_id;
-        }
-        System.out.println(user_id + user_str);
+        }}
         String query_str = "update nkulakow.PAP_BOOKS set name='"+name+"', author='"+author+"', cathegory='"+category+"', available="+available+", return_date="+return_date+user_str+ " where book_id="+book_id;
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
