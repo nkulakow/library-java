@@ -12,8 +12,7 @@
 //
 //public class LibraryContextTest {
 //
-//    @Test
-//    public void testRemoveObject() throws InvalidIdException, InvalidBookNumberException, NullOrEmptyStringException, IOException, InvalidLoginException {
+//    public void testRemoveObject() throws InvalidIdException, InvalidBookNumberException, NullOrEmptyStringException, InvalidLoginException, CannotConnectToDBException {
 //        int id = 0;
 //        String login = "asf";
 //        for(CommonUser user:Admin.getUsers())
@@ -90,8 +89,7 @@
 //        LibraryContext.removeObject(book);
 //        Assertions.assertEquals(size - 1, Admin.getBooks().size());
 //    }
-//    @Test
-//    public void testSearchForObject() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, IOException, InvalidLoginException {
+//    public void testSearchForObject() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, IOException, InvalidLoginException, CannotConnectToDBException {
 //        int id = 0;
 //        for(Book book:Admin.getBooks())
 //        {
@@ -147,8 +145,7 @@
 //        Assertions.assertEquals(sAdmin, adminResult);
 //        LibraryContext.removeObject(sAdmin);
 //    }
-//    @Test
-//    public void testAddObject() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, IOException, InvalidLoginException {
+//    public void testAddObject() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, IOException, InvalidLoginException, CannotConnectToDBException {
 //        int id = 0;
 //        for(Book book:Admin.getBooks())
 //        {
@@ -161,7 +158,7 @@
 //        Book book1 = new Book("asfa", "snfak", id, "aksfna", true, null, null);
 //        LibraryContext.LibContextInitForTests(false);
 //        int size = Admin.getBooks().size();
-//        Assertions.assertFalse(LibraryContext.addObject(book1));
+//        LibraryContext.addObject(book1);
 //        Assertions.assertFalse(Admin.getBooks().isEmpty());
 //        Assertions.assertEquals(size + 1, Admin.getBooks().size());
 //        LibraryContext.addObject(book1);
@@ -208,13 +205,11 @@
 //        Assertions.assertEquals(size + 1, Admin.getAdmins().size());
 //        LibraryContext.removeObject(admin);
 //    }
-//    @Test
-//    public void testModifyBookAndUser() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
+//    public void testModifyBookAndUser() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException, CannotConnectToDBException {
 //        Book book = new Book("asfa", "snfak", 1, "aksfna", true, null, null);
 //        LibraryContext.LibContextInitForTests(true);
 //        LibraryContext.addObject(book);
-//        var res = LibraryContext.modifyBook(AttributesNames.name, "mybook", book);
-//        Assertions.assertFalse(res);
+//        LibraryContext.modifyBook(AttributesNames.name, "mybook", book);
 //        Assertions.assertEquals("mybook", book.getName());
 //        Assertions.assertTrue(Admin.getBooks().contains(book));
 //        for(var book1 : Admin.getBooks()){
@@ -223,27 +218,23 @@
 //        LibraryContext.removeObject(book);
 //        CommonUser user = new CommonUser("asf", "alksnfka", "lasmf", "oahoa", 1, "oiahfiau", 0);
 //        LibraryContext.addObject(user);
-//        res = LibraryContext.modifyUser(AttributesNames.password, "mypass", user);
-//        Assertions.assertFalse(res);
+//        LibraryContext.modifyUser(AttributesNames.password, "mypass", user);
 //        Assertions.assertEquals("mypass", user.getPassword());
 //        Assertions.assertTrue(Admin.getUsers().contains(user));
 //        LibraryContext.removeObject(user);
 //    }
 //
-//    @Test
-//    public void testModifyAdmin() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
+//    public void testModifyAdmin() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException, CannotConnectToDBException {
 //        LibraryContext.LibContextInitForTests(false);
 //        Admin sAdmin = new Admin("as", "asfkn", "aksnf", "aoishfaiu", "aoisha", 1);
 //        LibraryContext.addObject(sAdmin);
-//        var res = LibraryContext.modifyUser(AttributesNames.login, "mylogin", sAdmin);
-//        Assertions.assertFalse(res);
+//        LibraryContext.modifyUser(AttributesNames.login, "mylogin", sAdmin);
 //        Assertions.assertEquals("mylogin", sAdmin.getLogin());
 //        Assertions.assertTrue(Admin.getAdmins().contains(sAdmin));
 //        LibraryContext.removeObject(sAdmin);
 //    }
 //
-//    @Test
-//    public void testOrderBook() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException{
+//    public void testOrderBook() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, CannotConnectToDBException {
 //        LibraryContext.LibContextInitForTests(true);
 //        Book book1 = new Book("book1", "cat1", 1, "author1", true, null, null);
 //        Book book2 = new Book("book2", "cat2", 2, "author2", true, null, null);
