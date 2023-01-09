@@ -38,8 +38,9 @@ class UserAdder extends FrameContentManager {
         String password = user_data.get(1);
         String name     = user_data.get(2);
         String surname  = user_data.get(3);
-        int id          = Integer.parseInt(user_data.get(4));
-        String mail     = user_data.get(5);
+        String mail     = user_data.get(4);
+
+        int id          = LibraryContext.generateCommonUserID();
 
         var prompt = LibraryGUI.main_page.getPrompt();
         try {

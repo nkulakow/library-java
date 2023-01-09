@@ -37,7 +37,7 @@ class BookAdder extends FrameContentManager {
         String name    = book_data.get(0);
         String category = book_data.get(1);
         String author     = book_data.get(2);
-        int id          = Integer.parseInt(book_data.get(3));
+        int id          = LibraryContext.generateBookID();
         try {
             boolean validInDB = LibraryContext.addObject(new Book(
                     name,
