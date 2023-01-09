@@ -212,8 +212,7 @@ public class LibraryContext {
     /**
      * Add Object to local data and to Database. Returns true if object was added to Database, false if only locally.
      */
-    static public boolean addObject(LibraryContextActions libObject)
-    {
+    static public void addObject(LibraryContextActions libObject) throws CannotConnectToDBException {
         if (currentAdmin.addObject(libObject)) {
             logger.info("Added object locally.");
             if (libObject.getClass().equals(CommonUser.class)) {
@@ -223,7 +222,7 @@ public class LibraryContext {
                 }
                 catch (SQLException e){
                     logger.warn("Could not remove user in DB");
-                    return false;
+                    throw new CannotConnectToDBException("Could not make changes in DB");
                 }
             }
             if (libObject.getClass().equals(Book.class)) {
@@ -233,18 +232,16 @@ public class LibraryContext {
                 }
                 catch (SQLException e){
                     logger.warn("Could not remove user in DB");
-                    return false;
+                    throw new CannotConnectToDBException("Could not make changes in DB");
                 }
             }
         }
-        return true;
     }
 
     /**
      * Remove Object from local data and from Database. Returns true if object was removed Database, false if only locally.
      */
-    static public boolean removeObject(LibraryContextActions libObject)
-    {
+    static public void removeObject(LibraryContextActions libObject) throws CannotConnectToDBException {
         if (currentAdmin.removeObject(libObject)) {
             logger.info("Removed object locally.");
             if (libObject.getClass().equals(CommonUser.class)) {
@@ -254,7 +251,7 @@ public class LibraryContext {
                 }
                 catch (SQLException e){
                     logger.warn("Could not remove user in DB");
-                    return false;
+                    throw new CannotConnectToDBException("Could not make changes in DB");
                 }
             }
             if (libObject.getClass().equals(Book.class)) {
@@ -264,11 +261,10 @@ public class LibraryContext {
                 }
                 catch (SQLException e){
                     logger.warn("Could not remove book in DB");
-                    return false;
+                    throw new CannotConnectToDBException("Could not make changes in DB");
                 }
             }
         }
-        return true;
     }
 
     /**
@@ -291,13 +287,13 @@ public class LibraryContext {
     /**
      * Allows CommonUser to modify his attributes and Admin to change selected CommonUser's attributes. Returns true if attributes were successfully modified in DB, otherwise returns false.
      */
-    static public boolean modifyFewUserAttributes(Map<AttributesNames, String> attributes, int userId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
+    static public void modifyFewUserAttributes(Map<AttributesNames, String> attributes, int userId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException, CannotConnectToDBException {
         CommonUser user;
         try {
             user = Admin.findUserById(userId);
         } catch (InvalidIdException e) {
             logger.error("Could not find user by id");
-            return false;
+            throw e;
         }
         try {
             for (var attributeName : attributes.keySet()) {
@@ -312,15 +308,14 @@ public class LibraryContext {
             LibraryDatabase.modifyCommonUser(user);
         } catch (SQLException e) {
             logger.warn("Could not execute query in DB in modifyFewUserAttributes "+ e.getMessage());
-            return false;
+            throw new CannotConnectToDBException("Could not make changes in DB");
         }
-        return true;
     }
 
     /**
      * Allows Admin to modify his attributes. Returns true if attributes were successfully modified in DB, otherwise returns false.
      */
-    static public boolean modifyFewAdminAttributes(Map<AttributesNames, String> attributes) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
+    static public void modifyFewAdminAttributes(Map<AttributesNames, String> attributes) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException, CannotConnectToDBException {
         try {
             for (var attributeName : attributes.keySet()) {
                 currentAdmin.modifyUser(attributeName, attributes.get(attributeName));
@@ -334,21 +329,20 @@ public class LibraryContext {
             LibraryDatabase.modifyAdmin(currentAdmin);
         } catch (SQLException e) {
             logger.warn("Could not execute query in DB in modifyFewUserAttributes "+ e.getMessage());
-            return false;
+            throw new CannotConnectToDBException("Could not make changes in DB");
         }
-        return true;
     }
 
     /**
      * Allows Admin to modify selected Book's attributes. Returns true if attributes were successfully modified in DB, otherwise returns false.
      */
-    static public boolean modifyFewBookAttributes(Map<AttributesNames, String> attributes, int bookId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException {
+    static public void modifyFewBookAttributes(Map<AttributesNames, String> attributes, int bookId) throws InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException, CannotConnectToDBException {
         Book book;
         try {
             book = Admin.findBookById(bookId);
         } catch (InvalidIdException e) {
             logger.error("Could not find book by id");
-            return false;
+            throw e;
         }
         for (var attributeName : attributes.keySet()){
             book.modifyBook(attributeName, attributes.get(attributeName));
@@ -357,15 +351,14 @@ public class LibraryContext {
             LibraryDatabase.modifyBook(book);
         } catch (SQLException e) {
             logger.warn("Could not execute query in DB in modifyFewBookAttributes "+ e.getMessage());
-            return false;
+            throw new CannotConnectToDBException("Could not make changes in DB");
         }
-        return true;
     }
 
     /**
      * Allows to modify User's selected attribute. Returns true if attributes were successfully modified in DB, otherwise returns false.
      */
-    static public boolean modifyUser(AttributesNames attributeName, String modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
+    static public void modifyUser(AttributesNames attributeName, String modifiedVal, User modifiedUser) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException, CannotConnectToDBException {
         modifiedUser.modifyUser(attributeName, modifiedVal);
         try{
         if (currentUser != null || modifiedUser.getClass().equals(CommonUser.class))
@@ -377,23 +370,21 @@ public class LibraryContext {
         }}
         catch (SQLException e){
             logger.warn("Could not execute query in DB in modifyUser "+ e.getMessage());
-            return false;
+            throw new CannotConnectToDBException("Could not make changes in DB");
         }
-        return true;
     }
 
     /**
      * Allows to modify Book's selected attribute. Returns true if attributes were successfully modified in DB, otherwise returns false.
      */
-    static public boolean modifyBook(AttributesNames attributeName, String modifiedVal, Book modifiedBook) throws NullOrEmptyStringException, InvalidIdException {
+    static public void modifyBook(AttributesNames attributeName, String modifiedVal, Book modifiedBook) throws NullOrEmptyStringException, InvalidIdException, CannotConnectToDBException {
         modifiedBook.modifyBook(attributeName, modifiedVal);
         try{
             LibraryDatabase.modifyBook(modifiedBook);
         } catch (SQLException e) {
             logger.warn("Could not execute query in DB in modifyBook "+ e.getMessage());
-            return false;
+            throw new CannotConnectToDBException("Could not make changes in DB");
         }
-        return true;
     }
 
     /**

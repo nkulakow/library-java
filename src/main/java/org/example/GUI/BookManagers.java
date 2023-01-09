@@ -40,7 +40,7 @@ class BookAdder extends FrameContentManager {
         String author     = book_data.get(2);
         int id          = Integer.parseInt(book_data.get(3));
         try {
-            boolean validInDB = LibraryContext.addObject(new Book(
+            LibraryContext.addObject(new Book(
                     name,
                     category,
                     id,
@@ -49,11 +49,13 @@ class BookAdder extends FrameContentManager {
                     null,
                     null
             ));
-            //jak validinDB=false tzn ze sie w db cos nie udalo i zmiany sa wprowadzone jedynie lokalnie
         } catch (NullOrEmptyStringException e) {
             panel.changePrompt("Book data cannot be empty");
         } catch (InvalidIdException | NumberFormatException e) {
             panel.changePrompt("Incorrect book id");
+        }
+        catch (CannotConnectToDBException e){
+            //
         }
     }
 }
@@ -73,7 +75,11 @@ class BooksDeleter extends FrameContentManager {
         } catch (ArrayIndexOutOfBoundsException ignored) {
             return;
         }
-        LibraryContext.removeObject(book);
+        try {
+            LibraryContext.removeObject(book);
+        } catch (CannotConnectToDBException e) {
+            //
+        }
     }
 }
 
@@ -163,6 +169,8 @@ class BookModificationApplier extends FrameContentManager {
             prompt.setText("Book data cannot be empty");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
+        } catch (CannotConnectToDBException e) {
+            //
         }
     }
 }

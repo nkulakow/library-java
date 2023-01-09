@@ -41,7 +41,7 @@ class UserAdder extends FrameContentManager {
         int id          = Integer.parseInt(user_data.get(4));
         String mail     = user_data.get(5);
         try {
-            boolean validInDB = LibraryContext.addObject(new CommonUser(
+            LibraryContext.addObject(new CommonUser(
                     login,
                     password,
                     name,
@@ -50,7 +50,6 @@ class UserAdder extends FrameContentManager {
                     mail,
                     0   //books number
             ));
-            //jak validinDB=false tzn ze sie w db cos nie udalo i zmiany sa wprowadzone jedynie lokalnie
         } catch (NullOrEmptyStringException e) {
             LibraryGUI.main_page.getPrompt().setText("User data cannot be empty");
         } catch (InvalidIdException | NumberFormatException e) {
@@ -59,6 +58,8 @@ class UserAdder extends FrameContentManager {
 
         } catch (InvalidLoginException e) {
             LibraryGUI.main_page.getPrompt().setText("Login already exists");
+        } catch (CannotConnectToDBException e) {
+            //
         }
     }
 }
@@ -181,6 +182,8 @@ class UsersModificationApplier extends FrameContentManager {
         }
          catch (InvalidBookNumberException | InvalidIdException ignored) {
 
+        } catch (CannotConnectToDBException e) {
+            //
         }
     }
 }
@@ -201,7 +204,11 @@ class UsersDeleter extends FrameContentManager {
             return;
         }
         System.out.println(user.describe());
-        LibraryContext.removeObject(user);
+        try {
+            LibraryContext.removeObject(user);
+        } catch (CannotConnectToDBException e) {
+            //
+        }
     }
 }
 
@@ -223,6 +230,8 @@ class AdminModificationApplier extends FrameContentManager {
             prompt.setText("Incorrect login");
         } catch (InvalidIdException | InvalidBookNumberException ignored) {
 
+        } catch (CannotConnectToDBException e) {
+            //
         }
     }
 }
