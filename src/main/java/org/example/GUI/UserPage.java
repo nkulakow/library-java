@@ -109,14 +109,15 @@ public class UserPage extends Page {
         button.setAction_manager(new UsersModificationApplier(FrameContentManager.USER_USER_MOD));
 
 
-        var prompt2 = new JLabel("");
-        prompt2.setBounds(content_panel.getSize().width / 2 - 300,  panel.getHeight() + button.getHeight() , 300, 30);
+        var prompt = LibraryGUI.main_page.getPrompt();
+        prompt.setText("");
+        prompt.setBounds(button.getX(), button.getY() + button.getHeight(), 0, 30);
 
         content_panel.removeAll();
         content_panel.setLayout(null);
         content_panel.add(panel);
         content_panel.add(button);
-        content_panel.add(prompt2);
+        content_panel.add(prompt);
         content_panel.validate();
         content_panel.repaint();
     }

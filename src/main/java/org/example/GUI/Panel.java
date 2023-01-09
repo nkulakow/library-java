@@ -102,7 +102,6 @@ class OptionPanel extends JPanel {
 }
 
 class AddingPanel extends JPanel {
-    private final JTextField id_fild;
     private final JTextField name_fild;
     private final JTextField surname_fild;
     private final JTextField mail_fild;
@@ -110,9 +109,7 @@ class AddingPanel extends JPanel {
     private final JTextField login_field;
 
     public AddingPanel(ActionListener listener) {
-        this.setLayout(new GridLayout(8, 1));
-        this.id_fild = new JTextField("Id");
-        this.add(this.id_fild);
+        this.setLayout(new GridLayout(7, 1));
         this.name_fild = new JTextField("Name");
         this.add(this.name_fild);
         this.surname_fild = new JTextField("Surname");
@@ -138,7 +135,6 @@ class AddingPanel extends JPanel {
         result.add(this.password_field.getText());
         result.add(this.name_fild.getText());
         result.add(this.surname_fild.getText());
-        result.add(this.id_fild.getText());
         result.add(this.mail_fild.getText());
         return result;
     }
@@ -152,8 +148,6 @@ class BookAddingPanel extends JPanel {
 
     private final JTextField author;
 
-    private final JTextField bookId;
-
     private final JLabel prompt;
 
 
@@ -165,15 +159,14 @@ class BookAddingPanel extends JPanel {
         this.add(this.category);
         this.author = new JTextField("Author");
         this.add(this.author);
-        this.bookId = new JTextField("Id");
-        this.add(this.bookId);
 
         OptionPanel.OptionButton add_button = new OptionPanel.OptionButton("Add");
         add_button.addActionListener(listener);
         add_button.setAction_manager(new BookAdder());
         this.add(add_button);
 
-        this.prompt = new JLabel("Enter book data");
+        this.prompt = LibraryGUI.main_page.getPrompt();
+        prompt.setText("Enter book data");
         this.add(this.prompt);
         this.setBounds(200, 0, 400, 200);
     }
@@ -183,7 +176,6 @@ class BookAddingPanel extends JPanel {
         result.add(this.name.getText());
         result.add(this.category.getText());
         result.add(this.author.getText());
-        result.add(this.bookId.getText());
         return result;
     }
 

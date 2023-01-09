@@ -4,7 +4,6 @@ import org.example.LibraryContextPackage.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -38,7 +37,7 @@ class BookAdder extends FrameContentManager {
         String name    = book_data.get(0);
         String category = book_data.get(1);
         String author     = book_data.get(2);
-        int id          = Integer.parseInt(book_data.get(3));
+        int id          = LibraryContext.generateBookID();
         try {
             LibraryContext.addObject(new Book(
                     name,
@@ -49,6 +48,8 @@ class BookAdder extends FrameContentManager {
                     null,
                     null
             ));
+            panel.changePrompt("" +
+                    "Book successfully added");
         } catch (NullOrEmptyStringException e) {
             panel.changePrompt("Book data cannot be empty");
         } catch (InvalidIdException | NumberFormatException e) {
@@ -57,6 +58,7 @@ class BookAdder extends FrameContentManager {
         catch (CannotConnectToDBException e){
             //
         }
+        LibraryGUI.main_page.adjustPromptSize();
     }
 }
 
@@ -77,6 +79,9 @@ class BooksDeleter extends FrameContentManager {
         }
         try {
             LibraryContext.removeObject(book);
+            var prompt = LibraryGUI.main_page.getPrompt();
+            prompt.setText("Book successfully deleted");
+            LibraryGUI.main_page.adjustPromptSize();
         } catch (CannotConnectToDBException e) {
             //
         }
@@ -123,8 +128,10 @@ class BooksModifier extends FrameContentManager {
         button.addActionListener(LibraryGUI.main_page);
         button.setAction_manager(new BookModificationApplier());
 
-        var prompt = new JLabel();
+        var prompt = LibraryGUI.main_page.getPrompt();
+        prompt.setText("");
         prompt.setBounds(content_panel.getSize().width / 2 - 150, list.getHeight() + panel.getHeight() + button.getHeight(), 300, 30);
+        LibraryGUI.main_page.adjustPromptSize();
 
         content_panel.removeAll();
         content_panel.setLayout(null);
@@ -162,16 +169,18 @@ class BookModificationApplier extends FrameContentManager {
         map.put(AttributesNames.category, cateogry);
         map.put(AttributesNames.author, author);
 
+        var prompt = LibraryGUI.main_page.getPrompt();
         try {
             LibraryContext.modifyFewBookAttributes(map, BookModificationApplier.last_modified_id);
+            prompt.setText("Book successfully modified");
         } catch (NullOrEmptyStringException e) {
-            var prompt = (JLabel) content_panel.getComponent(3);
             prompt.setText("Book data cannot be empty");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
         } catch (CannotConnectToDBException e) {
             //
         }
+        LibraryGUI.main_page.adjustPromptSize();
     }
 }
 
@@ -190,15 +199,15 @@ class BooksReturner extends FrameContentManager {
         } catch (ArrayIndexOutOfBoundsException ignored) {
             return;
         }
-        System.out.println(book.describe());
+        var prompt = LibraryGUI.main_page.getPrompt();
         try {
             LibraryContext.returnBook(book);
+            prompt.setText(book.getName() + " by " + book.getAuthor() + " successfully returned");
         }
         catch (CannotReturnBookException e){
-            var meslabel = (JLabel) content_panel.getComponent(1);
-            meslabel.setText("Could not return book, please contact administrator");
-            content_panel.add(meslabel);
+            prompt.setText("Could not return book, please contact administrator");
         }
+        LibraryGUI.main_page.adjustPromptSize();
     }
 }
 
@@ -210,14 +219,14 @@ class BooksOrderer extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         int index = OrderChooser.last_results.getSelectedIndex();
-        JLabel label = (JLabel) content_panel.getComponent(1);
+        var prompt = LibraryGUI.main_page.getPrompt();
         var selected = Searcher.last_results.toArray();
         long months;
         try {
             months = Long.parseLong(OrderChooser.months_field.getText());
         }
         catch (java.lang.NumberFormatException e){
-            label.setText("Input valid months.");
+            prompt.setText("Input valid months number.");
             return;
         }
         Book book;
@@ -226,7 +235,8 @@ class BooksOrderer extends FrameContentManager {
         } catch (ArrayIndexOutOfBoundsException ignored) {
             return;
         }
-        System.out.println(book.describe());
         LibraryContext.orderBook(book, months);
+        prompt.setText(book.getName() + " by " + book.getAuthor() + " successfully ordered");
+        LibraryGUI.main_page.adjustPromptSize();
     }
 }

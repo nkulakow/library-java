@@ -59,15 +59,6 @@ class UserOptionPanel extends JPanel {
         }
     }
 
-    public static void initButtonVisuals(JButton button) {
-        button.setBackground(new Color(179, 122, 82));
-        button.setForeground(new Color(60,60 ,60));
-        button.setFont(new Font(Font.SERIF, Font.ITALIC, 20));
-        button.setFocusPainted(false);
-        button.setHorizontalAlignment(JButton.CENTER);
-        button.setBorder(new LineBorder(Color.BLACK));
-    }
-
     public Vector<JButton> getOptions() {
         return this.options;
     }
