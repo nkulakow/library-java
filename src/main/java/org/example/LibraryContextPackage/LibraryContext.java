@@ -438,5 +438,32 @@ public class LibraryContext {
         return borrowed;
     }
 
+    /**
+     * Generate ID for CommonUser.
+     */
+    public static int generateCommonUserID(){
+        ArrayList<Integer> usersIds = new ArrayList<>();
+        for (var user:Admin.getUsers()){usersIds.add(user.getUserId());}
+        return getMinimumIDFromSortedArray(usersIds);
+    }
 
+    /**
+     * Generate ID for Book.
+     */
+    public static int generateBookID(){
+        ArrayList<Integer> booksIds = new ArrayList<>();
+        for (var book:Admin.getBooks()){booksIds.add(book.getBookId());}
+        return getMinimumIDFromSortedArray(booksIds);
+    }
+
+    /**
+     * Generate ID, minimum and positive, from given sorted ArrayList.
+     */
+    private static int getMinimumIDFromSortedArray(ArrayList<Integer> booksIds) {
+        booksIds.sort(Comparator.comparingInt(id -> id));
+        for (int i = 1; i< booksIds.get(booksIds.size()-1); i++){
+            if(!booksIds.contains(i)){return i;}
+        }
+        return booksIds.get(booksIds.size()-1)+1;
+    }
 }
