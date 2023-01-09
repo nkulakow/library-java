@@ -64,6 +64,7 @@ class UserAdder extends FrameContentManager {
             prompt.setText("Login already exists");
         }
         prompt.setBounds(panel.getX(), panel.getY() + panel.getHeight(), 300, 30);
+        LibraryGUI.main_page.adjustPromptSize();
         content_panel.removeAll();
         content_panel.add(panel);
         content_panel.add(prompt);
@@ -117,6 +118,7 @@ class UsersModifier extends FrameContentManager {
         var prompt = LibraryGUI.main_page.getPrompt();
         prompt.setText("");
         prompt.setBounds(button.getX(), list.getHeight() + panel.getHeight() + button.getHeight(), 300, 30);
+        LibraryGUI.main_page.adjustPromptSize();
 
         content_panel.removeAll();
         content_panel.setLayout(null);
@@ -183,6 +185,7 @@ class UsersModificationApplier extends FrameContentManager {
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
         }
+        LibraryGUI.main_page.adjustPromptSize();
     }
 }
 
@@ -205,6 +208,7 @@ class UsersDeleter extends FrameContentManager {
 
         var prompt = LibraryGUI.main_page.getPrompt();
         prompt.setText("User successfully deleted");
+        LibraryGUI.main_page.adjustPromptSize();
     }
 }
 
@@ -227,5 +231,6 @@ class AdminModificationApplier extends FrameContentManager {
         } catch (InvalidIdException | InvalidBookNumberException ignored) {
 
         }
+        LibraryGUI.main_page.adjustPromptSize();
     }
 }

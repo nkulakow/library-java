@@ -56,6 +56,7 @@ class BookAdder extends FrameContentManager {
         } catch (InvalidIdException | NumberFormatException e) {
             panel.changePrompt("Incorrect book id");
         }
+        LibraryGUI.main_page.adjustPromptSize();
     }
 }
 
@@ -77,6 +78,7 @@ class BooksDeleter extends FrameContentManager {
         LibraryContext.removeObject(book);
         var prompt = LibraryGUI.main_page.getPrompt();
         prompt.setText("Book successfully deleted");
+        LibraryGUI.main_page.adjustPromptSize();
     }
 }
 
@@ -123,6 +125,7 @@ class BooksModifier extends FrameContentManager {
         var prompt = LibraryGUI.main_page.getPrompt();
         prompt.setText("");
         prompt.setBounds(content_panel.getSize().width / 2 - 150, list.getHeight() + panel.getHeight() + button.getHeight(), 300, 30);
+        LibraryGUI.main_page.adjustPromptSize();
 
         content_panel.removeAll();
         content_panel.setLayout(null);
@@ -169,6 +172,7 @@ class BookModificationApplier extends FrameContentManager {
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
         }
+        LibraryGUI.main_page.adjustPromptSize();
     }
 }
 
@@ -187,15 +191,15 @@ class BooksReturner extends FrameContentManager {
         } catch (ArrayIndexOutOfBoundsException ignored) {
             return;
         }
-        System.out.println(book.describe());
+        var prompt = LibraryGUI.main_page.getPrompt();
         try {
             LibraryContext.returnBook(book);
+            prompt.setText(book.getName() + " by " + book.getAuthor() + " successfully returned");
         }
         catch (CannotReturnBookException e){
-            var meslabel = (JLabel) content_panel.getComponent(1);
-            meslabel.setText("Could not return book, please contact administrator");
-            content_panel.add(meslabel);
+            prompt.setText("Could not return book, please contact administrator");
         }
+        LibraryGUI.main_page.adjustPromptSize();
     }
 }
 
@@ -207,14 +211,14 @@ class BooksOrderer extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         int index = OrderChooser.last_results.getSelectedIndex();
-        JLabel label = (JLabel) content_panel.getComponent(1);
+        var prompt = LibraryGUI.main_page.getPrompt();
         var selected = Searcher.last_results.toArray();
         long months;
         try {
             months = Long.parseLong(OrderChooser.months_field.getText());
         }
         catch (java.lang.NumberFormatException e){
-            label.setText("Input valid months.");
+            prompt.setText("Input valid months number.");
             return;
         }
         Book book;
@@ -223,7 +227,8 @@ class BooksOrderer extends FrameContentManager {
         } catch (ArrayIndexOutOfBoundsException ignored) {
             return;
         }
-        System.out.println(book.describe());
         LibraryContext.orderBook(book, months);
+        prompt.setText(book.getName() + " by " + book.getAuthor() + " successfully ordered");
+        LibraryGUI.main_page.adjustPromptSize();
     }
 }

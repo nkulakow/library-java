@@ -28,6 +28,10 @@ public class MainPage extends Page {
         return prompt;
     }
 
+    public void adjustPromptSize() {
+        this.prompt.setSize(prompt.getFont().getSize() * prompt.getText().length(), prompt.getHeight());
+    }
+
     private void init() {
         this.setLayout(new BorderLayout());
         this.current_options = null;
