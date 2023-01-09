@@ -1,6 +1,5 @@
 package org.example.GUI;
 
-import org.example.Database.LibraryDatabase;
 import org.example.LibraryContextPackage.*;
 
 import javax.swing.*;
@@ -204,8 +203,9 @@ class DeleteChooser extends FrameContentManager {
         list.setBounds(0, 0, content_panel.getWidth(), 30 * list.getModel().getSize());
         DeleteChooser.last_results = list;
 
-        var label = new JLabel("Select data to delete");
-        label.setBounds(list.getX(), list.getHeight(), 300, 30);
+        var prompt = LibraryGUI.main_page.getPrompt();
+        prompt.setText("Select data to delete");
+        prompt.setBounds(list.getX(), list.getHeight(), 300, 30);
 
         var button = new OptionPanel.OptionButton("Delete");
         button.addActionListener(LibraryGUI.main_page);
@@ -218,7 +218,7 @@ class DeleteChooser extends FrameContentManager {
         content_panel.removeAll();
         content_panel.setLayout(null);
         content_panel.add(list);
-        content_panel.add(label);
+        content_panel.add(prompt);
         content_panel.add(button);
         content_panel.validate();
         content_panel.repaint();

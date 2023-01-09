@@ -4,7 +4,6 @@ import org.example.LibraryContextPackage.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Vector;
@@ -49,6 +48,8 @@ class BookAdder extends FrameContentManager {
                     null,
                     null
             ));
+            panel.changePrompt("" +
+                    "Book successfully added");
             //jak validinDB=false tzn ze sie w db cos nie udalo i zmiany sa wprowadzone jedynie lokalnie
         } catch (NullOrEmptyStringException e) {
             panel.changePrompt("Book data cannot be empty");
@@ -74,6 +75,8 @@ class BooksDeleter extends FrameContentManager {
             return;
         }
         LibraryContext.removeObject(book);
+        var prompt = LibraryGUI.main_page.getPrompt();
+        prompt.setText("Book successfully deleted");
     }
 }
 
@@ -117,7 +120,8 @@ class BooksModifier extends FrameContentManager {
         button.addActionListener(LibraryGUI.main_page);
         button.setAction_manager(new BookModificationApplier());
 
-        var prompt = new JLabel();
+        var prompt = LibraryGUI.main_page.getPrompt();
+        prompt.setText("");
         prompt.setBounds(content_panel.getSize().width / 2 - 150, list.getHeight() + panel.getHeight() + button.getHeight(), 300, 30);
 
         content_panel.removeAll();
@@ -156,10 +160,11 @@ class BookModificationApplier extends FrameContentManager {
         map.put(AttributesNames.category, cateogry);
         map.put(AttributesNames.author, author);
 
+        var prompt = LibraryGUI.main_page.getPrompt();
         try {
             LibraryContext.modifyFewBookAttributes(map, BookModificationApplier.last_modified_id);
+            prompt.setText("Book successfully modified");
         } catch (NullOrEmptyStringException e) {
-            var prompt = (JLabel) content_panel.getComponent(3);
             prompt.setText("Book data cannot be empty");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 

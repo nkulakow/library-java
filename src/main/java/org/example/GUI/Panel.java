@@ -173,7 +173,8 @@ class BookAddingPanel extends JPanel {
         add_button.setAction_manager(new BookAdder());
         this.add(add_button);
 
-        this.prompt = new JLabel("Enter book data");
+        this.prompt = LibraryGUI.main_page.getPrompt();
+        prompt.setText("Enter book data");
         this.add(this.prompt);
         this.setBounds(200, 0, 400, 200);
     }

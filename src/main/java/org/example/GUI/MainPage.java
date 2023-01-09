@@ -1,6 +1,5 @@
 package org.example.GUI;
 
-import lombok.Getter;
 import org.example.LibraryContextPackage.LibraryContext;
 import org.example.Main;
 
@@ -159,8 +158,8 @@ public class MainPage extends Page {
         button.setBounds(name_field.getX(), 200, 150, 40);
         button.addActionListener(this);
         button.setAction_manager(new AdminModificationApplier());
-        var prompt = new JLabel();
-        prompt.setBounds(name_field.getX(), 240, 300, 40);
+        this.prompt.setText("");
+        this.prompt.setBounds(name_field.getX(), 240, 300, 40);
 
         this.content_panel.removeAll();
         this.content_panel.setLayout(null);
@@ -170,7 +169,7 @@ public class MainPage extends Page {
         this.content_panel.add(login_field);
         this.content_panel.add(password_field);
         this.content_panel.add(button);
-        this.content_panel.add(prompt);
+        this.content_panel.add(this.prompt);
         this.content_panel.validate();
         this.content_panel.repaint();
     }
