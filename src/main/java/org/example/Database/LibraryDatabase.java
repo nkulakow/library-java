@@ -129,7 +129,7 @@ public class LibraryDatabase {
                 }
                 Integer user_id = result.getInt(DatabaseConstants.BooksConstants.USER_ID);
                 user_id = user_id==0?null:user_id;
-                if (user_id != null)
+                if (user_id != null && !takenBooks.containsKey(id))
                 {
                     takenBooks.put(id, new ArrayDeque<>());
                     takenBooksOrderedTime.put(id, new ArrayDeque<>());
@@ -158,13 +158,15 @@ public class LibraryDatabase {
                 long months = result.getInt(DatabaseConstants.WaitingConstants.MONTHS);
                 if (takenBooksTemp.containsKey(book_id))
                 {
-                    takenBooksTemp.get(book_id).add(autoadmin.findUserById(user_id));
+                    takenBooksTemp.get(book_id).add(Admin.findUserById(user_id));
                     takenBooksOrderedTimeTemp.get(book_id).add(months);
                 }
                 else
                 {
                     takenBooksTemp.put(book_id, new ArrayDeque<>());
+                    takenBooksTemp.get(book_id).add(Admin.findUserById(user_id));
                     takenBooksOrderedTimeTemp.put(book_id, new ArrayDeque<>());
+                    takenBooksOrderedTimeTemp.get(book_id).add(months);
                 }
             }
             logger.info("Executed getWaiting method");
@@ -279,11 +281,10 @@ public class LibraryDatabase {
         }
     }
 
-    public static void addWaiting(Book book, long months) throws SQLException {
-        int user_id = book.getUserId();
+    public static void addWaiting(Book book, long months, int userId) throws SQLException {
         int book_id = book.getBookId();
         int waiting_id = 0; // change
-        String query_str = "insert into nkulakow.pap_waiting values("+waiting_id+", "+book_id+", "+user_id+", "+months+")";
+        String query_str = "insert into nkulakow.pap_waiting values("+waiting_id+", "+book_id+", "+userId+", "+months+")";
 
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
@@ -372,6 +373,7 @@ public class LibraryDatabase {
         if (user_id != 0){
             user_str = ", user_id="+user_id;
         }}
+        else{user_str =", user_id=null";}
         String query_str = "update nkulakow.PAP_BOOKS set name='"+name+"', author='"+author+"', cathegory='"+category+"', available="+available+", return_date=?"+user_str+ " where book_id="+book_id;
 
         try {

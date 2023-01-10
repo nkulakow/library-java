@@ -209,7 +209,6 @@ class UsersDeleter extends FrameContentManager {
         } catch (ArrayIndexOutOfBoundsException ignored) {
             return;
         }
-        System.out.println(user.describe());
         try {
             LibraryContext.removeObject(user);
             var prompt = LibraryGUI.main_page.getPrompt();

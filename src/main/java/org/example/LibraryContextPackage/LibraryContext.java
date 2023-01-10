@@ -37,7 +37,7 @@ public class LibraryContext {
             takenBooks.get(book.getBookId()).add(currentUser);
             takenBooksOrderedTime.get(book.getBookId()).add(months);
             try {
-                LibraryDatabase.addWaiting(book, months);
+                LibraryDatabase.addWaiting(book, months, currentUser.getUserId());
                 logger.info("Added book to WAITING");
             }
             catch (SQLException e){
@@ -100,8 +100,6 @@ public class LibraryContext {
             currentAdmin = autoAdmin;
             autoAdmin.addObject(currentAdmin);
 
-            LibraryDatabase.initWaiting();
-
             var newAdmins = LibraryDatabase.getAdmins();
             for (var admin : newAdmins){
                 autoAdmin.addObject(admin);
@@ -111,6 +109,7 @@ public class LibraryContext {
             for(var user : newUsers){
                 autoAdmin.addObject(user);
             }
+            LibraryDatabase.initWaiting();
 
             var newBooks = LibraryDatabase.getBooks();
             for(var book : newBooks){
@@ -159,15 +158,16 @@ public class LibraryContext {
             }
             book.setReturnDate(ZonedDateTime.now().plusMonths(takenBooksOrderedTime.get(book.getBookId()).remove()));
             logger.info("Returned book, it is now borrowed by next user.");
-        }
+
             try {
-                LibraryDatabase.removeWaiting(book, currentUser.getUserId());
-                logger.info("Removed book from WAITING");
-            }
-            catch (SQLException e){
+                LibraryDatabase.removeWaiting(book, book.getUserId());
+                LibraryDatabase.modifyBook(book);
+                logger.info("Removed book from WAITING, modified BOOKS");
+            } catch (SQLException e) {
                 logger.warn("Could not remove book in WAITING");
                 throw new CannotConnectToDBException("Could not make changes in DB");
             }
+        }
         }
         catch (NoSuchElementException | java.lang.NullPointerException e){
             logger.error("In returnBook: " + e.getMessage());
