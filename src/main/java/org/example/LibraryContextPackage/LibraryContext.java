@@ -30,6 +30,18 @@ public class LibraryContext {
     private static Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime = new Hashtable<>();
     private static final Logger logger = LogManager.getLogger(org.example.LibraryContextPackage.LibraryContext.class);
 
+    /**
+     * Method responsible for assigning a book to a user by assigning values to its two parameters: returnDate and userId.
+     * If these parameters were set previously it means that a book is assignined to another user and the current user must be put in a book's queue indicated
+     * by its id.
+     *
+     * params:
+     * book - object representing a book in a library.
+     * months - positive number representing time reserved by a certain user to have the book.
+     *
+     * returns:
+     * no value
+     */
     public static void orderBook(Book book, long months)
     {
         if(takenBooks.containsKey(book.getBookId()))
@@ -49,6 +61,12 @@ public class LibraryContext {
 
     /**
     * Initializes LibContext specifically for tests - without allowing to connect do DB and without any Gui initialization.
+     *
+     * params:
+     * AsUser - a boolean value used to determine whether a user or an admin is trying to log in.
+     *
+     * returns:
+     * lack of value
      */
     public static void LibContextInitForTests(boolean AsUser) throws InvalidBookNumberException {
         try {
@@ -75,6 +93,13 @@ public class LibraryContext {
 
     /**
      * Initializes LibContext. Using LibraryDatabase gets Admins, Books, Users and books orders info and creates objects corresponding to them.
+     *
+     * params:
+     * lack of params
+     *
+     * returns:
+     *
+     * lack of value
      */
     public static void LibContextInit() {
         try {
@@ -112,6 +137,13 @@ public class LibraryContext {
 
     /**
      * Allows currentUser to return borrowed Book.
+     *
+     * params:
+     * book - object representing a book in a library.
+     *
+     * returns:
+     *
+     * lack of value
      */
     public static void returnBook(Book book) throws CannotReturnBookException {
         try{
@@ -141,6 +173,13 @@ public class LibraryContext {
 
     /**
      * Returns hash table of penalties for borrowed by currentUser books
+     *
+     * params:
+     * lack of params
+     *
+     * returns:
+     *
+     * hashtable containing pairs: book's id and a penalty greater than zero if a book had not been returned by user before given time had passed.
      */
     public static Hashtable<Integer, Float> showPenalties()
     {
@@ -167,6 +206,15 @@ public class LibraryContext {
         return penalties;
     }
 
+    /**
+     * Prepares current user's books and returns them.
+     *
+     * params:
+     * lack of params
+     *
+     * returns:
+     * current user's books.
+     */
     private static HashSet<Book> showBooks()
     {
         if(currentUser != null)
@@ -178,6 +226,13 @@ public class LibraryContext {
 
     /**
      * Returns true if Admins login information are correct. Sets currentAdmin to the one logged in.
+     *
+     * params:
+     * login - text destined to be compared with admins' logins.
+     * password - text destined to be compared with admins' passwords.
+     *
+     * returns:
+     * true if login and password are valid, false otherwise.
      */
     static public boolean checkLoggingAdmins(String login, String password) {
         String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
@@ -193,6 +248,13 @@ public class LibraryContext {
 
     /**
      * Returns true if Users login information are correct. Sets currentUser to the one logged in.
+     *
+     params:
+     * login - text destined to be compared with users' logins.
+     * password - text destined to be compared with users' passwords.
+     *
+     * returns:
+     * true if login and password are valid, false otherwise.
      */
     static public boolean checkLoggingUsers(String login, String password) {
 
@@ -211,6 +273,13 @@ public class LibraryContext {
 
     /**
      * Add Object to local data and to Database. Returns true if object was added to Database, false if only locally.
+     *
+     * params:
+     * libObject - object implementing LibraryContextActions interface that guarantees it can be added to a certain collection of library objects.
+     * The mechanism of choosing a proper collection and asking current admin to modify it by adding an element to it is encapsulated in libObject.
+     *
+     * returns:
+     * lack of data.
      */
     static public void addObject(LibraryContextActions libObject) throws CannotConnectToDBException {
         if (currentAdmin.addObject(libObject)) {
@@ -240,6 +309,13 @@ public class LibraryContext {
 
     /**
      * Remove Object from local data and from Database. Returns true if object was removed Database, false if only locally.
+     *
+     * params:
+     * libObject - object implementing LibraryContextActions interface that guarantees it can be removed from a certain collection of library objects.
+     * The mechanism of choosing a proper collection and asking current admin to modify it by removing an element from it is encapsulated in libObject.
+     *
+     * returns:
+     * lack of data.
      */
     static public void removeObject(LibraryContextActions libObject) throws CannotConnectToDBException {
         if (currentAdmin.removeObject(libObject)) {
@@ -269,6 +345,13 @@ public class LibraryContext {
 
     /**
      * Searches for Object by given pattern. Return set of matching Objects.
+     *
+     * params:
+     * searchObject - implements interface Isearch that has one method responsible for preparing environment for searching an object in library.
+     * searchPattern - pattern describing object or objects that should be returned by this method.
+     *
+     * returns:
+     * set of objects described by the searchPattern.
      */
     static public HashSet<LibraryContextActions> searchForObject(Isearch searchObject, String searchPattern)
     {
