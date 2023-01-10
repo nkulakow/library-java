@@ -136,7 +136,7 @@ public class LibraryContext {
             takenBooks.remove(book.getBookId());
             takenBooksOrderedTime.remove(book.getBookId());
             currentUser.returnBook(book);
-            book.setUserId(null); // albo 0
+            book.setUserId(null); // albo 0, wywala blad niewazne co
             LibraryDatabase.modifyBook(book);
 
             logger.info("Returned book, it is now available.");
