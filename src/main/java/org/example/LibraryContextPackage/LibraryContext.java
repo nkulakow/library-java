@@ -30,14 +30,13 @@ public class LibraryContext {
     private static Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime = new Hashtable<>();
     private static final Logger logger = LogManager.getLogger(org.example.LibraryContextPackage.LibraryContext.class);
 
-    public static void orderBook(Book book, long months)
+    public static void orderBook(Book book, long months) throws CannotConnectToDBException
     {
         if(takenBooks.containsKey(book.getBookId()))
         {
             takenBooks.get(book.getBookId()).add(currentUser);
             takenBooksOrderedTime.get(book.getBookId()).add(months);
             logger.info("Ordered book and got into queue.");
-            // database
         }
         else
         {
@@ -45,7 +44,14 @@ public class LibraryContext {
             takenBooks.put(book.getBookId(), new ArrayDeque<>());
             takenBooksOrderedTime.put(book.getBookId(), new ArrayDeque<>());
             logger.info("Borrowed book.");
-            // database
+        }
+        try {
+            LibraryDatabase.addWaiting(book, months);
+            logger.info("Added book to WAITING");
+        }
+        catch (SQLException e){
+            logger.warn("Could not add book to WAITING");
+            throw new CannotConnectToDBException("Could not make changes in DB");
         }
     }
 
@@ -101,6 +107,9 @@ public class LibraryContext {
             for(var book : newBooks){
                 autoAdmin.addObject(book);
             }
+
+            // init pap_waiting
+
             logger.info("Executed LibraryContextInit.");
 
         }
@@ -115,7 +124,7 @@ public class LibraryContext {
     /**
      * Allows currentUser to return borrowed Book.
      */
-    public static void returnBook(Book book) throws CannotReturnBookException {
+    public static void returnBook(Book book) throws CannotReturnBookException, CannotConnectToDBException {
         try{
         ArrayDeque<CommonUser> users = takenBooks.get(book.getBookId());
         if (users.isEmpty()) {
@@ -123,7 +132,6 @@ public class LibraryContext {
             takenBooksOrderedTime.remove(book.getBookId());
             currentUser.returnBook(book);
             logger.info("Returned book, it is now available.");
-            // database
         }
         else {
             currentUser.returnBook(book);
@@ -135,11 +143,20 @@ public class LibraryContext {
             book.setReturnDate(ZonedDateTime.now().plusMonths(takenBooksOrderedTime.get(book.getBookId()).remove()));
             logger.info("Returned book, it is now borrowed by next user.");
         }
+            try {
+                LibraryDatabase.removeWaiting(book);
+                logger.info("Removed book from WAITING");
+            }
+            catch (SQLException e){
+                logger.warn("Could not remove book in WAITING");
+                throw new CannotConnectToDBException("Could not make changes in DB");
+            }
         }
         catch (NoSuchElementException | java.lang.NullPointerException e){
             logger.error("In returnBook: " + e.getMessage());
             throw new CannotReturnBookException("Exception in returnBook occurred.");
         }
+
     }
 
     /**

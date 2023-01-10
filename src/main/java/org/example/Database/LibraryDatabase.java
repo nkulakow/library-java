@@ -14,6 +14,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.Date;
 
+
 public class LibraryDatabase {
     private static final Logger logger = LogManager.getLogger(org.example.Database.LibraryDatabase.class);
 
@@ -133,8 +134,6 @@ public class LibraryDatabase {
         }
         return books;
     }
-
-    // zeby zwracal oba hashtable:
     public static Hashtable<Integer, ArrayDeque<CommonUser>> getWaiting() throws SQLException, NullOrEmptyStringException, InvalidIdException {
         Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks = new Hashtable();
         Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime = new Hashtable<>();
@@ -145,7 +144,6 @@ public class LibraryDatabase {
             Statement query = CONNECTION.createStatement();
             ResultSet result = query.executeQuery(DatabaseConstants.InquiriesConstants.SELECT_WAITING);
             while (result.next()) {
-                int id = result.getInt(DatabaseConstants.WaitingConstants.WAITING_ID);
                 int book_id = result.getInt(DatabaseConstants.WaitingConstants.BOOK_WAITING_ID);
                 int user_id = result.getInt(DatabaseConstants.WaitingConstants.USER_WAITING_ID);
                 long months = result.getInt(DatabaseConstants.WaitingConstants.MONTHS);
@@ -165,7 +163,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in getWaiting method " + e.getMessage());
             throw e;
         }
-        return takenBooks;
+        // zwracanie obu hashtables
     }
 
 
