@@ -36,6 +36,14 @@ public class LibraryContext {
         {
             takenBooks.get(book.getBookId()).add(currentUser);
             takenBooksOrderedTime.get(book.getBookId()).add(months);
+            try {
+                LibraryDatabase.addWaiting(book, months);
+                logger.info("Added book to WAITING");
+            }
+            catch (SQLException e){
+                logger.warn("Could not add book to WAITING");
+                throw new CannotConnectToDBException("Could not make changes in DB");
+            }
             logger.info("Ordered book and got into queue.");
         }
         else
@@ -43,15 +51,9 @@ public class LibraryContext {
             currentUser.orderBook(book, months);
             takenBooks.put(book.getBookId(), new ArrayDeque<>());
             takenBooksOrderedTime.put(book.getBookId(), new ArrayDeque<>());
+            book.setUserId(currentUser.getUserId()); // ?? czemu integer w jednym a w drugim int
+            LibraryDatabase.modifyBook(book);
             logger.info("Borrowed book.");
-        }
-        try {
-            LibraryDatabase.addWaiting(book, months);
-            logger.info("Added book to WAITING");
-        }
-        catch (SQLException e){
-            logger.warn("Could not add book to WAITING");
-            throw new CannotConnectToDBException("Could not make changes in DB");
         }
     }
 
@@ -93,6 +95,8 @@ public class LibraryContext {
             currentAdmin = autoAdmin;
             autoAdmin.addObject(currentAdmin);
 
+            LibraryDatabase.initWaiting();
+
             var newAdmins = LibraryDatabase.getAdmins();
             for (var admin : newAdmins){
                 autoAdmin.addObject(admin);
@@ -108,7 +112,8 @@ public class LibraryContext {
                 autoAdmin.addObject(book);
             }
 
-            // init pap_waiting
+            takenBooks = LibraryDatabase.getTakenBooks();
+            takenBooksOrderedTime = LibraryDatabase.getTakenBooksOrderedTime();
 
             logger.info("Executed LibraryContextInit.");
 
@@ -131,6 +136,9 @@ public class LibraryContext {
             takenBooks.remove(book.getBookId());
             takenBooksOrderedTime.remove(book.getBookId());
             currentUser.returnBook(book);
+            book.setUserId(null); // albo 0
+            LibraryDatabase.modifyBook(book);
+
             logger.info("Returned book, it is now available.");
         }
         else {

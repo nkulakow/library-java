@@ -1,5 +1,6 @@
 package org.example.Database;
 
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.LibraryContextPackage.*;
@@ -23,6 +24,10 @@ public class LibraryDatabase {
     private static String HASHEDPASSWORD;
     private static Connection CONNECTION;
     private static Admin autoadmin;
+    @Getter
+    private static Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks;
+    @Getter
+    private static Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime;
 
     public static void initLoginInfo() throws IOException {
         try {
@@ -125,6 +130,13 @@ public class LibraryDatabase {
                     return_date = ZonedDateTime.ofInstant(return_date_demo.toInstant(), ZoneId.systemDefault());
                 }
                 int user_id = result.getInt(DatabaseConstants.BooksConstants.USER_ID);
+
+                if (user_id != 0) // do sprawdzenia
+                {
+                    takenBooks.put(id, new ArrayDeque<>());
+                    takenBooksOrderedTime.put(id, new ArrayDeque<>());
+                }
+
                 books.add(new Book(name, category, id, author, available, user_id, return_date));
             }
             logger.info("Executed getBooks method.");
@@ -134,9 +146,9 @@ public class LibraryDatabase {
         }
         return books;
     }
-    public static Hashtable<Integer, ArrayDeque<CommonUser>> getWaiting() throws SQLException, NullOrEmptyStringException, InvalidIdException {
-        Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks = new Hashtable();
-        Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime = new Hashtable<>();
+    public static void initWaiting() throws SQLException, InvalidIdException {
+        Hashtable<Integer, ArrayDeque<CommonUser>> takenBooksTemp = new Hashtable();
+        Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTimeTemp = new Hashtable<>();
 
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
@@ -147,15 +159,15 @@ public class LibraryDatabase {
                 int book_id = result.getInt(DatabaseConstants.WaitingConstants.BOOK_WAITING_ID);
                 int user_id = result.getInt(DatabaseConstants.WaitingConstants.USER_WAITING_ID);
                 long months = result.getInt(DatabaseConstants.WaitingConstants.MONTHS);
-                if (takenBooks.containsKey(book_id))
+                if (takenBooksTemp.containsKey(book_id))
                 {
-                    takenBooks.get(book_id).add(autoadmin.findUserById(user_id));
-                    takenBooksOrderedTime.get(book_id).add(months);
+                    takenBooksTemp.get(book_id).add(autoadmin.findUserById(user_id));
+                    takenBooksOrderedTimeTemp.get(book_id).add(months);
                 }
                 else
                 {
-                    takenBooks.put(book_id, new ArrayDeque<>());
-                    takenBooksOrderedTime.put(book_id, new ArrayDeque<>());
+                    takenBooksTemp.put(book_id, new ArrayDeque<>());
+                    takenBooksOrderedTimeTemp.put(book_id, new ArrayDeque<>());
                 }
             }
             logger.info("Executed getWaiting method");
@@ -163,9 +175,9 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in getWaiting method " + e.getMessage());
             throw e;
         }
-        // zwracanie obu hashtables
+        takenBooks = takenBooksTemp;
+        takenBooksOrderedTime = takenBooksOrderedTimeTemp;
     }
-
 
 
     public static ArrayList<CommonUser> getCommonUsers() throws SQLException, InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
@@ -428,4 +440,5 @@ class DatabaseConstants {
         public static final String SELECT_WAITING = "SELECT * from nkulakow.PAP_WAITING";
     }
 }
+
 
