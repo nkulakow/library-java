@@ -11,8 +11,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Base64;
+import java.util.*;
 import java.util.Date;
 
 public class LibraryDatabase {
@@ -22,6 +21,7 @@ public class LibraryDatabase {
     private static String LOGIN;
     private static String HASHEDPASSWORD;
     private static Connection CONNECTION;
+    private static Admin autoadmin;
 
     public static void initLoginInfo() throws IOException {
         try {
@@ -134,6 +134,37 @@ public class LibraryDatabase {
         return books;
     }
 
+    public static Hashtable<Integer, ArrayDeque<CommonUser>> getWaiting() throws SQLException, NullOrEmptyStringException, InvalidIdException {
+        Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks = new Hashtable();
+
+        try {
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
+            logger.info("Connected to database.");
+            Statement query = CONNECTION.createStatement();
+            ResultSet result = query.executeQuery(DatabaseConstants.InquiriesConstants.SELECT_WAITING);
+            while (result.next()) {
+                int id = result.getInt(DatabaseConstants.WaitingConstants.WAITING_ID);
+                int book_id = result.getInt(DatabaseConstants.WaitingConstants.BOOK_WAITING_ID);
+                int user_id = result.getInt(DatabaseConstants.WaitingConstants.USER_WAITING_ID);
+                if (takenBooks.containsKey(book_id))
+                {
+                    takenBooks.get(book_id).add(autoadmin.findUserById(user_id));
+                }
+                else
+                {
+                    takenBooks.put(book_id, new ArrayDeque<>());
+                }
+            }
+            logger.info("Executed getWaiting method");
+        } catch (java.sql.SQLException | InvalidIdException e) {
+            logger.warn("Could not execute query in getWaiting method " + e.getMessage());
+            throw e;
+        }
+        return takenBooks;
+    }
+
+
+
     public static ArrayList<CommonUser> getCommonUsers() throws SQLException, InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
         ArrayList<CommonUser> users = new ArrayList<>();
         try {
@@ -229,7 +260,42 @@ public class LibraryDatabase {
             logger.info("Connected to database.");
             Statement query = CONNECTION.createStatement();
             query.executeUpdate(query_str);
-            logger.info("Executed removeUser method.");
+            logger.info("Executed removeBook method.");
+        } catch (java.sql.SQLException e) {
+            logger.warn("Could not execute query in removeUser method " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public static void addWaiting(Book book) throws SQLException {
+        int user_id = book.getUserId();
+        int book_id = book.getBookId();
+        int waiting_id = 0;
+        String query_str = "insert into nkulakow.pap_books values("+waiting_id+", '"+book_id+"', '"+user_id+")";
+
+        try {
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
+            logger.info("Connected to database.");
+            Statement query = CONNECTION.createStatement();
+            query.executeUpdate(query_str);
+            logger.info("Executed addWaiting method.");
+        } catch (java.sql.SQLException e) {
+            logger.warn("Could not execute query in addWaiting method " + e.getMessage());
+            throw e;
+        }
+    }
+
+    public static void removeWaiting(Book book) throws SQLException {
+        String book_id = String.valueOf(book.getBookId());
+        String user_id = String.valueOf(book.getUserId());
+        String query_str = "delete from nkulakow.PAP_WAITING where book_id=" + book_id + "and user_id=" + user_id;
+
+        try {
+            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
+            logger.info("Connected to database.");
+            Statement query = CONNECTION.createStatement();
+            query.executeUpdate(query_str);
+            logger.info("Executed removeWaiting method.");
         } catch (java.sql.SQLException e) {
             logger.warn("Could not execute query in removeUser method " + e.getMessage());
             throw e;
@@ -345,11 +411,17 @@ class DatabaseConstants {
         public static final String RETURN_DATE = "return_date";
         public static final String USER_ID = "user_id";
     }
+
+    public static final class WaitingConstants {
+        public static final String WAITING_ID = "waiting_id";
+        public static final String BOOK_WAITING_ID = "book_id";
+        public static final String USER_WAITING_ID = "user_id";
+    }
     public static final class InquiriesConstants {
         public static final String SELECT_COMMON_USERS = "SELECT u.*, p.login, p.password from nkulakow.PAP_USERS u join nkulakow.PAP_USERS_PASSWD p on(u.user_id=p.user_id)";
         public static final String SELECT_ADMINS = "SELECT a.*, p.login, p.password from nkulakow.PAP_ADMINS a join nkulakow.PAP_ADMINS_PASSWD p on(a.admin_id=p.admin_id)";
         public static final String SELECT_BOOKS = "SELECT * from nkulakow.PAP_BOOKS";
-
+        public static final String SELECT_WAITING = "SELECT * from nkulakow.PAP_WAITING";
     }
 }
 

@@ -37,6 +37,7 @@ public class LibraryContext {
             takenBooks.get(book.getBookId()).add(currentUser);
             takenBooksOrderedTime.get(book.getBookId()).add(months);
             logger.info("Ordered book and got into queue.");
+            // database
         }
         else
         {
@@ -44,6 +45,7 @@ public class LibraryContext {
             takenBooks.put(book.getBookId(), new ArrayDeque<>());
             takenBooksOrderedTime.put(book.getBookId(), new ArrayDeque<>());
             logger.info("Borrowed book.");
+            // database
         }
     }
 
@@ -121,6 +123,7 @@ public class LibraryContext {
             takenBooksOrderedTime.remove(book.getBookId());
             currentUser.returnBook(book);
             logger.info("Returned book, it is now available.");
+            // database
         }
         else {
             currentUser.returnBook(book);
