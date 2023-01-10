@@ -8,10 +8,7 @@ import org.example.LibraryContextPackage.*;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.*;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.*;
 import java.util.Date;
 
@@ -124,19 +121,19 @@ public class LibraryDatabase {
                 String author = result.getString(DatabaseConstants.BooksConstants.AUTHOR);
                 String category = result.getString(DatabaseConstants.BooksConstants.CATEGORY);
                 boolean available = result.getInt(DatabaseConstants.BooksConstants.AVAILABLE)==1;
-                Date return_date_demo = result.getDate(DatabaseConstants.BooksConstants.RETURN_DATE);
+                java.sql.Date return_date_demo = result.getDate(DatabaseConstants.BooksConstants.RETURN_DATE);
                 ZonedDateTime return_date = null;
                 if (return_date_demo!=null){
-                    return_date = ZonedDateTime.ofInstant(return_date_demo.toInstant(), ZoneId.systemDefault());
+                    LocalDate localDate = return_date_demo.toLocalDate();
+                    return_date = localDate.atStartOfDay(ZoneId.systemDefault());
                 }
-                int user_id = result.getInt(DatabaseConstants.BooksConstants.USER_ID);
-
-                if (user_id != 0) // do sprawdzenia
+                Integer user_id = result.getInt(DatabaseConstants.BooksConstants.USER_ID);
+                user_id = user_id==0?null:user_id;
+                if (user_id != null)
                 {
                     takenBooks.put(id, new ArrayDeque<>());
                     takenBooksOrderedTime.put(id, new ArrayDeque<>());
                 }
-
                 books.add(new Book(name, category, id, author, available, user_id, return_date));
             }
             logger.info("Executed getBooks method.");
@@ -286,7 +283,7 @@ public class LibraryDatabase {
         int user_id = book.getUserId();
         int book_id = book.getBookId();
         int waiting_id = 0; // change
-        String query_str = "insert into nkulakow.pap_books values("+waiting_id+", "+book_id+", "+user_id+", "+months+")";
+        String query_str = "insert into nkulakow.pap_waiting values("+waiting_id+", "+book_id+", "+user_id+", "+months+")";
 
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
@@ -300,9 +297,9 @@ public class LibraryDatabase {
         }
     }
 
-    public static void removeWaiting(Book book) throws SQLException {
+    public static void removeWaiting(Book book, Integer user_id_int) throws SQLException {
         String book_id = String.valueOf(book.getBookId());
-        String user_id = String.valueOf(book.getUserId());
+        String user_id = String.valueOf(user_id_int);
         String query_str = "delete from nkulakow.PAP_WAITING where book_id=" + book_id + "and user_id=" + user_id;
 
         try {
@@ -366,25 +363,24 @@ public class LibraryDatabase {
         int book_id = book.getBookId(), available = book.getAvailable()?1:0;
         Integer user_id = book.getUserId();
         ZonedDateTime date_zoned = book.getReturnDate();
-        Date return_date;
-        if (date_zoned==null)
-        {
-            return_date =null;
-        }
-        else{
+        Date date_date = null;
+        if (date_zoned!=null){
             Instant instant = date_zoned.toLocalDateTime().toInstant(ZoneOffset.UTC);
-            return_date = Date.from(instant);
+            date_date = Date.from(instant);
         }
         if (user_id != null) {
         if (user_id != 0){
             user_str = ", user_id="+user_id;
         }}
-        String query_str = "update nkulakow.PAP_BOOKS set name='"+name+"', author='"+author+"', cathegory='"+category+"', available="+available+", return_date="+return_date+user_str+ " where book_id="+book_id;
+        String query_str = "update nkulakow.PAP_BOOKS set name='"+name+"', author='"+author+"', cathegory='"+category+"', available="+available+", return_date=?"+user_str+ " where book_id="+book_id;
+
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
+            PreparedStatement statement = CONNECTION.prepareStatement(query_str);
+            if(date_date != null){statement.setDate(1, new java.sql.Date(date_date.getTime()));}
+            else{statement.setDate(1, null);}
             logger.info("Connected to database.");
-            Statement query = CONNECTION.createStatement();
-            query.executeUpdate(query_str);
+            statement.executeUpdate();
             logger.info("Executed modifyBook method.");
         } catch (java.sql.SQLException e) {
             logger.warn("Could not execute query in modifyBook method " + e.getMessage());

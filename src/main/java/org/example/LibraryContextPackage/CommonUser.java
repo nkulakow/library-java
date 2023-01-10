@@ -16,9 +16,9 @@ public class CommonUser extends User implements LibraryContextActions{
     /**
      * Sets User ID.
      */
-    public void setUserId(int id) throws InvalidIdException
+    public void setUserId(Integer id) throws InvalidIdException
     {
-        if(id <= 0)
+        if(id <= 0 && id != null)
         {
             throw new InvalidIdException("Invalid User ID.");
         }
@@ -40,7 +40,7 @@ public class CommonUser extends User implements LibraryContextActions{
     /**
      * Creates CommonUser Object.
      */
-    public CommonUser(String login, String password, String name, String surname, int userId, String mail, Integer booksNr) throws NullOrEmptyStringException, InvalidBookNumberException, InvalidIdException, InvalidLoginException {
+    public CommonUser(String login, String password, String name, String surname, Integer userId, String mail, Integer booksNr) throws NullOrEmptyStringException, InvalidBookNumberException, InvalidIdException, InvalidLoginException {
         super(login, password, name, surname, mail);
         this.setUserId(userId);
         this.setBooksNr(booksNr);

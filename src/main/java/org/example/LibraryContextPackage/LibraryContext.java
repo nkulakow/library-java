@@ -41,19 +41,24 @@ public class LibraryContext {
                 logger.info("Added book to WAITING");
             }
             catch (SQLException e){
-                logger.warn("Could not add book to WAITING");
+                logger.warn("Could not add book to WAITING" + e.getMessage());
                 throw new CannotConnectToDBException("Could not make changes in DB");
             }
             logger.info("Ordered book and got into queue.");
         }
         else
         {
-            currentUser.orderBook(book, months);
-            takenBooks.put(book.getBookId(), new ArrayDeque<>());
-            takenBooksOrderedTime.put(book.getBookId(), new ArrayDeque<>());
-            book.setUserId(currentUser.getUserId()); // ?? czemu integer w jednym a w drugim int
-            LibraryDatabase.modifyBook(book);
-            logger.info("Borrowed book.");
+            try {
+                currentUser.orderBook(book, months);
+                takenBooks.put(book.getBookId(), new ArrayDeque<>());
+                takenBooksOrderedTime.put(book.getBookId(), new ArrayDeque<>());
+                LibraryDatabase.modifyBook(book);
+                logger.info("Borrowed book.");
+            }
+            catch (SQLException e){
+                logger.warn("Could not borrow book" + e.getMessage());
+                throw new CannotConnectToDBException("Could not make changes in DB");
+            }
         }
     }
 
@@ -136,10 +141,14 @@ public class LibraryContext {
             takenBooks.remove(book.getBookId());
             takenBooksOrderedTime.remove(book.getBookId());
             currentUser.returnBook(book);
-            book.setUserId(null); // albo 0, wywala blad niewazne co
-            LibraryDatabase.modifyBook(book);
-
-            logger.info("Returned book, it is now available.");
+            try {
+                LibraryDatabase.modifyBook(book);
+                logger.info("Returned book, it is now available.");
+            }
+            catch (SQLException e){
+                logger.warn("Could not modify book" + e.getMessage());
+                throw new CannotConnectToDBException("Could not make changes in DB");
+            }
         }
         else {
             currentUser.returnBook(book);
@@ -152,7 +161,7 @@ public class LibraryContext {
             logger.info("Returned book, it is now borrowed by next user.");
         }
             try {
-                LibraryDatabase.removeWaiting(book);
+                LibraryDatabase.removeWaiting(book, currentUser.getUserId());
                 logger.info("Removed book from WAITING");
             }
             catch (SQLException e){
