@@ -14,12 +14,22 @@
 - Dostęp do bazy danych i podstawowe operacje
 - Prototypowe logowanie (dla administratora)
 - Naprawiona ikonka
+- Poprawienie GUI
+- Wprowadzenie w GUI komunikatów do informowania użytkownika o wyjątkowych sytuacjach (np. błędach w połączeniu z bazą danych)
+- Przeniesienie danych na Oracle
+- Rozbudowanie i usprawnienie operacji na bazie danych
+- Funkcjonalności administratora (dodawanie/modyfikacja/usuwanie użytkowników/książek, przeszukiwanie bazy książek i użytkowników)
+- Funkcjonalności użytkownika (zamawianie/wypożyczanie książek, zmiana własnych danych, przeszukiwanie bazy książek)
+- Testy
+- Refaktoryzacja
 
 <ins>Do zrobienia:</ins>
-- Zrefaktoryzowanie kodu
-- Rozbudowanie i usprawnienie operacji na bazie danych poprzez utworzenie klasy Database
-- Zrobienie ładniejszego GUI (temat przewodni: Kubuś Puchatek)
-- Stworzenie "mail server" (spróbować)
+- Refaktoryzacja (?)
+
+<ins>Co się nie udało?:</ins>
+- Stworzenie "mail server"
+- Przeniesienie się na JPA - zbyt dużo pracy
+- Skorzystanie z plików CSS - dużo pracy, za późno wpadliśmy na ten pomysł
 
 
 ## Instrukcja instalacji i obsługi
