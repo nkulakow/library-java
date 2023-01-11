@@ -20,7 +20,6 @@ public class LibraryDatabase {
     private static String LOGIN;
     private static String HASHEDPASSWORD;
     private static Connection CONNECTION;
-    private static Admin autoadmin;
     @Getter
     private static Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks;
     @Getter
@@ -53,22 +52,24 @@ public class LibraryDatabase {
             Statement query = CONNECTION.createStatement();
             ResultSet result = query.executeQuery(query_str);
             while (result.next()) {
-                int id = result.getInt(DatabaseConstants.UserConstants.USER_ID);
+                int id = result.getInt(DatabaseConstants.BasicConstants.USER_ID);
                 String name = result.getString(DatabaseConstants.UserConstants.USER_NAME);
                 String surname = result.getString(DatabaseConstants.UserConstants.USER_SURNAME);
-                String mail = result.getString(DatabaseConstants.UserConstants.USER_MAIL);
+                String mail = result.getString(DatabaseConstants.BasicConstants.MAIL);
                 int booksNumber = result.getInt(DatabaseConstants.UserConstants.USER_BOOKS_NR);
                 users.add(new UserInDB(id, name, surname, mail, booksNumber));
             }
             logger.info("Executed searchUsers method.");
+            CONNECTION.close();
         } catch (java.sql.SQLException e) {
             logger.warn("Could not execute query in searchUsers method. " + e.getMessage());
             throw e;
         }
         return users;
+
     }
 
-    public static ArrayList<String> getUsers(final String query_str) {
+    public static ArrayList<String> getUsers(final String query_str) throws SQLException{
         ArrayList<String> result = new ArrayList<>();
         ArrayList<UserInDB> users;
         try {
@@ -81,6 +82,7 @@ public class LibraryDatabase {
             result.add("Exception occurred in database.");
             logger.warn("Could not get users in getUsers. " + e.getMessage());
         }
+        CONNECTION.close();
         return result;
     }
 
@@ -93,11 +95,11 @@ public class LibraryDatabase {
             ResultSet result = query.executeQuery(DatabaseConstants.InquiriesConstants.SELECT_ADMINS);
             while (result.next()) {
                 int id = result.getInt(DatabaseConstants.AdminConstants.ADMIN_ID);
-                String name = result.getString(DatabaseConstants.AdminConstants.ADMIN_NAME);
+                String name = result.getString(DatabaseConstants.BasicConstants.NAME);
                 String surname = result.getString(DatabaseConstants.AdminConstants.ADMIN_SURNAME);
-                String mail = result.getString(DatabaseConstants.AdminConstants.ADMIN_MAIL);
-                String login = result.getString(DatabaseConstants.AdminConstants.ADMIN_LOGIN);
-                String password = result.getString(DatabaseConstants.AdminConstants.ADMIN_PASSWORD);
+                String mail = result.getString(DatabaseConstants.BasicConstants.MAIL);
+                String login = result.getString(DatabaseConstants.BasicConstants.LOGIN);
+                String password = result.getString(DatabaseConstants.BasicConstants.PASSWORD);
                 admins.add(new Admin(login, password, name, surname, mail, id));
             }
             logger.info("Executed getAdmins method.");
@@ -105,6 +107,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in getAdmins method " + e.getMessage());
             throw e;
         }
+        CONNECTION.close();
         return admins;
     }
 
@@ -116,8 +119,8 @@ public class LibraryDatabase {
             Statement query = CONNECTION.createStatement();
             ResultSet result = query.executeQuery(DatabaseConstants.InquiriesConstants.SELECT_BOOKS);
             while (result.next()) {
-                int id = result.getInt(DatabaseConstants.BooksConstants.BOOK_ID);
-                String name = result.getString(DatabaseConstants.BooksConstants.NAME);
+                int id = result.getInt(DatabaseConstants.BasicConstants.BOOK_ID);
+                String name = result.getString(DatabaseConstants.BasicConstants.NAME);
                 String author = result.getString(DatabaseConstants.BooksConstants.AUTHOR);
                 String category = result.getString(DatabaseConstants.BooksConstants.CATEGORY);
                 boolean available = result.getInt(DatabaseConstants.BooksConstants.AVAILABLE)==1;
@@ -127,7 +130,7 @@ public class LibraryDatabase {
                     LocalDate localDate = return_date_demo.toLocalDate();
                     return_date = localDate.atStartOfDay(ZoneId.systemDefault());
                 }
-                Integer user_id = result.getInt(DatabaseConstants.BooksConstants.USER_ID);
+                Integer user_id = result.getInt(DatabaseConstants.BasicConstants.USER_ID);
                 user_id = user_id==0?null:user_id;
                 if (user_id != null && !takenBooks.containsKey(id))
                 {
@@ -141,6 +144,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in getBooks method " + e.getMessage());
             throw e;
         }
+        CONNECTION.close();
         return books;
     }
     public static void initWaiting() throws SQLException, InvalidIdException {
@@ -153,8 +157,8 @@ public class LibraryDatabase {
             Statement query = CONNECTION.createStatement();
             ResultSet result = query.executeQuery(DatabaseConstants.InquiriesConstants.SELECT_WAITING);
             while (result.next()) {
-                int book_id = result.getInt(DatabaseConstants.WaitingConstants.BOOK_WAITING_ID);
-                int user_id = result.getInt(DatabaseConstants.WaitingConstants.USER_WAITING_ID);
+                int book_id = result.getInt(DatabaseConstants.BasicConstants.BOOK_ID);
+                int user_id = result.getInt(DatabaseConstants.BasicConstants.USER_ID);
                 long months = result.getInt(DatabaseConstants.WaitingConstants.MONTHS);
                 if (takenBooksTemp.containsKey(book_id))
                 {
@@ -174,6 +178,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in getWaiting method " + e.getMessage());
             throw e;
         }
+        CONNECTION.close();
         takenBooks = takenBooksTemp;
         takenBooksOrderedTime = takenBooksOrderedTimeTemp;
     }
@@ -187,12 +192,12 @@ public class LibraryDatabase {
             Statement query = CONNECTION.createStatement();
             ResultSet result = query.executeQuery(DatabaseConstants.InquiriesConstants.SELECT_COMMON_USERS);
             while (result.next()) {
-                int id = result.getInt(DatabaseConstants.UserConstants.USER_ID);
+                int id = result.getInt(DatabaseConstants.BasicConstants.USER_ID);
                 String name = result.getString(DatabaseConstants.UserConstants.USER_NAME);
                 String surname = result.getString(DatabaseConstants.UserConstants.USER_SURNAME);
-                String mail = result.getString(DatabaseConstants.UserConstants.USER_MAIL);
-                String login = result.getString(DatabaseConstants.UserConstants.USER_LOGIN);
-                String password = result.getString(DatabaseConstants.UserConstants.USER_PASSWORD);
+                String mail = result.getString(DatabaseConstants.BasicConstants.MAIL);
+                String login = result.getString(DatabaseConstants.BasicConstants.LOGIN);
+                String password = result.getString(DatabaseConstants.BasicConstants.PASSWORD);
                 int booksNumber = result.getInt(DatabaseConstants.UserConstants.USER_BOOKS_NR);
                 users.add(new CommonUser(login, password, name, surname, id, mail, booksNumber));
             }
@@ -201,6 +206,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in getAdmins method " + e.getMessage());
             throw e;
         }
+        CONNECTION.close();
         return users;
     }
 
@@ -220,6 +226,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in addUser method " + e.getMessage());
             throw e;
         }
+        CONNECTION.close();
     }
 
     public static void removeUser(CommonUser user) throws SQLException {
@@ -237,6 +244,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in removeUser method " + e.getMessage());
             throw e;
         }
+        CONNECTION.close();
     }
 
     public static void addBook(Book book) throws SQLException {
@@ -264,6 +272,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in addBook method " + e.getMessage());
             throw e;
         }
+        CONNECTION.close();
     }
 
     public static void removeBook(Book book) throws SQLException {
@@ -279,6 +288,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in removeUser method " + e.getMessage());
             throw e;
         }
+        CONNECTION.close();
     }
 
     public static void addWaiting(Book book, long months, int userId) throws SQLException {
@@ -296,6 +306,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in addWaiting method " + e.getMessage());
             throw e;
         }
+        CONNECTION.close();
     }
 
     public static void removeWaiting(Book book, Integer user_id_int) throws SQLException {
@@ -313,6 +324,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in removeWaiting method " + e.getMessage());
             throw e;
         }
+        CONNECTION.close();
     }
 
     private static String getAutoPassword()
@@ -338,6 +350,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in modifyCommonUser method " + e.getMessage());
             throw e;
         }
+        CONNECTION.close();
     }
 
     public static void modifyAdmin(Admin admin) throws SQLException {
@@ -356,6 +369,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in modifyAdmin method " + e.getMessage());
             throw e;
         }
+        CONNECTION.close();
     }
 
 
@@ -388,6 +402,7 @@ public class LibraryDatabase {
             logger.warn("Could not execute query in modifyBook method " + e.getMessage());
             throw e;
         }
+        CONNECTION.close();
     }
 }
 
@@ -397,38 +412,32 @@ class DatabaseConstants {
         public static final int TABLE_BOOKS = 1;
         public static final int TABLE_LOANS = 2;
     }
-    public static final class UserConstants {
+    public static final class BasicConstants {
         public static final String USER_ID = "user_id";
-        public static final String USER_NAME = "first_name";
-        public static final String USER_SURNAME = "last_name";
-        public static final String USER_MAIL = "mail";
-        public static final String USER_BOOKS_NR = "books_nr";
-        public static final String USER_LOGIN = "login";
-        public static final String USER_PASSWORD = "password";
-    }
-
-    public static final class AdminConstants {
-        public static final String ADMIN_ID = "admin_id";
-        public static final String ADMIN_NAME = "name";
-        public static final String ADMIN_SURNAME = "surname";
-        public static final String ADMIN_LOGIN = "login";
-        public static final String ADMIN_PASSWORD = "password";
-        public static final String ADMIN_MAIL = "mail";
-    }
-    public static final class BooksConstants {
         public static final String BOOK_ID = "book_id";
         public static final String NAME = "name";
+        public static final String MAIL = "mail";
+        public static final String LOGIN = "login";
+        public static final String PASSWORD = "password";
+    }
+
+    public static final class UserConstants {
+        public static final String USER_NAME = "first_name";
+        public static final String USER_SURNAME = "last_name";
+        public static final String USER_BOOKS_NR = "books_nr";
+    }
+    public static final class AdminConstants {
+        public static final String ADMIN_ID = "admin_id";
+        public static final String ADMIN_SURNAME = "surname";
+    }
+    public static final class BooksConstants {
         public static final String AUTHOR = "author";
         public static final String CATEGORY = "cathegory";
         public static final String AVAILABLE = "available";
         public static final String RETURN_DATE = "return_date";
-        public static final String USER_ID = "user_id";
-    }
 
+    }
     public static final class WaitingConstants {
-        public static final String WAITING_ID = "waiting_id";
-        public static final String BOOK_WAITING_ID = "book_id";
-        public static final String USER_WAITING_ID = "user_id";
         public static final String MONTHS = "months";
     }
     public static final class InquiriesConstants {
@@ -438,5 +447,3 @@ class DatabaseConstants {
         public static final String SELECT_WAITING = "SELECT * from nkulakow.PAP_WAITING";
     }
 }
-
-
