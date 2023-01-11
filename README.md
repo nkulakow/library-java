@@ -89,6 +89,9 @@ Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarząd
 **Testy:**  
 Do implementacji testów jednostkowych planujemy używać JUnit. Poszczególne metody i funkcjonalności będą sprawdzane oddzielnie.
 
+**Implementacja testów**
+Przygotowane testy jednostkowe weryfikują działanie metod z klasy LibraryContext odpowiedzialnych za wdrożenie logiki aplikacji. Sprawdzone zostało działanie metod odpowiedzialnych za wyszukiwanie obiektów, ich dodawanie i usuwanie, a także modyfikację kolekcji bibliotecznych. Testy można uruchomić z poziomu programu IntelliJ Idea otwierając folder z testami i wybierając klasę testującą, a następnie klikając zielony trójkąt, który wyświetla się przy nazwie klasy. 
+
 **Logowanie:**  
 Klasy zarządzające częścią logiczną, tzn.: LibraryContext, User, LibraryDatabase, a także klasy testujące posiadają obiekty klasy Logger. Za ich pomocą odpowiednich plików wysyłane są logi informujące o wykonaniu bardziej skomplikowanych zadań i o złapanych wyjątkach
 w danej metodzie wraz z wiadomością co dokładnie poszło nie tak. Wykorzystanie RolingFiles pozwala na porównanie zapisanych logów z otrzymanymi przy poprzednim uruchomieniu. Pliki zapisujące logi znajdują się w folderze target/logs:
