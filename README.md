@@ -84,7 +84,7 @@ Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarząd
     - Klasy reprezentujące pewne wyjątki m.in. InvalidIdException, NullOrEmptyStringException
 
 3. Database
-    - LibraryDatabase - klasa reprezentująca bazę danych.
+    - LibraryDatabase - klasa reprezentująca bazę danych i realizująca opercje na niej (zapytania, modyfikacje, dodawanie, usuwanie). Posiada także metody do odwzorowania danych w tabeli w ich Javową reprezentację.
 
 **Testy:**  
 Do implementacji testów jednostkowych planujemy używać JUnit. Poszczególne metody i funkcjonalności będą sprawdzane oddzielnie.
