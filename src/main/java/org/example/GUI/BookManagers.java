@@ -138,7 +138,7 @@ class BookModificationApplier extends FrameContentManager {
 
     @Override
     void manage(JPanel content_panel) {
-        var panel = (JPanel) content_panel.getComponent(1);
+        var panel = (JPanel) content_panel.getComponent(0);
         JTextField name_f, category_f, author_f;
         String name, author, cateogry;
 

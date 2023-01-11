@@ -189,6 +189,8 @@ public class MainPage extends Page {
         if(e.getSource() instanceof OptionPanel.OptionButton button) {
             button.getAction_manager().manage(this.content_panel);
         } else if (e.getSource() instanceof OptionPanel.MainOptionButton button) {
+            this.content_panel.removeAll();
+            this.content_panel.repaint();
             switch (button.getAction_type()) {
                 case OptionPanel.MainOptionButton.SEARCH_IN_DATABASE -> this.showOptions(this.search_options);
                 case OptionPanel.MainOptionButton.MODIFY_DATABASE -> this.showOptions(this.modify_options);

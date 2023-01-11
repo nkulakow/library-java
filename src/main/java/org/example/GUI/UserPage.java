@@ -192,6 +192,8 @@ public class UserPage extends Page {
         if(e.getSource() instanceof UserOptionPanel.OptionButton button) {
             button.getAction_manager().manage(this.content_panel);
         } else if (e.getSource() instanceof UserOptionPanel.MainOptionButton button) {
+            this.content_panel.removeAll();
+            this.content_panel.repaint();
             switch (button.getAction_type()) {
                 case UserOptionPanel.MainOptionButton.SEARCH_IN_DATABASE -> this.SearchBook();
                 case UserOptionPanel.MainOptionButton.MODIFY_DATABASE -> this.Modify();

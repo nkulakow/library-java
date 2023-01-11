@@ -159,12 +159,8 @@ class UsersModificationApplier extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         JPanel panel;
-        if (this.search_mode == FrameContentManager.ADMIN_USER_MOD) {
-            panel = (JPanel) content_panel.getComponent(1);
-        }
-        else {
-            panel = (JPanel) content_panel.getComponent(0);
-        }
+//        System.out.println(content_panel.getComponent(1).getClass());
+        panel = (JPanel) content_panel.getComponent(0);
         var map = UsersModificationApplier.getDataMap(panel);
 
         try {

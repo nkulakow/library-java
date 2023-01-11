@@ -44,10 +44,15 @@ class Shower extends FrameContentManager {
             var books = LibraryContext.getOrderedBooks();
             for (var book : books){repr.add(book.describe());}
         }
-        var list = new JList<>(repr);
-        list.setFont(new InfoListFont());
-        content_panel.add(list);
-        content_panel.setLayout(new FlowLayout());
+        if (!repr.isEmpty()) {
+            var list = new JList<>(repr);
+            list.setFont(new InfoListFont());
+            content_panel.add(list);
+            content_panel.setLayout(new FlowLayout());
+        } else {
+            FrameContentManager.noDataPanic(content_panel);
+        }
+
         content_panel.validate();
         content_panel.repaint();
     }
@@ -268,29 +273,29 @@ class ReturnChooser extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         var list = getBooksToReturn();
-        int height;
-        if(list.getCellBounds(0, 0) != null)
-            height = list.getCellBounds(0, 0).height * list.getModel().getSize();
-        else
-            height = 0;
-        list.setBounds(10, 0, content_panel.getWidth() - 20, height);
-        list.setFont(new InfoListFont());
-        ReturnChooser.last_results = list;
-
-        LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 600, 30);
-        LibraryGUI.main_page.changePrompt("Select book");
-
-        var button = new UserOptionPanel.OptionButton("Return");
-        button.addActionListener(LibraryGUI.user_page);
-
-        button.setAction_manager(new BooksReturner());
-        button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
-
         content_panel.removeAll();
-        content_panel.setLayout(null);
-        content_panel.add(list);
+        if(list.getModel().getSize() > 0) {
+            list.setBounds(10, 0, content_panel.getWidth() - 20, list.getCellBounds(0, 0).height * list.getModel().getSize());
+            list.setFont(new InfoListFont());
+            ReturnChooser.last_results = list;
+
+            LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 600, 30);
+            LibraryGUI.main_page.changePrompt("Select book");
+
+            var button = new UserOptionPanel.OptionButton("Return");
+            button.addActionListener(LibraryGUI.user_page);
+
+            button.setAction_manager(new BooksReturner());
+            button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
+
+            content_panel.setLayout(null);
+            content_panel.add(list);
+            content_panel.add(button);
+        } else {
+            FrameContentManager.noDataPanic(content_panel);
+        }
+
         content_panel.add(LibraryGUI.main_page.getPrompt());
-        content_panel.add(button);
         content_panel.validate();
         content_panel.repaint();
     }
