@@ -52,10 +52,14 @@ Do implementacji interfejsu graficznego wykorzystamy narzędzia środowiska Inte
 Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarządzających interfejsem graficznym. 
 
 **Klasy:**
-1. Klasa LibraryGUI - klasa zawierająca definicje elementów graficznych, obiekty klas kontrolek i stron, zarządzająca nimi, aktualizująca je.
-2. Klasy utworzone do zarządzania kontrolkami.
-3. Klasa MainPage - klasa przedstawiająca elementy graficzne strony głównej, obok ma zdefiniowane klasy kontrolek: OptionPanel i BottomPanel.
-4. Klasa LoginPage - klasa przedstawiająca elementy graficzne strony logowania.
+1. GUI
+    - Klasa LibraryGUI - klasa zawierająca głowne elementy GUI - strony logowania, użytkownika i administratora.
+    - Klasa LogInPage - strona logowania dla wszystkich użytkowników.
+    - Klasa MainPage - strona administratora, zawiera najważniejsze kontrolki. Jej głownym elementem jest pole content_panel, którego zawartość jest wizualizacją logiki aplikacji. Jest to także główny ActionListener aplikacji.
+    - Klasa UserPage - odpowiednik MainPage dla użytkownika nie-administratora.
+    - Klasy AddingPanel, BookAddingPanel, BottomPanel, OptionPanel - dostosowane do GUI aplikacji JPanele. Ich głównym zadaniem jest przechowywanie zawartości wyświetlanej na ekranie.
+    - Klasa FrameContentManager i wszystkie klasy pochodne - klasy zarządzające całą logiką GUI. Każda ta klasa ma zdefiniowaną własną metodę manage(JPanel content_panel), której zadaniem jest dostosowanie zawartości wyświetlanej na ekranie, do aktualnego stanu aplikacji.
+    - Pozostałe klasy (InfoListFont, etc.) - klasy służące do zebrania pewnych własności GUI, takich jak kolor, rozmiar czcionki itd.
 4. Klasa LibraryContext - klasa sterująca. Zawiera obiekty klas Admin, User na zasadzie kompozycji. Implementuje metody, które służą do komunikacji między obiektami zawartymi w jej atrybutach. Steruje całą aplikacją biblioteki łącznie z korzystaniem z bazy danych. 
 5. Klasa Book - reprezentuje książkę, ma atrybuty takie jak nazwa, kategoria, data zwrotu, etc., gettery, settery.
 6. Klasa User - klasa reprezentująca użytkownika, ma metody reprezentujące czynności: wypożyczanie, oddawanie, przedłużanie, opłacanie kar za nieoddane książki, ma atrybuty takie jak imię, nazwisko, id, liczba wypożyczonych książek, etc.
