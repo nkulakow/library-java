@@ -52,7 +52,14 @@ Do implementacji interfejsu graficznego wykorzystamy narzędzia środowiska Inte
 Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarządzających interfejsem graficznym. 
 
 **Klasy:**
-1. Klasa LibraryGUI - klasa zawierająca definicje elementów graficznych, obiekty klas kontrolek i stron, zarządzająca nimi, aktualizująca je.
+1. GUI
+    - Klasa LibraryGUI - klasa zawierająca głowne elementy GUI - strony logowania, użytkownika i administratora.
+    - Klasa LogInPage - strona logowania dla wszystkich użytkowników.
+    - Klasa MainPage - strona administratora, zawiera najważniejsze kontrolki. Jej głownym elementem jest pole content_panel, którego zawartość jest wizualizacją logiki aplikacji. Jest to także główny ActionListener aplikacji.
+    - Klasa UserPage - odpowiednik MainPage dla użytkownika nie-administratora.
+    - Klasy AddingPanel, BookAddingPanel, BottomPanel, OptionPanel - dostosowane do GUI aplikacji JPanele. Ich głównym zadaniem jest przechowywanie zawartości wyświetlanej na ekranie.
+    - Klasa FrameContentManager i wszystkie klasy pochodne - klasy zarządzające całą logiką GUI. Każda ta klasa ma zdefiniowaną własną metodę manage(JPanel content_panel), której zadaniem jest dostosowanie zawartości wyświetlanej na ekranie, do aktualnego stanu aplikacji, a także wymiana danych między GUI, a logiką (LibraryContext).
+    - Pozostałe klasy (InfoListFont, etc.) - klasy służące do zebrania pewnych własności GUI, takich jak kolor, rozmiar czcionki itd.
 2. Klasy utworzone do zarządzania kontrolkami.
 3. Klasa MainPage - klasa przedstawiająca elementy graficzne strony głównej, obok ma zdefiniowane klasy kontrolek: OptionPanel i BottomPanel.
 4. Klasa LoginPage - klasa przedstawiająca elementy graficzne strony logowania.
