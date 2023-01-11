@@ -39,7 +39,7 @@ class BookAdder extends FrameContentManager {
         String author     = book_data.get(2);
         int id          = LibraryContext.generateBookID();
         try {
-            boolean validInDB = LibraryContext.addObject(new Book(
+            LibraryContext.addObject(new Book(
                     name,
                     category,
                     id,
@@ -55,6 +55,8 @@ class BookAdder extends FrameContentManager {
             LibraryGUI.main_page.changePrompt("Book data cannot be empty");
         } catch (InvalidIdException | NumberFormatException e) {
             LibraryGUI.main_page.changePrompt("Incorrect book id");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.main_page.changePrompt("Cannot connect to database, check your connection");
         }
     }
 }
@@ -71,11 +73,13 @@ class BooksDeleter extends FrameContentManager {
         Book book;
         try {
             book = (Book) selected[index];
+            LibraryContext.removeObject(book);
+            LibraryGUI.main_page.changePrompt("Book successfully deleted");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.main_page.changePrompt("Cannot connect to database, check your connection");
         } catch (ArrayIndexOutOfBoundsException ignored) {
-            return;
+
         }
-        LibraryContext.removeObject(book);
-        LibraryGUI.main_page.changePrompt("Book successfully deleted");
     }
 }
 
@@ -164,6 +168,8 @@ class BookModificationApplier extends FrameContentManager {
         try {
             LibraryContext.modifyFewBookAttributes(map, BookModificationApplier.last_modified_id);
             LibraryGUI.main_page.changePrompt("Book successfully modified");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.main_page.changePrompt("Cannot connect to database, check your connection");
         } catch (NullOrEmptyStringException e) {
             LibraryGUI.main_page.changePrompt("Book data cannot be empty");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {

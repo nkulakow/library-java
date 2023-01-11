@@ -45,7 +45,7 @@ class UserAdder extends FrameContentManager {
         int id          = LibraryContext.generateCommonUserID();
 
         try {
-            boolean validInDB = LibraryContext.addObject(new CommonUser(
+            LibraryContext.addObject(new CommonUser(
                     login,
                     password,
                     name,
@@ -60,10 +60,12 @@ class UserAdder extends FrameContentManager {
             LibraryGUI.main_page.changePrompt("User data cannot be empty");
         } catch (InvalidIdException | NumberFormatException e) {
             LibraryGUI.main_page.changePrompt("Incorrect user id");
-        } catch (InvalidBookNumberException ignored) {
-
         } catch (InvalidLoginException e) {
             LibraryGUI.main_page.changePrompt("Login already exists");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.main_page.changePrompt("Cannot connect to database, check your connection");
+        } catch (InvalidBookNumberException ignored) {
+
         }
         content_panel.removeAll();
         content_panel.add(panel);
@@ -179,6 +181,8 @@ class UsersModificationApplier extends FrameContentManager {
             LibraryGUI.main_page.changePrompt("User data cannot be empty");
         } catch (InvalidLoginException e) {
             LibraryGUI.main_page.changePrompt("Login already exists");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.main_page.changePrompt("Cannot connect to database, check your connection");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
         }
@@ -197,11 +201,13 @@ class UsersDeleter extends FrameContentManager {
         CommonUser user;
         try {
             user = (CommonUser) selected[index];
+            LibraryContext.removeObject(user);
+            LibraryGUI.main_page.changePrompt("User successfully deleted");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.main_page.changePrompt("Cannot connect to database, check your connection");
         } catch (ArrayIndexOutOfBoundsException ignored) {
-            return;
+
         }
-        LibraryContext.removeObject(user);
-        LibraryGUI.main_page.changePrompt("User successfully deleted");
     }
 }
 
@@ -222,6 +228,8 @@ class AdminModificationApplier extends FrameContentManager {
             LibraryGUI.main_page.changePrompt("Incorrect login");
         } catch (InvalidIdException | InvalidBookNumberException ignored) {
 
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.main_page.changePrompt("Cannot connect to database, check your connection");
         }
     }
 }
