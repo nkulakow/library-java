@@ -18,8 +18,8 @@
 - Wprowadzenie w GUI komunikatów do informowania użytkownika o wyjątkowych sytuacjach (np. błędach w połączeniu z bazą danych)
 - Przeniesienie danych na Oracle
 - Rozbudowanie i usprawnienie operacji na bazie danych
-- Funkcjonalności administratora (dodawanie/modyfikacja/usuwanie użytkowników/książek, przeszukiwanie bazy książek i użytkowników)
-- Funkcjonalności użytkownika (zamawianie/wypożyczanie książek, zmiana własnych danych, przeszukiwanie bazy książek)
+- Funkcjonalności administratora (logowanie, dodawanie/modyfikacja/usuwanie użytkowników/książek, przeszukiwanie bazy książek i użytkowników)
+- Funkcjonalności użytkownika (logowanie, zamawianie/wypożyczanie książek, zmiana własnych danych, przeszukiwanie bazy książek)
 - Testy
 - Refaktoryzacja
 - Logi
