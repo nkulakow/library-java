@@ -58,7 +58,7 @@ Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarząd
     - Klasa MainPage - strona administratora, zawiera najważniejsze kontrolki. Jej głownym elementem jest pole content_panel, którego zawartość jest wizualizacją logiki aplikacji. Jest to także główny ActionListener aplikacji.
     - Klasa UserPage - odpowiednik MainPage dla użytkownika nie-administratora.
     - Klasy AddingPanel, BookAddingPanel, BottomPanel, OptionPanel - dostosowane do GUI aplikacji JPanele. Ich głównym zadaniem jest przechowywanie zawartości wyświetlanej na ekranie.
-    - Klasa FrameContentManager i wszystkie klasy pochodne - klasy zarządzające całą logiką GUI. Każda ta klasa ma zdefiniowaną własną metodę manage(JPanel content_panel), której zadaniem jest dostosowanie zawartości wyświetlanej na ekranie, do aktualnego stanu aplikacji.
+    - Klasa FrameContentManager i wszystkie klasy pochodne - klasy zarządzające całą logiką GUI. Każda ta klasa ma zdefiniowaną własną metodę manage(JPanel content_panel), której zadaniem jest dostosowanie zawartości wyświetlanej na ekranie, do aktualnego stanu aplikacji, a także wymiana danych między GUI, a logiką (LibraryContext).
     - Pozostałe klasy (InfoListFont, etc.) - klasy służące do zebrania pewnych własności GUI, takich jak kolor, rozmiar czcionki itd.
 4. Klasa LibraryContext - klasa sterująca. Zawiera obiekty klas Admin, User na zasadzie kompozycji. Implementuje metody, które służą do komunikacji między obiektami zawartymi w jej atrybutach. Steruje całą aplikacją biblioteki łącznie z korzystaniem z bazy danych. 
 5. Klasa Book - reprezentuje książkę, ma atrybuty takie jak nazwa, kategoria, data zwrotu, etc., gettery, settery.
