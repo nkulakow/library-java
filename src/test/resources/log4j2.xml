@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Configuration status="warn">
+
+    <Properties>
+        <Property name="logPath">target/logs</Property>
+    </Properties>
+
+    <Appenders>
+        <RollingFile name="TestFile" fileName="${logPath}/test.log" filePattern="${logPath}/test_prev.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+        <RollingFile name="LogTestFile" fileName="${logPath}/test_log.log" filePattern="${logPath}/test_log_prev.log">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+            </Policies>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="org.example.TestLog.LogTest">
+            <AppenderRef ref="LogTestFile"/>
+        </Logger>
+
+        <Root level="trace">
+            <AppenderRef ref="TestFile"/>
+        </Root>
+    </Loggers>
+</Configuration>

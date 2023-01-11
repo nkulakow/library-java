@@ -1,20 +1,64 @@
 package org.example.LibraryContextPackage;
 
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.Objects;
-
-public class User {
+public abstract class User {
     @Getter
-    private String login;
+    protected String login;
     @Getter
     private String password;
+    @Getter
+    private String name;
+    @Getter
+    private String surname;
+    @Getter
+    private String mail;
+    protected final Logger logger = LogManager.getLogger(org.example.LibraryContextPackage.User.class);
 
-    public void setLogin(String login) throws NullOrEmptyStringException
+    public void setMail(String mail) throws NullOrEmptyStringException
     {
+        if(mail != null && mail.isEmpty())
+        {
+            throw new NullOrEmptyStringException("Brak maila.");
+        }
+        this.mail = mail;
+    }
+
+    public void setSurname(String surname) throws NullOrEmptyStringException
+    {
+        if(surname == null || surname.isEmpty())
+        {
+            throw new NullOrEmptyStringException("Brak nazwiska.");
+        }
+        this.surname = surname;
+    }
+    public void setName(String name) throws NullOrEmptyStringException
+    {
+        if(name == null || name.isEmpty())
+        {
+            throw new NullOrEmptyStringException("Brak imienia.");
+        }
+        this.name = name;
+    }
+    public void setLogin(String login) throws NullOrEmptyStringException, InvalidLoginException {
         if(login == null || login.isEmpty())
         {
             throw new NullOrEmptyStringException("Login użytkownika nie może być pusty.");
+        }
+        if( this.getClass() == CommonUser.class){
+        for( var user : Admin.getUsers()){
+            if( login.equals(user.getLogin()) && user != this){
+                throw new InvalidLoginException("CommonUser login already exists");
+            }
+        }}
+        else{
+            for( var user : Admin.getAdmins()){
+                if( login.equals(user.getLogin()) && user != this){
+                    throw new InvalidLoginException("Admin login already exists");
+                }
+            }
         }
         this.login = login;
     }
@@ -28,38 +72,30 @@ public class User {
         this.password = password;
     }
 
-//    public void setUserId(int id) throws InvalidIdException
-//    {
-//        if(id < 0)
-//        {
-//            throw new InvalidIdException("Nieprawidłowe id użytkownika.");
-//        }
-//        this.userId = id;
-//    }
-    public User(String name, String password) throws NullOrEmptyStringException
-    {
-        this.setLogin(name);
+    public User(String login, String password, String name, String surname, String mail) throws NullOrEmptyStringException, InvalidLoginException {
+        this.setLogin(login);
         this.setPassword(password);
+        this.setName(name);
+        this.setSurname((surname));
+        this.setMail(mail);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(this.getLogin());
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean modifyUser(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, InvalidLoginException {
+        if (attributeName == AttributesNames.login){
+            setLogin( modifiedVal);
             return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        User otherUser = (User) obj;
-        if(this.getLogin() == otherUser.getLogin())
-        {
+        } else if (attributeName == AttributesNames.name) {
+            setName( modifiedVal);
+            return true;
+        } else if (attributeName == AttributesNames.surname) {
+            setSurname( modifiedVal);
+            return true;
+        }
+        else if (attributeName == AttributesNames.mail) {
+            setMail( modifiedVal);
             return true;
         }
         return false;
     }
+
 }
