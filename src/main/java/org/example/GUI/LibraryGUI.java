@@ -1,5 +1,7 @@
 package org.example.GUI;
 
+import java.awt.*;
+
 public class LibraryGUI {
     public static final int LOG_FRAME = 0;
     public static final int MAIN_FRAME = 1;
@@ -29,5 +31,9 @@ public class LibraryGUI {
 
     public static void sendMessageToLoginPage(final String mes){
         LibraryGUI.login_frame.sendMessageToPrompt(mes);
+    }
+
+    public static class GUIData {
+        public static final Color BACKGROUND_COLOR = new Color(252, 252, 189);
     }
 }

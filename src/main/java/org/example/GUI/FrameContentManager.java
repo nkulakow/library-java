@@ -39,7 +39,7 @@ class Shower extends FrameContentManager {
             for (var book : books){repr.add(book.describe());}
         }
         var list = new JList<>(repr);
-        list.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+        list.setFont(new InfoListFont());
         content_panel.add(list);
         content_panel.setLayout(new FlowLayout());
         content_panel.validate();
@@ -93,7 +93,7 @@ class Searcher extends FrameContentManager {
             infos.add(result.describe());
         }
         var list = new JList<>(infos);
-        list.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+        list.setFont(new InfoListFont());
 
         return list;
     }
@@ -142,11 +142,12 @@ class ModifyChooser extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         var list = Searcher.getSearchList(content_panel, this.search_mode);
-        list.setBounds(content_panel.getSize().width / 2 - 300, 0, 600, 30 * list.getModel().getSize());
+        list.setBounds(10, 0, content_panel.getWidth() - 20, list.getCellBounds(0, 0).height * list.getModel().getSize());
         ModifyChooser.last_results = list;
 
         var label = new JLabel("Select data to modify");
         label.setBounds(list.getX(), list.getHeight(), 300, 30);
+        label.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
 
         var button = new OptionPanel.OptionButton("Select");
         button.addActionListener(LibraryGUI.main_page);
@@ -199,7 +200,8 @@ class DeleteChooser extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         var list = Searcher.getSearchList(content_panel, this.search_mode);
-        list.setBounds(0, 0, content_panel.getWidth(), 30 * list.getModel().getSize());
+        list.setBounds(10, 0, content_panel.getWidth() - 20, list.getCellBounds(0, 0).height * list.getModel().getSize());
+        list.setFont(new InfoListFont());
         DeleteChooser.last_results = list;
 
         LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 300, 30);
@@ -239,13 +241,14 @@ class ReturnChooser extends FrameContentManager {
             infos.add(result.describe());
         }
         var list = new JList<>(infos);
-        list.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
+        list.setFont(new InfoListFont());
         return list;
     }
     @Override
     void manage(JPanel content_panel) {
         var list = getBooksToReturn();
-        list.setBounds(0, 0, content_panel.getWidth(), 30 * list.getModel().getSize());
+        list.setBounds(10, 0, content_panel.getWidth() - 20, list.getCellBounds(0, 0).height * list.getModel().getSize());
+        list.setFont(new InfoListFont());
         ReturnChooser.last_results = list;
 
         LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 600, 30);
@@ -278,6 +281,7 @@ class OrderChooser extends FrameContentManager {
     void manage(JPanel content_panel) {
         var list = Searcher.getSearchList(content_panel, Shower.BOOKS);
         list.setBounds(0, 0, content_panel.getWidth(), 30 * list.getModel().getSize());
+        list.setFont(new InfoListFont());
         OrderChooser.last_results = list;
 
         LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 300, 30);
@@ -285,6 +289,7 @@ class OrderChooser extends FrameContentManager {
 
         var label_months = new JLabel("Select months: ");
         label_months.setBounds(list.getX(), list.getHeight()+30, 200, 30);
+        label_months.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
 
         months_field.setBounds(list.getX() + 200, list.getHeight()+30, 100, 30);
 

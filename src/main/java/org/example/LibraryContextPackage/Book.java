@@ -131,17 +131,26 @@ public class Book implements LibraryContextActions{
         }
         else
         {
-            date = this.getReturnDate().toString();
+            date = this.getReturnDate().getYear() + " ";
+            date += this.getReturnDate().getMonth().toString() + " ";
+            date += this.getReturnDate().getDayOfMonth() + " ";
         }
-        if(this.getUserId() == null)
-        {
-            userId = "";
-        }
-        else
-        {
-            userId = this.getUserId().toString();
-        }
-        return Integer.valueOf(this.bookId).toString() + " " + this.name + " " + this.category + " " + this.author + " " + userId + " " + date;
+//        if(this.getUserId() == null)
+//        {
+//            userId = "";
+//        }
+//        else
+//        {
+//            userId = this.getUserId().toString();
+//        }
+        String result = "";
+        result += "ID: " + Integer.valueOf(this.bookId).toString() + " ";
+        result += "Name: " + this.name + " ";
+        result += "Category: " + this.category + "\n";
+        result += "Author: " + this.author + " ";
+        if (this.returnDate != null)
+            result += "Return: " + date;
+        return result;
     }
 
     @Override

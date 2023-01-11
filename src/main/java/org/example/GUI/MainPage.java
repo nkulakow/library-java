@@ -57,6 +57,8 @@ public class MainPage extends Page {
                 800);
         this.center_panel.add(this.content_panel);
         this.content_panel.setVisible(true);
+        this.content_panel.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
+        this.center_panel.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
     }
 
     private void initOptions() {

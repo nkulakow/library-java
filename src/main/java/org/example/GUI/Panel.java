@@ -109,7 +109,7 @@ class AddingPanel extends JPanel {
     private final JTextField login_field;
 
     public AddingPanel(ActionListener listener) {
-        this.setLayout(new GridLayout(7, 1));
+        this.setLayout(new GridLayout(6, 1));
         this.name_fild = new JTextField("Name");
         this.add(this.name_fild);
         this.surname_fild = new JTextField("Surname");
@@ -127,6 +127,7 @@ class AddingPanel extends JPanel {
         this.add(add_button);
 
         this.setBounds(200, 0, 400, 200);
+        this.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
     }
 
     public ArrayList<String> getData() {
@@ -150,7 +151,7 @@ class BookAddingPanel extends JPanel {
 
 
     public BookAddingPanel(ActionListener listener) {
-        this.setLayout(new GridLayout(6, 1));
+        this.setLayout(new GridLayout(5, 1));
         this.name = new JTextField("Name");
         this.add(this.name);
         this.category = new JTextField("Category");
@@ -165,6 +166,8 @@ class BookAddingPanel extends JPanel {
 
         this.add(LibraryGUI.main_page.getPrompt());
         this.setBounds(200, 0, 400, 200);
+        this.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
+
         LibraryGUI.main_page.changePrompt("Enter book data");
     }
 

@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 class BookAddingShower extends FrameContentManager {
 
@@ -18,7 +17,7 @@ class BookAddingShower extends FrameContentManager {
         content_panel.removeAll();
         content_panel.setLayout(null);
         var panel = new BookAddingPanel(LibraryGUI.main_page);
-        panel.setBounds(content_panel.getWidth() / 2 - panel.getSize().width, 0, panel.getSize().width, panel.getSize().height);
+        panel.setBounds(content_panel.getWidth() / 2 - panel.getSize().width / 2, 0, panel.getSize().width, panel.getSize().height);
         content_panel.add(panel);
         content_panel.validate();
         content_panel.repaint();
@@ -91,9 +90,6 @@ class BooksModifier extends FrameContentManager {
 
     @Override
     void manage(JPanel content_panel) {
-        JList<String> list;
-        var repr = new Vector<String>();
-
         int index = ModifyChooser.last_results.getSelectedIndex();
         var selected = Searcher.last_results.toArray();
         Book book;
@@ -103,32 +99,28 @@ class BooksModifier extends FrameContentManager {
             return;
         }
         BookModificationApplier.last_modified_id = book.getBookId();
-        repr.add(book.describe());
-        list = new JList<>(repr);
-        list.setBounds(content_panel.getSize().width / 2 - 300, 0, 600, 30 * list.getModel().getSize());
 
         var name_field      = new JTextField(book.getName());
         var category_field   = new JTextField(book.getCategory());
         var author_field     = new JTextField(book.getAuthor());
 
         var panel = new JPanel();
-        panel.setLayout(new GridLayout(2, 2));
-        panel.setBounds(content_panel.getSize().width / 2 - 300, list.getHeight(), 600, 30 * 3);
+        panel.setLayout(new GridLayout(3, 1));
+        panel.setBounds(content_panel.getSize().width / 2 - 300, 0, 600, 30 * 3);
         panel.add(name_field);
         panel.add(category_field);
         panel.add(author_field);
 
         var button = new OptionPanel.OptionButton("Confirm");
-        button.setBounds(content_panel.getSize().width / 2 - 300, list.getHeight() + panel.getHeight(), 150, 30);
+        button.setBounds(content_panel.getSize().width / 2 - 300, panel.getHeight(), 150, 30);
         button.addActionListener(LibraryGUI.main_page);
         button.setAction_manager(new BookModificationApplier());
 
-        LibraryGUI.main_page.getPrompt().setBounds(content_panel.getSize().width / 2 - 150, list.getHeight() + panel.getHeight() + button.getHeight(), 300, 30);
+        LibraryGUI.main_page.getPrompt().setBounds(content_panel.getSize().width / 2 - 150, panel.getHeight() + button.getHeight(), 300, 30);
         LibraryGUI.main_page.changePrompt("");
 
         content_panel.removeAll();
         content_panel.setLayout(null);
-        content_panel.add(list);
         content_panel.add(panel);
         content_panel.add(button);
         content_panel.add(LibraryGUI.main_page.getPrompt());

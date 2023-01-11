@@ -6,7 +6,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 class UserAddingShower extends FrameContentManager {
 
@@ -18,7 +17,7 @@ class UserAddingShower extends FrameContentManager {
         content_panel.removeAll();
         content_panel.setLayout(null);
         var panel = new AddingPanel(LibraryGUI.main_page);
-        panel.setBounds(content_panel.getWidth() / 2 - panel.getSize().width, 0, panel.getSize().width, panel.getSize().height);
+        panel.setBounds(content_panel.getWidth() / 2 - panel.getSize().width / 2, 0, panel.getSize().width, panel.getSize().height);
         content_panel.add(panel);
         LibraryGUI.main_page.getPrompt().setBounds(panel.getX(), panel.getHeight(), 0, 30);
         LibraryGUI.main_page.changePrompt("");
@@ -82,9 +81,6 @@ class UsersModifier extends FrameContentManager {
 
     @Override
     void manage(JPanel content_panel) {
-        JList<String> list;
-        var repr = new Vector<String>();
-
         int index = ModifyChooser.last_results.getSelectedIndex();
         var selected = Searcher.last_results.toArray();
         CommonUser user;
@@ -94,9 +90,6 @@ class UsersModifier extends FrameContentManager {
             return;
         }
         UsersModificationApplier.last_modified_id = user.getUserId();
-        repr.add(user.describe());
-        list = new JList<>(repr);
-        list.setBounds(content_panel.getSize().width / 2 - 300, 0, 600, 30 * list.getModel().getSize());
 
         var name_field      = new JTextField(user.getName());
         var surname_field   = new JTextField(user.getSurname());
@@ -105,7 +98,8 @@ class UsersModifier extends FrameContentManager {
         var password_field  = new JTextField(user.getPassword());
         var panel = new JPanel();
         panel.setLayout(new GridLayout(3, 2));
-        panel.setBounds(content_panel.getSize().width / 2 - 300, list.getHeight(), 600, 30 * 3);
+        panel.setBounds(content_panel.getSize().width / 2 - 300, 0, 600, 30 * 3);
+        panel.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
         panel.add(name_field);
         panel.add(surname_field);
         panel.add(mail_field);
@@ -113,16 +107,15 @@ class UsersModifier extends FrameContentManager {
         panel.add(password_field);
 
         var button = new OptionPanel.OptionButton("Confirm");
-        button.setBounds(content_panel.getSize().width / 2 - 300, list.getHeight() + panel.getHeight(), 150, 30);
+        button.setBounds(content_panel.getSize().width / 2 - 300, panel.getHeight(), 150, 30);
         button.addActionListener(LibraryGUI.main_page);
         button.setAction_manager(new UsersModificationApplier(FrameContentManager.ADMIN_USER_MOD));
 
-        LibraryGUI.main_page.getPrompt().setBounds(button.getX(), list.getHeight() + panel.getHeight() + button.getHeight(), 300, 30);
+        LibraryGUI.main_page.getPrompt().setBounds(button.getX(), panel.getHeight() + button.getHeight(), 300, 30);
         LibraryGUI.main_page.changePrompt("");
 
         content_panel.removeAll();
         content_panel.setLayout(null);
-        content_panel.add(list);
         content_panel.add(panel);
         content_panel.add(button);
         content_panel.add(LibraryGUI.main_page.getPrompt());
