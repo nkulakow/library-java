@@ -14,12 +14,23 @@
 - Dostęp do bazy danych i podstawowe operacje
 - Prototypowe logowanie (dla administratora)
 - Naprawiona ikonka
+- Poprawienie GUI
+- Wprowadzenie w GUI komunikatów do informowania użytkownika o wyjątkowych sytuacjach (np. błędach w połączeniu z bazą danych)
+- Przeniesienie danych na Oracle
+- Rozbudowanie i usprawnienie operacji na bazie danych
+- Funkcjonalności administratora (logowanie, dodawanie/modyfikacja/usuwanie użytkowników/książek, przeszukiwanie bazy książek i użytkowników)
+- Funkcjonalności użytkownika (logowanie, zamawianie/wypożyczanie książek, zmiana własnych danych, przeszukiwanie bazy książek)
+- Testy
+- Refaktoryzacja
+- Logi
 
 <ins>Do zrobienia:</ins>
-- Zrefaktoryzowanie kodu
-- Rozbudowanie i usprawnienie operacji na bazie danych poprzez utworzenie klasy Database
-- Zrobienie ładniejszego GUI (temat przewodni: Kubuś Puchatek)
-- Stworzenie "mail server" (spróbować)
+- Refaktoryzacja (?)
+
+<ins>Co się nie udało?:</ins>
+- Stworzenie "mail server"
+- Przeniesienie się na JPA - zbyt dużo pracy
+- Skorzystanie z plików CSS - dużo pracy, za późno wpadliśmy na ten pomysł
 
 
 ## Instrukcja instalacji i obsługi
@@ -53,12 +64,12 @@ Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarząd
 
 **Klasy:**
 1. GUI
-    - Klasa LibraryGUI - klasa zawierająca głowne elementy GUI - strony logowania, użytkownika i administratora.
+    - Klasa LibraryGUI - klasa zawierająca i zarządzające głownymi elementami GUI - strony logowania, użytkownika i administratora.
     - Klasa LogInPage - strona logowania dla wszystkich użytkowników.
-    - Klasa MainPage - strona administratora, zawiera najważniejsze kontrolki. Jej głownym elementem jest pole content_panel, którego zawartość jest wizualizacją logiki aplikacji. Jest to także główny ActionListener aplikacji.
+    - Klasa MainPage - strona administratora, zawiera najważniejsze kontrolki. Jej głownym elementem jest pole content_panel, którego zawartość jest wizualizacją logiki aplikacji. MainPage to także główny ActionListener aplikacji.
     - Klasa UserPage - odpowiednik MainPage dla użytkownika nie-administratora.
     - Klasy AddingPanel, BookAddingPanel, BottomPanel, OptionPanel - dostosowane do GUI aplikacji JPanele. Ich głównym zadaniem jest przechowywanie zawartości wyświetlanej na ekranie.
-    - Klasa FrameContentManager i wszystkie klasy pochodne - klasy zarządzające całą logiką GUI. Każda ta klasa ma zdefiniowaną własną metodę manage(JPanel content_panel), której zadaniem jest dostosowanie zawartości wyświetlanej na ekranie, do aktualnego stanu aplikacji, a także wymiana danych między GUI, a logiką (LibraryContext).
+    - Klasa FrameContentManager i wszystkie klasy pochodne - klasy zarządzające całą logiką GUI. Każda ta klasa ma zdefiniowaną własną metodę manage(JPanel content_panel), której zadaniem jest dostosowanie zawartości wyświetlanej na ekranie, do aktualnego stanu aplikacji, a także wymiana danych między GUI, a logiką (LibraryContext). Szkielet działania: 1.Pobierz dane od użytkownika. 2. Prześlij dane do logiki i odbierz rezultat. 3. Dostosuj do rezultatu zawartość ekranu.
     - Pozostałe klasy (InfoListFont, etc.) - klasy służące do zebrania pewnych własności GUI, takich jak kolor, rozmiar czcionki itd.
 
 2. LibraryContext
