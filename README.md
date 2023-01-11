@@ -82,6 +82,13 @@ Mogą także wyszukiwać obiekty w bazie danych.
 **Testy:**  
 Do implementacji testów jednostkowych planujemy używać JUnit. Poszczególne metody i funkcjonalności będą sprawdzane oddzielnie.
 
+**Logowanie:**  
+Klasy zarządzające częścią logiczną, tzn.: LibraryContext, User, LibraryDatabase, a także klasy testujące posiadają obiekty klasy Logger. Za ich pomocą odpowiednich plików wysyłane są logi informujące o wykonaniu bardziej skomplikowanych zadań i o złapanych wyjątkach
+w danej metodzie wraz z wiadomością co dokładnie poszło nie tak. Wykorzystanie RolingFiles pozwala na porównanie zapisanych logów z otrzymanymi przy poprzednim uruchomieniu. Pliki zapisujące logi znajdują się w folderze target/logs:
+- all_logs.log i all_logs_prev.log - logi z klas tworzących projekt oraz logi zapisane w poprzednim uruchomieniu w all_logs.log
+- test.log i test_prev.log - logi z wszystkich klas testujących oraz poprzednie logi z test.log
+- test_log.log i test_log_prev.log - logi wyłącznie z klasy LogTest i poprzednie logi z test_log.log
+
 ### Wybrane technologie:
 - Biblioteki Javy:
     - javax.swing - główne narzędzie do tworzenia okienka aplikacji
@@ -93,5 +100,6 @@ Do implementacji testów jednostkowych planujemy używać JUnit. Poszczególne m
     - java.util - podstawowe narzędzie do przechowywania danych lokalnie w kolekcjach oraz do dekodowania haseł adminów
     - lombok - wykorzystywana do automatycznego tworzenia getterów i setterów
     - java.time - wykorzystywana do reprezentowania danych typu czas/data
+- JDBC
 - Maven
 - Sqldeveloper / baza Oracle
