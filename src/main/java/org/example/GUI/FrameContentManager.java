@@ -21,6 +21,12 @@ abstract class FrameContentManager {
         this.search_mode = mode;
     }
     abstract void manage(JPanel content_panel);
+
+    public static void noDataPanic(JPanel content_panel) {
+        LibraryGUI.main_page.changePrompt("No data found");
+        content_panel.setLayout(new FlowLayout());
+        content_panel.add(LibraryGUI.main_page.getPrompt());
+    }
 }
 
 class Shower extends FrameContentManager {
@@ -92,6 +98,9 @@ class Searcher extends FrameContentManager {
         for(var result : results) {
             infos.add(result.describe());
         }
+//        if (infos.isEmpty())
+//            infos.add("No data found");
+
         var list = new JList<>(infos);
         list.setFont(new InfoListFont());
 
@@ -102,7 +111,10 @@ class Searcher extends FrameContentManager {
         var list = Searcher.getSearchList(content_panel, this.search_mode);
         content_panel.removeAll();
         content_panel.setLayout(new FlowLayout());
-        content_panel.add(list);
+        if (list.getModel().getSize() > 0)
+            content_panel.add(list);
+        else
+            FrameContentManager.noDataPanic(content_panel);
         content_panel.validate();
         content_panel.repaint();
     }
@@ -142,25 +154,29 @@ class ModifyChooser extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         var list = Searcher.getSearchList(content_panel, this.search_mode);
-        list.setBounds(10, 0, content_panel.getWidth() - 20, list.getCellBounds(0, 0).height * list.getModel().getSize());
-        ModifyChooser.last_results = list;
-
-        var label = new JLabel("Select data to modify");
-        label.setBounds(list.getX(), list.getHeight(), 300, 30);
-        label.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
-
-        var button = new OptionPanel.OptionButton("Select");
-        button.addActionListener(LibraryGUI.main_page);
-        if (this.search_mode == FrameContentManager.USERS)
-            button.setAction_manager(new UsersModifier());
-        else
-            button.setAction_manager(new BooksModifier());
-        button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
-
         content_panel.removeAll();
-        content_panel.add(list);
-        content_panel.add(label);
-        content_panel.add(button);
+        if(list.getModel().getSize() > 0) {
+            list.setBounds(10, 0, content_panel.getWidth() - 20, list.getCellBounds(0, 0).height * list.getModel().getSize());
+            ModifyChooser.last_results = list;
+
+            var label = new JLabel("Select data to modify");
+            label.setBounds(list.getX(), list.getHeight(), 300, 30);
+            label.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
+
+            var button = new OptionPanel.OptionButton("Select");
+            button.addActionListener(LibraryGUI.main_page);
+            if (this.search_mode == FrameContentManager.USERS)
+                button.setAction_manager(new UsersModifier());
+            else
+                button.setAction_manager(new BooksModifier());
+            button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
+
+            content_panel.add(list);
+            content_panel.add(label);
+            content_panel.add(button);
+        } else {
+            FrameContentManager.noDataPanic(content_panel);
+        }
         content_panel.validate();
         content_panel.repaint();
     }
@@ -200,26 +216,31 @@ class DeleteChooser extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         var list = Searcher.getSearchList(content_panel, this.search_mode);
-        list.setBounds(10, 0, content_panel.getWidth() - 20, list.getCellBounds(0, 0).height * list.getModel().getSize());
-        list.setFont(new InfoListFont());
-        DeleteChooser.last_results = list;
-
-        LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 300, 30);
-        LibraryGUI.main_page.changePrompt("Select data to delete");
-
-        var button = new OptionPanel.OptionButton("Delete");
-        button.addActionListener(LibraryGUI.main_page);
-        if (this.search_mode == FrameContentManager.USERS)
-            button.setAction_manager(new UsersDeleter());
-        else
-            button.setAction_manager(new BooksDeleter());
-        button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
-
         content_panel.removeAll();
-        content_panel.setLayout(null);
-        content_panel.add(list);
+        if (list.getModel().getSize() > 0) {
+            list.setBounds(10, 0, content_panel.getWidth() - 20, list.getCellBounds(0, 0).height * list.getModel().getSize());
+            list.setFont(new InfoListFont());
+            DeleteChooser.last_results = list;
+
+            LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 300, 30);
+            LibraryGUI.main_page.changePrompt("Select data to delete");
+
+            var button = new OptionPanel.OptionButton("Delete");
+            button.addActionListener(LibraryGUI.main_page);
+            if (this.search_mode == FrameContentManager.USERS)
+                button.setAction_manager(new UsersDeleter());
+            else
+                button.setAction_manager(new BooksDeleter());
+            button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
+
+            content_panel.setLayout(null);
+            content_panel.add(list);
+            content_panel.add(button);
+        } else {
+            FrameContentManager.noDataPanic(content_panel);
+        }
+
         content_panel.add(LibraryGUI.main_page.getPrompt());
-        content_panel.add(button);
         content_panel.validate();
         content_panel.repaint();
     }
@@ -247,7 +268,12 @@ class ReturnChooser extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         var list = getBooksToReturn();
-        list.setBounds(10, 0, content_panel.getWidth() - 20, list.getCellBounds(0, 0).height * list.getModel().getSize());
+        int height;
+        if(list.getCellBounds(0, 0) != null)
+            height = list.getCellBounds(0, 0).height * list.getModel().getSize();
+        else
+            height = 0;
+        list.setBounds(10, 0, content_panel.getWidth() - 20, height);
         list.setFont(new InfoListFont());
         ReturnChooser.last_results = list;
 
@@ -280,31 +306,36 @@ class OrderChooser extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         var list = Searcher.getSearchList(content_panel, Shower.BOOKS);
-        list.setBounds(0, 0, content_panel.getWidth(), 30 * list.getModel().getSize());
-        list.setFont(new InfoListFont());
-        OrderChooser.last_results = list;
-
-        LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 300, 30);
-        LibraryGUI.main_page.changePrompt("Select book to order");
-
-        var label_months = new JLabel("Select months: ");
-        label_months.setBounds(list.getX(), list.getHeight()+30, 200, 30);
-        label_months.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
-
-        months_field.setBounds(list.getX() + 200, list.getHeight()+30, 100, 30);
-
-        var button = new UserOptionPanel.OptionButton("Order");
-        button.addActionListener(LibraryGUI.user_page);
-        button.setAction_manager(new BooksOrderer());
-        button.setBounds(list.getX(), list.getHeight() + 60, 150, 30);
-
         content_panel.removeAll();
-        content_panel.setLayout(null);
-        content_panel.add(list);
-        content_panel.add(LibraryGUI.main_page.getPrompt());
-        content_panel.add(button);
-        content_panel.add(label_months);
-        content_panel.add(months_field);
+        if (list.getModel().getSize() > 0) {
+            list.setBounds(0, 0, content_panel.getWidth(), list.getCellBounds(0, 0).height * list.getModel().getSize());
+            list.setFont(new InfoListFont());
+            OrderChooser.last_results = list;
+
+            LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 300, 30);
+            LibraryGUI.main_page.changePrompt("Select book to order");
+
+            var label_months = new JLabel("Select months: ");
+            label_months.setBounds(list.getX(), list.getHeight()+30, 200, 30);
+            label_months.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
+
+            months_field.setBounds(list.getX() + 200, list.getHeight()+30, 100, 30);
+
+            var button = new UserOptionPanel.OptionButton("Order");
+            button.addActionListener(LibraryGUI.user_page);
+            button.setAction_manager(new BooksOrderer());
+            button.setBounds(list.getX(), list.getHeight() + 60, 150, 30);
+
+            content_panel.setLayout(null);
+            content_panel.add(list);
+            content_panel.add(LibraryGUI.main_page.getPrompt());
+            content_panel.add(button);
+            content_panel.add(label_months);
+            content_panel.add(months_field);
+        } else {
+            FrameContentManager.noDataPanic(content_panel);
+        }
+
         content_panel.validate();
         content_panel.repaint();
     }

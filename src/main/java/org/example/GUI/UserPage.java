@@ -44,6 +44,8 @@ public class UserPage extends Page {
                 800);
         this.center_panel.add(this.content_panel);
         this.content_panel.setVisible(true);
+        this.center_panel.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
+        this.content_panel.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
     }
 
     private void initOptions() {
@@ -102,6 +104,7 @@ public class UserPage extends Page {
         panel.add(mail_field);
         panel.add(login_field);
         panel.add(password_field);
+        panel.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
 
         var button = new UserOptionPanel.OptionButton("Confirm");
         button.setBounds(content_panel.getSize().width / 2 - 300,  panel.getHeight(), 150, 30);
@@ -150,8 +153,8 @@ public class UserPage extends Page {
             infos.add("No penalties");
         }
         JList<String> list = new JList<>(infos);
-        list.setFont(new Font(Font.SERIF, Font.PLAIN, 20));
-        list.setBounds(content_panel.getSize().width / 2 - 300, 0, 600, 30 * list.getModel().getSize());
+        list.setFont(new InfoListFont());
+        list.setBounds(content_panel.getSize().width / 2 - 300, 0, 600, list.getCellBounds(0, 0).height * list.getModel().getSize());
         content_panel.setLayout(null);
         this.content_panel.add(list);
         this.content_panel.validate();
