@@ -29,7 +29,7 @@
 
 <ins>Co się nie udało?:</ins>
 - Stworzenie "mail server"
-- Przeniesienie się na JPA - zbyt dużo pracy
+- próba implementacji JPA Hibernate (branch oracle_cd). Problemem okazała się trudność w zastosowaniu JPA w oracle database. W rozwiązaniu tego i bardziej czytelnym kodzie klasy LibraryDatabase pomogłoby zastosowanie Spring Boot.
 - Skorzystanie z plików CSS - dużo pracy, za późno wpadliśmy na ten pomysł
 
 
@@ -114,6 +114,3 @@ w danej metodzie wraz z wiadomością co dokładnie poszło nie tak. Wykorzystan
 - JDBC
 - Maven
 - Sqldeveloper / baza Oracle
-
-### Napotkane problemy:
-    - próba implementacji JPA Hibernate (branch oracle_cd). Problemem okazała się trudność w zastosowaniu JPA w oracle database. W rozwiązaniu tego i bardziej czytelnym kodzie klasy LibraryDatabase pomogłoby zastosowanie Spring Boot.
