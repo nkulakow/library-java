@@ -24,7 +24,6 @@ public class LibraryDatabase {
     private static Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks;
     @Getter
     private static Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime;
-
     public static void initLoginInfo() throws IOException {
         try {
             FileInputStream fileStream = new FileInputStream("src/main/resources/info.txt");
@@ -38,7 +37,6 @@ public class LibraryDatabase {
             throw e;
         }
     }
-
     public static void initLoginInfoForTests()  {
             LOGIN = "n";
             HASHEDPASSWORD = "password";
@@ -293,8 +291,7 @@ public class LibraryDatabase {
 
     public static void addWaiting(Book book, long months, int userId) throws SQLException {
         int book_id = book.getBookId();
-        int waiting_id = 0; // change
-        String query_str = "insert into nkulakow.pap_waiting values("+waiting_id+", "+book_id+", "+userId+", "+months+")";
+        String query_str = "insert into nkulakow.pap_waiting values("+book_id+", "+userId+", "+months+")";
 
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());

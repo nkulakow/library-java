@@ -30,9 +30,6 @@ public class LibraryContext {
     private static Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime = new Hashtable<>();
     private static final Logger logger = LogManager.getLogger(org.example.LibraryContextPackage.LibraryContext.class);
 
-<<<<<<< src/main/java/org/example/LibraryContextPackage/LibraryContext.java
-    public static void orderBook(Book book, long months) throws CannotConnectToDBException
-=======
     /**
      * Method responsible for assigning a book to a user by assigning values to its two parameters: returnDate and userId.
      * If these parameters were set previously it means that a book is assignined to another user and the current user must be put in a book's queue indicated
@@ -46,7 +43,6 @@ public class LibraryContext {
      * no value
      */
     public static void orderBook(Book book, long months) throws CannotConnectToDBException
->>>>>>> src/main/java/org/example/LibraryContextPackage/LibraryContext.java
     {
         if(takenBooks.containsKey(book.getBookId()))
         {
