@@ -64,7 +64,9 @@ Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarząd
 5. Klasa Book - reprezentuje książkę, ma atrybuty takie jak nazwa, kategoria, data zwrotu, etc., gettery, settery.
 6. Klasa User - klasa reprezentująca użytkownika, ma metody reprezentujące czynności: wypożyczanie, oddawanie, przedłużanie, opłacanie kar za nieoddane książki, ma atrybuty takie jak imię, nazwisko, id, liczba wypożyczonych książek, etc.
 7. Klasa Admin - ma uprawnienia zwykłego użytkownika, ale dodatkowo rozszerza jego możliwości dzięki zastosowaniu dziedziczenia. Może wykonywać czynności administracyjne na systemie zarządzania biblioteką.
-8. Klasa LibraryDatabase - klasa reprezentująca bazę danych.
+8. LibraryDatabase:
+    - Klasa LibraryDatabase - reprezentuje bazę danych i umożliwia operowanie na każdej z tabel (usuwanie, dodawanie i modyfikowanie jej wierszy).
+    - Klasa DatabaseConstants - znajdują się w niej stałe z których korzysta klasa LibraryDatabase. 
 9. Klasy reprezentujące pewne wyjątki m.in. InvalidIdException, NullOrEmptyStringException
 
 **Testy:**  
@@ -78,3 +80,6 @@ Do implementacji testów jednostkowych planujemy używać JUnit. Poszczególne m
     - javax.mail - wykorzystywana do automatycznego wysyłania maili 
 - Maven
 - Sqldeveloper
+
+### Napotkane problemy:
+- próba implementacji JPA Hibernate (branch oracle_cd). Problemem okazała się trudność w zastosowaniu JPA w oracle database. W rozwiązaniu tego i bardziej czytelnym kodzie LibraryDatabase pomogłoby zastosowanie Spring Boot
