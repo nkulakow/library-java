@@ -199,6 +199,8 @@ class BooksReturner extends FrameContentManager {
         }
         catch (CannotReturnBookException e){
             LibraryGUI.main_page.changePrompt("Could not return book, please contact administrator");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.main_page.changePrompt("Cannot connect to database, check your connection");
         }
     }
 }
@@ -223,10 +225,12 @@ class BooksOrderer extends FrameContentManager {
         Book book;
         try {
             book = (Book) selected[index];
+            LibraryContext.orderBook(book, months);
+            LibraryGUI.main_page.changePrompt(book.getName() + " by " + book.getAuthor() + " successfully ordered");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.main_page.changePrompt("Cannot connect to database, check your connection");
         } catch (ArrayIndexOutOfBoundsException ignored) {
-            return;
+
         }
-        LibraryContext.orderBook(book, months);
-        LibraryGUI.main_page.changePrompt(book.getName() + " by " + book.getAuthor() + " successfully ordered");
     }
 }
