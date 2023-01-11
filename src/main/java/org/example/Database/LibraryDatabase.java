@@ -42,6 +42,15 @@ public class LibraryDatabase {
             HASHEDPASSWORD = "password";
     }
 
+    /**
+     * Shows users based on the searched terms.
+     *
+     * params:
+     * query_str - searched terms changed into a sql_statement.
+     *
+     * returns:
+     * users that match the searched term.
+     */
     private static ArrayList<UserInDB> showUsers(final String query_str) throws SQLException {
         ArrayList<UserInDB> users = new ArrayList<>();
         try {
@@ -84,6 +93,9 @@ public class LibraryDatabase {
         return result;
     }
 
+    /**
+     * Returns an arraylist of all the admins.
+     */
     public static ArrayList<Admin> getAdmins() throws SQLException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
         ArrayList<Admin> admins = new ArrayList<>();
         try {
@@ -108,7 +120,9 @@ public class LibraryDatabase {
         CONNECTION.close();
         return admins;
     }
-
+    /**
+     * Returns an arraylist of all the books.
+     */
     public static ArrayList<Book> getBooks() throws SQLException, NullOrEmptyStringException, InvalidIdException {
         ArrayList<Book> books = new ArrayList<>();
         try {
@@ -145,6 +159,9 @@ public class LibraryDatabase {
         CONNECTION.close();
         return books;
     }
+    /**
+     * initializes the hashtables for takenBooks and takenBooksOrderedTime.
+     */
     public static void initWaiting() throws SQLException, InvalidIdException {
         Hashtable<Integer, ArrayDeque<CommonUser>> takenBooksTemp = new Hashtable();
         Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTimeTemp = new Hashtable<>();
@@ -181,7 +198,9 @@ public class LibraryDatabase {
         takenBooksOrderedTime = takenBooksOrderedTimeTemp;
     }
 
-
+    /**
+     * Returns an arraylist of all the common users.
+     */
     public static ArrayList<CommonUser> getCommonUsers() throws SQLException, InvalidBookNumberException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
         ArrayList<CommonUser> users = new ArrayList<>();
         try {
@@ -207,7 +226,9 @@ public class LibraryDatabase {
         CONNECTION.close();
         return users;
     }
-
+    /**
+     * Adds a new user to PAP_USERS, and their login/password info to PAP_USERS_PASSWD.
+     */
     public static void addUser(CommonUser user) throws SQLException {
         String id = String.valueOf(user.getUserId()), name = user.getName(), surname = user.getSurname(),
                 mail = user.getMail(), login = user.getLogin(), password= user.getPassword();
@@ -226,7 +247,9 @@ public class LibraryDatabase {
         }
         CONNECTION.close();
     }
-
+    /**
+     * Deletes the chosen user from the PAP_USER and their login info from PAP_USERS_PASSWD.
+     */
     public static void removeUser(CommonUser user) throws SQLException {
         String id = String.valueOf(user.getUserId());
         String query_str1 = "delete from nkulakow.PAP_USERS_PASSWD where user_id=" + id;
@@ -244,7 +267,9 @@ public class LibraryDatabase {
         }
         CONNECTION.close();
     }
-
+    /**
+     * Adds a book to PAP_BOOKS.
+     */
     public static void addBook(Book book) throws SQLException {
         String name = book.getName(), author = book.getAuthor(), category = book.getCategory();
         int book_id = book.getBookId(), available = book.getAvailable()?1:0;
@@ -272,7 +297,9 @@ public class LibraryDatabase {
         }
         CONNECTION.close();
     }
-
+    /**
+     * Removes a book from PAP_BOOKS.
+     */
     public static void removeBook(Book book) throws SQLException {
         String id = String.valueOf(book.getBookId());
         String query_str = "delete from nkulakow.PAP_BOOKS where book_id=" + id;
@@ -288,7 +315,9 @@ public class LibraryDatabase {
         }
         CONNECTION.close();
     }
-
+    /**
+     * Adds a new row in PAP_WAITING.
+     */
     public static void addWaiting(Book book, long months, int userId) throws SQLException {
         int book_id = book.getBookId();
         String query_str = "insert into nkulakow.pap_waiting values("+book_id+", "+userId+", "+months+")";
@@ -305,7 +334,9 @@ public class LibraryDatabase {
         }
         CONNECTION.close();
     }
-
+    /**
+     * Removes a row from PAP_WAITING.
+     */
     public static void removeWaiting(Book book, Integer user_id_int) throws SQLException {
         String book_id = String.valueOf(book.getBookId());
         String user_id = String.valueOf(user_id_int);
