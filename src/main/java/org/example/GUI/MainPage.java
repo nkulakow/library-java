@@ -27,8 +27,8 @@ public class MainPage extends Page {
     public JLabel getPrompt() {
         return prompt;
     }
-
-    public void adjustPromptSize() {
+    public void changePrompt(final String text) {
+        this.prompt.setText(text);
         this.prompt.setSize(prompt.getFont().getSize() * prompt.getText().length(), prompt.getHeight());
     }
 

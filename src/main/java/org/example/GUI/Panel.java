@@ -148,8 +148,6 @@ class BookAddingPanel extends JPanel {
 
     private final JTextField author;
 
-    private final JLabel prompt;
-
 
     public BookAddingPanel(ActionListener listener) {
         this.setLayout(new GridLayout(6, 1));
@@ -165,10 +163,9 @@ class BookAddingPanel extends JPanel {
         add_button.setAction_manager(new BookAdder());
         this.add(add_button);
 
-        this.prompt = LibraryGUI.main_page.getPrompt();
-        prompt.setText("Enter book data");
-        this.add(this.prompt);
+        this.add(LibraryGUI.main_page.getPrompt());
         this.setBounds(200, 0, 400, 200);
+        LibraryGUI.main_page.changePrompt("Enter book data");
     }
 
     public ArrayList<String> getData() {
@@ -177,10 +174,6 @@ class BookAddingPanel extends JPanel {
         result.add(this.category.getText());
         result.add(this.author.getText());
         return result;
-    }
-
-    public void changePrompt(final String text) {
-        this.prompt.setText(text);
     }
 }
 

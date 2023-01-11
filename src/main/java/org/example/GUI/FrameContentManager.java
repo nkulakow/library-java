@@ -202,10 +202,8 @@ class DeleteChooser extends FrameContentManager {
         list.setBounds(0, 0, content_panel.getWidth(), 30 * list.getModel().getSize());
         DeleteChooser.last_results = list;
 
-        var prompt = LibraryGUI.main_page.getPrompt();
-        prompt.setText("Select data to delete");
-        prompt.setBounds(list.getX(), list.getHeight(), 300, 30);
-        LibraryGUI.main_page.adjustPromptSize();
+        LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 300, 30);
+        LibraryGUI.main_page.changePrompt("Select data to delete");
 
         var button = new OptionPanel.OptionButton("Delete");
         button.addActionListener(LibraryGUI.main_page);
@@ -218,7 +216,7 @@ class DeleteChooser extends FrameContentManager {
         content_panel.removeAll();
         content_panel.setLayout(null);
         content_panel.add(list);
-        content_panel.add(prompt);
+        content_panel.add(LibraryGUI.main_page.getPrompt());
         content_panel.add(button);
         content_panel.validate();
         content_panel.repaint();
@@ -250,11 +248,8 @@ class ReturnChooser extends FrameContentManager {
         list.setBounds(0, 0, content_panel.getWidth(), 30 * list.getModel().getSize());
         ReturnChooser.last_results = list;
 
-
-        var prompt = LibraryGUI.main_page.getPrompt();
-        prompt.setText("Select book");
-        prompt.setBounds(list.getX(), list.getHeight(), 600, 30);
-        LibraryGUI.main_page.adjustPromptSize();
+        LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 600, 30);
+        LibraryGUI.main_page.changePrompt("Select book");
 
         var button = new UserOptionPanel.OptionButton("Return");
         button.addActionListener(LibraryGUI.user_page);
@@ -265,7 +260,7 @@ class ReturnChooser extends FrameContentManager {
         content_panel.removeAll();
         content_panel.setLayout(null);
         content_panel.add(list);
-        content_panel.add(prompt);
+        content_panel.add(LibraryGUI.main_page.getPrompt());
         content_panel.add(button);
         content_panel.validate();
         content_panel.repaint();
@@ -285,10 +280,8 @@ class OrderChooser extends FrameContentManager {
         list.setBounds(0, 0, content_panel.getWidth(), 30 * list.getModel().getSize());
         OrderChooser.last_results = list;
 
-        var prompt = LibraryGUI.main_page.getPrompt();
-        prompt.setText("Select book to order");
-        prompt.setBounds(list.getX(), list.getHeight(), 300, 30);
-        LibraryGUI.main_page.adjustPromptSize();
+        LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 300, 30);
+        LibraryGUI.main_page.changePrompt("Select book to order");
 
         var label_months = new JLabel("Select months: ");
         label_months.setBounds(list.getX(), list.getHeight()+30, 200, 30);
@@ -303,7 +296,7 @@ class OrderChooser extends FrameContentManager {
         content_panel.removeAll();
         content_panel.setLayout(null);
         content_panel.add(list);
-        content_panel.add(prompt);
+        content_panel.add(LibraryGUI.main_page.getPrompt());
         content_panel.add(button);
         content_panel.add(label_months);
         content_panel.add(months_field);

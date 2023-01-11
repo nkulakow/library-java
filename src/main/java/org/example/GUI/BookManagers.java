@@ -48,15 +48,14 @@ class BookAdder extends FrameContentManager {
                     null,
                     null
             ));
-            panel.changePrompt("" +
+            LibraryGUI.main_page.changePrompt("" +
                     "Book successfully added");
             //jak validinDB=false tzn ze sie w db cos nie udalo i zmiany sa wprowadzone jedynie lokalnie
         } catch (NullOrEmptyStringException e) {
-            panel.changePrompt("Book data cannot be empty");
+            LibraryGUI.main_page.changePrompt("Book data cannot be empty");
         } catch (InvalidIdException | NumberFormatException e) {
-            panel.changePrompt("Incorrect book id");
+            LibraryGUI.main_page.changePrompt("Incorrect book id");
         }
-        LibraryGUI.main_page.adjustPromptSize();
     }
 }
 
@@ -76,9 +75,7 @@ class BooksDeleter extends FrameContentManager {
             return;
         }
         LibraryContext.removeObject(book);
-        var prompt = LibraryGUI.main_page.getPrompt();
-        prompt.setText("Book successfully deleted");
-        LibraryGUI.main_page.adjustPromptSize();
+        LibraryGUI.main_page.changePrompt("Book successfully deleted");
     }
 }
 
@@ -122,17 +119,15 @@ class BooksModifier extends FrameContentManager {
         button.addActionListener(LibraryGUI.main_page);
         button.setAction_manager(new BookModificationApplier());
 
-        var prompt = LibraryGUI.main_page.getPrompt();
-        prompt.setText("");
-        prompt.setBounds(content_panel.getSize().width / 2 - 150, list.getHeight() + panel.getHeight() + button.getHeight(), 300, 30);
-        LibraryGUI.main_page.adjustPromptSize();
+        LibraryGUI.main_page.getPrompt().setBounds(content_panel.getSize().width / 2 - 150, list.getHeight() + panel.getHeight() + button.getHeight(), 300, 30);
+        LibraryGUI.main_page.changePrompt("");
 
         content_panel.removeAll();
         content_panel.setLayout(null);
         content_panel.add(list);
         content_panel.add(panel);
         content_panel.add(button);
-        content_panel.add(prompt);
+        content_panel.add(LibraryGUI.main_page.getPrompt());
         content_panel.validate();
         content_panel.repaint();
     }
@@ -164,15 +159,16 @@ class BookModificationApplier extends FrameContentManager {
         map.put(AttributesNames.author, author);
 
         var prompt = LibraryGUI.main_page.getPrompt();
+        prompt.setBounds(panel.getX(), prompt.getY(), 0, 30);
+
         try {
             LibraryContext.modifyFewBookAttributes(map, BookModificationApplier.last_modified_id);
-            prompt.setText("Book successfully modified");
+            LibraryGUI.main_page.changePrompt("Book successfully modified");
         } catch (NullOrEmptyStringException e) {
-            prompt.setText("Book data cannot be empty");
+            LibraryGUI.main_page.changePrompt("Book data cannot be empty");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
         }
-        LibraryGUI.main_page.adjustPromptSize();
     }
 }
 
@@ -191,15 +187,13 @@ class BooksReturner extends FrameContentManager {
         } catch (ArrayIndexOutOfBoundsException ignored) {
             return;
         }
-        var prompt = LibraryGUI.main_page.getPrompt();
         try {
             LibraryContext.returnBook(book);
-            prompt.setText(book.getName() + " by " + book.getAuthor() + " successfully returned");
+            LibraryGUI.main_page.changePrompt(book.getName() + " by " + book.getAuthor() + " successfully returned");
         }
         catch (CannotReturnBookException e){
-            prompt.setText("Could not return book, please contact administrator");
+            LibraryGUI.main_page.changePrompt("Could not return book, please contact administrator");
         }
-        LibraryGUI.main_page.adjustPromptSize();
     }
 }
 
@@ -211,14 +205,13 @@ class BooksOrderer extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         int index = OrderChooser.last_results.getSelectedIndex();
-        var prompt = LibraryGUI.main_page.getPrompt();
         var selected = Searcher.last_results.toArray();
         long months;
         try {
             months = Long.parseLong(OrderChooser.months_field.getText());
         }
         catch (java.lang.NumberFormatException e){
-            prompt.setText("Input valid months number.");
+            LibraryGUI.main_page.changePrompt("Input valid months number.");
             return;
         }
         Book book;
@@ -228,7 +221,6 @@ class BooksOrderer extends FrameContentManager {
             return;
         }
         LibraryContext.orderBook(book, months);
-        prompt.setText(book.getName() + " by " + book.getAuthor() + " successfully ordered");
-        LibraryGUI.main_page.adjustPromptSize();
+        LibraryGUI.main_page.changePrompt(book.getName() + " by " + book.getAuthor() + " successfully ordered");
     }
 }

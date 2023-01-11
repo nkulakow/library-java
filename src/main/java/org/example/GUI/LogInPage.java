@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.JCheckBox;
+import javax.swing.border.LineBorder;
 
 
 class LogInPage extends Page {
@@ -33,20 +34,45 @@ class LogInPage extends Page {
     }
 
     private void initContent() {
+        this.initCheckBocks();
+        this.initLoggingPart();
+        this.initPanels();
+    }
+
+    private void initCheckBocks() {
         this.userbox = new JCheckBox("User");
-        this.adminbox = new JCheckBox("Admin");
         this.userbox.setBounds(300, 360, 80, 20);
+        this.userbox.setOpaque(false);
+
+        this.adminbox = new JCheckBox("Admin");
         this.adminbox.setBounds(400, 360, 80, 20);
+        this.adminbox.setOpaque(false);
+
         this.checksGroup = new ButtonGroup();
         checksGroup.add(userbox);
         checksGroup.add(adminbox);
 
+        this.panel.add(this.userbox);
+        this.panel.add(this.adminbox);
+    }
+
+    private void initLoggingPart() {
+
+        var color = new Color(243, 229, 165);
         this.login_field = new JTextField();
         this.login_field.setBounds(300, 200, 200, 30);
+        this.login_field.setBorder(new LineBorder(Color.BLACK));
+        this.login_field.setBackground(color);
+
         this.password_field = new JPasswordField();
         this.password_field.setBounds(300, 300, 200, 30);
+        this.password_field.setBorder(new LineBorder(Color.BLACK));
+        this.password_field.setBackground(color);
+
         this.login_button = new JButton("Log in");
         this.login_button.setBounds(300, 400, 80, 40);
+        this.login_button.setBackground(color);
+
         JLabel login_text = new JLabel("Enter login");
         login_text.setBounds(300, 160, 100, 30);
         JLabel password_text = new JLabel("Enter password");
@@ -58,10 +84,11 @@ class LogInPage extends Page {
         this.panel.add(this.login_field);
         this.panel.add(this.password_field);
         this.panel.add(this.login_button);
-        this.panel.add(this.userbox);
-        this.panel.add(this.adminbox);
         this.panel.add(login_text);
         this.panel.add(password_text);
+    }
+
+    private void initPanels() {
         this.panel.setBackground(new Color(243, 229, 65));
         var bottomPanel = new JPanel();
         bottomPanel.setBounds(0, 500, 800, 100);

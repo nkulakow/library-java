@@ -20,6 +20,8 @@ class UserAddingShower extends FrameContentManager {
         var panel = new AddingPanel(LibraryGUI.main_page);
         panel.setBounds(content_panel.getWidth() / 2 - panel.getSize().width, 0, panel.getSize().width, panel.getSize().height);
         content_panel.add(panel);
+        LibraryGUI.main_page.getPrompt().setBounds(panel.getX(), panel.getHeight(), 0, 30);
+        LibraryGUI.main_page.changePrompt("");
         content_panel.validate();
         content_panel.repaint();
     }
@@ -42,7 +44,6 @@ class UserAdder extends FrameContentManager {
 
         int id          = LibraryContext.generateCommonUserID();
 
-        var prompt = LibraryGUI.main_page.getPrompt();
         try {
             boolean validInDB = LibraryContext.addObject(new CommonUser(
                     login,
@@ -53,22 +54,20 @@ class UserAdder extends FrameContentManager {
                     mail,
                     0   //books number
             ));
-            prompt.setText("User successfully added");
+            LibraryGUI.main_page.changePrompt("User successfully added");
             //jak validinDB=false tzn ze sie w db cos nie udalo i zmiany sa wprowadzone jedynie lokalnie
         } catch (NullOrEmptyStringException e) {
-            prompt.setText("User data cannot be empty");
+            LibraryGUI.main_page.changePrompt("User data cannot be empty");
         } catch (InvalidIdException | NumberFormatException e) {
-            prompt.setText("Incorrect user id");
+            LibraryGUI.main_page.changePrompt("Incorrect user id");
         } catch (InvalidBookNumberException ignored) {
 
         } catch (InvalidLoginException e) {
-            prompt.setText("Login already exists");
+            LibraryGUI.main_page.changePrompt("Login already exists");
         }
-        prompt.setBounds(panel.getX(), panel.getY() + panel.getHeight(), 300, 30);
-        LibraryGUI.main_page.adjustPromptSize();
         content_panel.removeAll();
         content_panel.add(panel);
-        content_panel.add(prompt);
+        content_panel.add(LibraryGUI.main_page.getPrompt());
         content_panel.validate();
         content_panel.repaint();
     }
@@ -116,17 +115,15 @@ class UsersModifier extends FrameContentManager {
         button.addActionListener(LibraryGUI.main_page);
         button.setAction_manager(new UsersModificationApplier(FrameContentManager.ADMIN_USER_MOD));
 
-        var prompt = LibraryGUI.main_page.getPrompt();
-        prompt.setText("");
-        prompt.setBounds(button.getX(), list.getHeight() + panel.getHeight() + button.getHeight(), 300, 30);
-        LibraryGUI.main_page.adjustPromptSize();
+        LibraryGUI.main_page.getPrompt().setBounds(button.getX(), list.getHeight() + panel.getHeight() + button.getHeight(), 300, 30);
+        LibraryGUI.main_page.changePrompt("");
 
         content_panel.removeAll();
         content_panel.setLayout(null);
         content_panel.add(list);
         content_panel.add(panel);
         content_panel.add(button);
-        content_panel.add(prompt);
+        content_panel.add(LibraryGUI.main_page.getPrompt());
         content_panel.validate();
         content_panel.repaint();
     }
@@ -175,18 +172,16 @@ class UsersModificationApplier extends FrameContentManager {
         }
         var map = UsersModificationApplier.getDataMap(panel);
 
-        JLabel prompt = LibraryGUI.main_page.getPrompt();
         try {
             LibraryContext.modifyFewUserAttributes(map, UsersModificationApplier.last_modified_id);
-            prompt.setText("User successfully modified");
+            LibraryGUI.main_page.changePrompt("User successfully modified");
         } catch (NullOrEmptyStringException e) {
-            prompt.setText("User data cannot be empty");
+            LibraryGUI.main_page.changePrompt("User data cannot be empty");
         } catch (InvalidLoginException e) {
-            prompt.setText("Login already exists");
+            LibraryGUI.main_page.changePrompt("Login already exists");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
         }
-        LibraryGUI.main_page.adjustPromptSize();
     }
 }
 
@@ -206,10 +201,7 @@ class UsersDeleter extends FrameContentManager {
             return;
         }
         LibraryContext.removeObject(user);
-
-        var prompt = LibraryGUI.main_page.getPrompt();
-        prompt.setText("User successfully deleted");
-        LibraryGUI.main_page.adjustPromptSize();
+        LibraryGUI.main_page.changePrompt("User successfully deleted");
     }
 }
 
@@ -221,17 +213,15 @@ class AdminModificationApplier extends FrameContentManager {
     @Override
     void manage(JPanel content_panel) {
         var map = UsersModificationApplier.getDataMap(content_panel);
-        JLabel prompt = LibraryGUI.main_page.getPrompt();
         try {
             LibraryContext.modifyFewAdminAttributes(map);
-            prompt.setText("Successfully changed your data");
+            LibraryGUI.main_page.changePrompt("Successfully changed your data");
         } catch (NullOrEmptyStringException e) {
-            prompt.setText("Admin data cannot be empty");
+            LibraryGUI.main_page.changePrompt("Admin data cannot be empty");
         } catch (InvalidLoginException e) {
-            prompt.setText("Incorrect login");
+            LibraryGUI.main_page.changePrompt("Incorrect login");
         } catch (InvalidIdException | InvalidBookNumberException ignored) {
 
         }
-        LibraryGUI.main_page.adjustPromptSize();
     }
 }
