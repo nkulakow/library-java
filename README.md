@@ -60,24 +60,20 @@ Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarząd
     - Klasy AddingPanel, BookAddingPanel, BottomPanel, OptionPanel - dostosowane do GUI aplikacji JPanele. Ich głównym zadaniem jest przechowywanie zawartości wyświetlanej na ekranie.
     - Klasa FrameContentManager i wszystkie klasy pochodne - klasy zarządzające całą logiką GUI. Każda ta klasa ma zdefiniowaną własną metodę manage(JPanel content_panel), której zadaniem jest dostosowanie zawartości wyświetlanej na ekranie, do aktualnego stanu aplikacji, a także wymiana danych między GUI, a logiką (LibraryContext).
     - Pozostałe klasy (InfoListFont, etc.) - klasy służące do zebrania pewnych własności GUI, takich jak kolor, rozmiar czcionki itd.
-2. Klasy utworzone do zarządzania kontrolkami.
-3. Klasa MainPage - klasa przedstawiająca elementy graficzne strony głównej, obok ma zdefiniowane klasy kontrolek: OptionPanel i BottomPanel.
-4. Klasa LoginPage - klasa przedstawiająca elementy graficzne strony logowania.
-5. Klasa LibraryContext - Klasa hermetyzująca logikę aplikacji wykorzystująca obiekty klas Admin, CommonUser i Book. Zawiera metody modyfikujące stan lokalnego repozytorium biblioteki. Wykorzystuje metody klasy database do aktualizacji lokalnego repozytorium i wprowadzania zmian do bazy danych.
-6. Klasa Admin - klasa reprezentująca administratora biblioteki. Administratorzy mogą modyfikować kolekcje z których składa się baza danych.
-Mogą także wyszukiwać obiekty w bazie danych.
-7. Klasa Book - klasa reprezentująca książkę. Ma atrybuty odpowiadające książkom wypożyczanym ze standardowej biblioteki oraz odpowiadające im odpowiednie gettery i settery. Jest to klasa odpowiadająca danym.
-8. Klasa CommonUser - klasa reprezentująca użytkowników biblioteki. Mogą wypożyczać książki, zwracać je, wyświetlać wypożyczone książki i sprawdzać, czy nie przetrzymują wypożyczonych książek zbyt długo.
-9. Klasa User - klasa abstrakcyjna, zawiera atrybuty i metody charakteryzujące klasy CommonUser i Admin. 
-10. Interfejs Isearch - interfejs z jedną metodą służącą do ustawienia środowiska wyszukiwania obiektu. Intefejs zapewnia polimorfizm i modyfikowalność środowiska wyszukiwania w zależności od wyszukiwanego obiektu.
-11. Interfejs LibraryContextActions - interfejs, którego metody muszą być implementowane przez obiekty biblioteczne. Umozliwia wykorzystanie polimorfizmu do uproszczenia wprowadzania zmian w bazie. Obiekty w bazie mogą być identyfikowane na podstawie operacji jakie można na nich wykonywać a nie na podstawie ich typu.
-12. Typ wyliczeniowy LibContextOptions - definiuje typy operacji jakie można wykonać na kolekcjach obiektów biblioteki w celu ich modyfikacji.
-13. Klasa Book - reprezentuje książkę, ma atrybuty takie jak nazwa, kategoria, data zwrotu, etc., gettery, settery.
-14. Klasa User - abstrakcyjna klasa reprezentująca użytkownika, rozszerzana przez klasy CommonUser i Admin
-15. Klasa CommonUser - klasa reprezentująca zwykłego użytkownika, ma metody reprezentujące czynności: wypożyczanie, oddawanie, przedłużanie, opłacanie kar za nieoddane książki, ma atrybuty takie jak imię, nazwisko, id, liczba wypożyczonych książek, etc.
-. Klasa Admin - ma uprawnienia zwykłego użytkownika, ale dodatkowo rozszerza jego możliwości dzięki zastosowaniu dziedziczenia. Może wykonywać czynności administracyjne na systemie zarządzania biblioteką.
-16. Klasa LibraryDatabase - klasa reprezentująca bazę danych.
-17. Klasy reprezentujące pewne wyjątki m.in. InvalidIdException, NullOrEmptyStringException
+
+2. LibraryContext
+    - Klasa LibraryContext - klasa hermetyzująca logikę aplikacji wykorzystująca obiekty klas Admin, CommonUser i Book. Zawiera metody modyfikujące stan lokalnego repozytorium biblioteki. Wykorzystuje metody klasy database do aktualizacji lokalnego repozytorium i wprowadzania zmian do bazy danych.
+    - Interfejs Isearch - interfejs z jedną metodą służącą do ustawienia środowiska wyszukiwania obiektu. Intefejs zapewnia polimorfizm i modyfikowalność środowiska wyszukiwania w zależności od wyszukiwanego obiektu.
+    - Interfejs LibraryContextActions - interfejs, którego metody muszą być implementowane przez obiekty biblioteczne. Umozliwia wykorzystanie polimorfizmu do uproszczenia wprowadzania zmian w bazie. Obiekty w bazie mogą być identyfikowane na podstawie operacji jakie można na nich wykonywać a nie na podstawie ich typu.
+    - Typ wyliczeniowy LibContextOptions - definiuje typy operacji jakie można wykonać na kolekcjach obiektów biblioteki w celu ich modyfikacji.
+    - Klasa Book - reprezentuje książkę. Ma atrybuty odpowiadające książkom wypożyczanym ze standardowej biblioteki oraz odpowiadające im odpowiednie gettery i settery. Jest to klasa odpowiadająca danym.
+    - Klasa User - abstrakcyjna klasa reprezentująca użytkownika, rozszerzana przez klasy CommonUser i Admin
+    - Klasa CommonUser - klasa reprezentująca użytkowników biblioteki. Mogą wypożyczać książki, zwracać je, wyświetlać wypożyczone książki i sprawdzać, czy nie przetrzymują wypożyczonych książek zbyt długo i czy nie naliczone zostały opłaty.
+    - Klasa Admin - klasa reprezentująca administratorów biblioteki. Może wykonywać czynności administracyjne na systemie zarządzania biblioteką. Może modyfikować kolekcje z których składa się baza danych. Może także wyszukiwać obiekty w bazie danych.
+    - Klasy reprezentujące pewne wyjątki m.in. InvalidIdException, NullOrEmptyStringException
+
+3. Database
+    - LibraryDatabase - klasa reprezentująca bazę danych.
 
 **Testy:**  
 Do implementacji testów jednostkowych planujemy używać JUnit. Poszczególne metody i funkcjonalności będą sprawdzane oddzielnie.

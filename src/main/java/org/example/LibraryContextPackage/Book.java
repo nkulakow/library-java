@@ -124,7 +124,6 @@ public class Book implements LibraryContextActions{
     @Override
     public String describe() {
         String date;
-        String userId;
         if(this.getReturnDate() == null)
         {
             date = "";
@@ -158,33 +157,26 @@ public class Book implements LibraryContextActions{
     }
 
     /**
-    Modifies Book's selected attribute.
+     * Modifies Book's selected attribute.
      */
-    public boolean modifyBook(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException {
+    public void modifyBook(AttributesNames attributeName, String modifiedVal) throws NullOrEmptyStringException, InvalidIdException {
          if (attributeName == AttributesNames.name) {
             setName(modifiedVal);
-            return true;
-        } else if (attributeName == AttributesNames.author) {
+         } else if (attributeName == AttributesNames.author) {
             setAuthor( modifiedVal);
-            return true;
-        }
+         }
         else if (attributeName == AttributesNames.category) {
             setCategory( modifiedVal);
-            return true;
-        }
+         }
          else if (attributeName == AttributesNames.returnDate) {
              setReturnDate(ZonedDateTime.parse(modifiedVal));
-             return true;
          }
          else if (attributeName == AttributesNames.available) {
              setAvailable(Objects.equals(modifiedVal, "1"));
-             return true;
          }
          else if (attributeName == AttributesNames.user_id) {
              setUserId(Integer.valueOf(modifiedVal));
-             return true;
          }
-        return false;
     }
 
 }

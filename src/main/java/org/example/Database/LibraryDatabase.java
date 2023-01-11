@@ -43,57 +43,6 @@ public class LibraryDatabase {
     }
 
     /**
-     * Shows users based on the searched terms.
-     *
-     * params:
-     * query_str - searched terms changed into a sql_statement.
-     *
-     * returns:
-     * users that match the searched term.
-     */
-    private static ArrayList<UserInDB> showUsers(final String query_str) throws SQLException {
-        ArrayList<UserInDB> users = new ArrayList<>();
-        try {
-            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
-            logger.info("Connected to database.");
-            Statement query = CONNECTION.createStatement();
-            ResultSet result = query.executeQuery(query_str);
-            while (result.next()) {
-                int id = result.getInt(DatabaseConstants.BasicConstants.USER_ID);
-                String name = result.getString(DatabaseConstants.UserConstants.USER_NAME);
-                String surname = result.getString(DatabaseConstants.UserConstants.USER_SURNAME);
-                String mail = result.getString(DatabaseConstants.BasicConstants.MAIL);
-                int booksNumber = result.getInt(DatabaseConstants.UserConstants.USER_BOOKS_NR);
-                users.add(new UserInDB(id, name, surname, mail, booksNumber));
-            }
-            logger.info("Executed searchUsers method.");
-            CONNECTION.close();
-        } catch (java.sql.SQLException e) {
-            logger.warn("Could not execute query in searchUsers method. " + e.getMessage());
-            throw e;
-        }
-        return users;
-
-    }
-
-    public static ArrayList<String> getUsers(final String query_str) throws SQLException{
-        ArrayList<String> result = new ArrayList<>();
-        ArrayList<UserInDB> users;
-        try {
-            users = showUsers(query_str);
-            for(var user : users) {
-                String respresentation = user.getId() + " " + user.getName() + " " + user.getSurname() + " " + user.getMail() + " " + user.getBooksNumber();
-                result.add(respresentation);
-            }
-        } catch (SQLException e) {
-            result.add("Exception occurred in database.");
-            logger.warn("Could not get users in getUsers. " + e.getMessage());
-        }
-        CONNECTION.close();
-        return result;
-    }
-
-    /**
      * Returns an arraylist of all the admins.
      */
     public static ArrayList<Admin> getAdmins() throws SQLException, NullOrEmptyStringException, InvalidIdException, InvalidLoginException {
@@ -163,7 +112,7 @@ public class LibraryDatabase {
      * initializes the hashtables for takenBooks and takenBooksOrderedTime.
      */
     public static void initWaiting() throws SQLException, InvalidIdException {
-        Hashtable<Integer, ArrayDeque<CommonUser>> takenBooksTemp = new Hashtable();
+        Hashtable<Integer, ArrayDeque<CommonUser>> takenBooksTemp = new Hashtable<>();
         Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTimeTemp = new Hashtable<>();
 
         try {
@@ -435,11 +384,6 @@ public class LibraryDatabase {
 }
 
 class DatabaseConstants {
-    public static final class Tables {
-        public static final int TABLE_USERS = 0;
-        public static final int TABLE_BOOKS = 1;
-        public static final int TABLE_LOANS = 2;
-    }
     public static final class BasicConstants {
         public static final String USER_ID = "user_id";
         public static final String BOOK_ID = "book_id";

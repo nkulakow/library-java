@@ -18,7 +18,7 @@ public class CommonUser extends User implements LibraryContextActions{
      */
     public void setUserId(Integer id) throws InvalidIdException
     {
-        if(id <= 0 && id != null)
+        if( id != null && id <= 0)
         {
             throw new InvalidIdException("Invalid User ID.");
         }
@@ -60,14 +60,13 @@ public class CommonUser extends User implements LibraryContextActions{
         catch (InvalidIdException e)
         {
             logger.warn("Invalid id in orderBook method " + e.getMessage());
-            return;
         }
 
     }
 
     public HashSet<Book> showBooks(Admin admin)
     {
-        HashSet<LibraryContextActions> books = admin.searchForObject(( String searchPattern ,Admin _admin)->{_admin.setToSearch(new HashSet<LibraryContextActions>(Admin.getBooks()));return _admin.search(searchPattern);}, Integer.valueOf(this.getUserId()).toString());
+        HashSet<LibraryContextActions> books = admin.searchForObject(( String searchPattern ,Admin _admin)->{_admin.setToSearch(new HashSet<>(Admin.getBooks()));return _admin.search(searchPattern);}, Integer.valueOf(this.getUserId()).toString());
         HashSet<Book> results = new HashSet<>();
         for(LibraryContextActions libObj:books)
         {
@@ -91,7 +90,6 @@ public class CommonUser extends User implements LibraryContextActions{
         catch (InvalidIdException e)
         {
             logger.warn("Invalid id in returnBook method " + e.getMessage());
-            return;
         }
     }
 
@@ -135,13 +133,13 @@ public class CommonUser extends User implements LibraryContextActions{
 
     @Override
     public boolean askToJoinCollection(Admin admin) {
-        CommonUser user = (CommonUser) this;
+        CommonUser user = this;
         return admin.updateUsers(user, LibObjectsChangeMode.Add);
     }
 
     @Override
     public boolean askToLeaveCollection(Admin admin) {
-        CommonUser user = (CommonUser) this;
+        CommonUser user = this;
         if(this.booksNr > 0)
             return false;
         for(ArrayDeque<CommonUser> queue:LibraryContext.getTakenBooks().values())
