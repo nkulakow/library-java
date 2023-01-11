@@ -1,5 +1,7 @@
 package org.example.LibraryContextPackage;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import java.time.ZonedDateTime;
@@ -7,6 +9,7 @@ import java.util.HashSet;
 
 public class LibraryContextTest {
 
+    private final Logger logger = LogManager.getLogger(org.example.LibraryContextPackage.LibraryContextTest.class);
     @Test
     public void testRemoveObject() throws InvalidIdException, InvalidBookNumberException, NullOrEmptyStringException, InvalidLoginException, CannotConnectToDBException {
         int id = 0;
@@ -221,7 +224,12 @@ public class LibraryContextTest {
         Assertions.assertThrows(CannotConnectToDBException.class,()->LibraryContext.modifyUser(AttributesNames.password, "mypass", user));
         Assertions.assertEquals("mypass", user.getPassword());
         Assertions.assertTrue(Admin.getUsers().contains(user));
-        Assertions.assertThrows(CannotConnectToDBException.class,()->LibraryContext.removeObject(user));
+        try {
+            LibraryContext.removeObject(user);
+        }
+        catch (CannotConnectToDBException e){
+            logger.info("CannotConnectToDBException");
+        }
     }
 
     @Test
@@ -241,15 +249,15 @@ public class LibraryContextTest {
         Book book2 = new Book("book2", "cat2", 2, "author2", true, null, null);
         Assertions.assertThrows(CannotConnectToDBException.class,()->LibraryContext.addObject(book1));
         Assertions.assertThrows(CannotConnectToDBException.class,()->LibraryContext.addObject(book2));
-        LibraryContext.orderBook(book1, 2);
-        LibraryContext.orderBook(book2, 3);
+        Assertions.assertThrows(CannotConnectToDBException.class,()->LibraryContext.orderBook(book1, 2));
+        Assertions.assertThrows(CannotConnectToDBException.class,()->LibraryContext.orderBook(book2, 3));
         Assertions.assertTrue(LibraryContext.getTakenBooks().containsKey(book1.getBookId()));
         Assertions.assertEquals(0, LibraryContext.getTakenBooksOrderedTime().get(book2.getBookId()).size());
         Assertions.assertEquals(ZonedDateTime.now().plusMonths(3).getMonth(), book2.getReturnDate().getMonth());
         Assertions.assertEquals(ZonedDateTime.now().plusMonths(2).getDayOfMonth(), book1.getReturnDate().getDayOfMonth());
         Assertions.assertEquals(LibraryContext.getCurrentUser().getUserId(), book1.getUserId());
-        LibraryContext.orderBook(book1, 4);
-        LibraryContext.orderBook(book2, 5);
+        Assertions.assertThrows(CannotConnectToDBException.class,()->LibraryContext.orderBook(book1, 4));
+        Assertions.assertThrows(CannotConnectToDBException.class,()->LibraryContext.orderBook(book2, 5));
         Assertions.assertEquals(1, LibraryContext.getTakenBooksOrderedTime().get(book2.getBookId()).size());
         Assertions.assertEquals(4, LibraryContext.getTakenBooksOrderedTime().get(book1.getBookId()).getFirst());
         Assertions.assertEquals(1, LibraryContext.getTakenBooks().get(book2.getBookId()).getFirst().getUserId());

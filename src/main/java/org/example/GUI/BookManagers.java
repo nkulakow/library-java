@@ -206,6 +206,8 @@ class BooksReturner extends FrameContentManager {
         }
         catch (CannotReturnBookException e){
             prompt.setText("Could not return book, please contact administrator");
+        } catch (CannotConnectToDBException e) {
+            //
         }
         LibraryGUI.main_page.adjustPromptSize();
     }
@@ -235,8 +237,13 @@ class BooksOrderer extends FrameContentManager {
         } catch (ArrayIndexOutOfBoundsException ignored) {
             return;
         }
-        LibraryContext.orderBook(book, months);
-        prompt.setText(book.getName() + " by " + book.getAuthor() + " successfully ordered");
-        LibraryGUI.main_page.adjustPromptSize();
+        try {
+            LibraryContext.orderBook(book, months);
+            prompt.setText(book.getName() + " by " + book.getAuthor() + " successfully ordered");
+            LibraryGUI.main_page.adjustPromptSize();
+        } catch (CannotConnectToDBException e) {
+            //
+        }
+
     }
 }
