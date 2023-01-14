@@ -1,6 +1,5 @@
 package org.example.Database;
 
-import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.LibraryContextPackage.*;
@@ -34,10 +33,6 @@ public class LibraryDatabase {
             logger.error("Could not get login to database info in initLoginInfo method " + e.getMessage());
             throw e;
         }
-    }
-    public static void initLoginInfoForTests()  {
-            LOGIN = "n";
-            HASHEDPASSWORD = "password";
     }
 
     /**
@@ -273,14 +268,19 @@ public class LibraryDatabase {
      * Adds a new row in PAP_WAITING.
      */
     public static void addWaiting(Book book, long months, int userId) throws SQLException {
+        String get_keys = DatabaseConstants.InquiriesConstants.SELECT_MAX_KEY ;
         int book_id = book.getBookId();
-        String query_str = "insert into nkulakow.pap_waiting values("+book_id+", "+userId+", "+months+")";
-        System.out.println(query_str);
+        String query_str = "insert into nkulakow.pap_waiting values(? ,"+book_id+", "+userId+", "+months+")";
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
             logger.info("Connected to database.");
             Statement query = CONNECTION.createStatement();
-            query.executeUpdate(query_str);
+            ResultSet result = query.executeQuery(get_keys);
+            result.next();
+            int wait_int = result.getInt("wait_id") + 1;
+            PreparedStatement statement = CONNECTION.prepareStatement(query_str);
+            statement.setInt(1, wait_int);
+            statement.executeUpdate();
             logger.info("Executed addWaiting method.");
         } catch (java.sql.SQLException e) {
             logger.warn("Could not execute query in addWaiting method " + e.getMessage());
@@ -422,5 +422,6 @@ class DatabaseConstants {
         public static final String SELECT_ADMINS = "SELECT a.*, p.login, p.password from nkulakow.PAP_ADMINS a join nkulakow.PAP_ADMINS_PASSWD p on(a.admin_id=p.admin_id)";
         public static final String SELECT_BOOKS = "SELECT * from nkulakow.PAP_BOOKS";
         public static final String SELECT_WAITING = "SELECT * from nkulakow.PAP_WAITING";
+        public static final String SELECT_MAX_KEY = "SELECT max(wait_id) as wait_id FROM nkulakow.pap_waiting";
     }
 }

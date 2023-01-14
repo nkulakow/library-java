@@ -72,38 +72,6 @@ public class LibraryContext {
         }
     }
 
-    /**
-    * Initializes LibContext specifically for tests - without allowing to connect do DB and without any Gui initialization.
-     * params:
-     * AsUser - a boolean value used to determine whether a user or an admin is trying to log in.
-     * returns:
-     * lack of value
-     */
-    public static void LibContextInitForTests(boolean AsUser) throws InvalidBookNumberException {
-        try {
-            LibraryDatabase.initLoginInfoForTests();
-
-            autoAdmin = null;
-            currentAdmin = null;
-            currentUser = null;
-            Admin.clearAll();
-            autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
-            autoAdmin.addObject(autoAdmin);
-            currentAdmin = autoAdmin;
-            autoAdmin.addObject(currentAdmin);
-
-            if(AsUser){
-                currentUser = new CommonUser("user", "Null", "user", "Null", 1, "mail", 0);
-                currentAdmin.addObject(currentUser);
-            }
-
-            takenBooks = new Hashtable<Integer, ArrayDeque<CommonUser>>();
-            takenBooksOrderedTime = new Hashtable<Integer, ArrayDeque<Long>>();
-        }
-        catch (NullOrEmptyStringException | InvalidIdException | InvalidLoginException e){
-            logger.error("Error in LibContextInitForTests: " + e.getMessage());
-        }
-    }
 
     /**
      * Initializes LibContext. Using LibraryDatabase gets Admins, Books, Users and books orders info and creates objects corresponding to them.
