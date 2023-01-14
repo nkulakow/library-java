@@ -20,9 +20,7 @@ public class LibraryDatabase {
     private static String LOGIN;
     private static String HASHEDPASSWORD;
     private static Connection CONNECTION;
-    @Getter
     private static Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks;
-    @Getter
     private static Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime;
     public static void initLoginInfo() throws IOException {
         try {
@@ -145,6 +143,13 @@ public class LibraryDatabase {
         CONNECTION.close();
         takenBooks = takenBooksTemp;
         takenBooksOrderedTime = takenBooksOrderedTimeTemp;
+    }
+
+    public static Hashtable<Integer, ArrayDeque<Long>> getTakenBooksOrderedTime() {
+        return takenBooksOrderedTime;
+    }
+    public static Hashtable<Integer, ArrayDeque<CommonUser>> getTakenBooks() {
+        return takenBooks;
     }
 
     /**
@@ -270,7 +275,7 @@ public class LibraryDatabase {
     public static void addWaiting(Book book, long months, int userId) throws SQLException {
         int book_id = book.getBookId();
         String query_str = "insert into nkulakow.pap_waiting values("+book_id+", "+userId+", "+months+")";
-
+        System.out.println(query_str);
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
             logger.info("Connected to database.");

@@ -96,6 +96,9 @@ public class LibraryContext {
                 currentUser = new CommonUser("user", "Null", "user", "Null", 1, "mail", 0);
                 currentAdmin.addObject(currentUser);
             }
+
+            takenBooks = new Hashtable<Integer, ArrayDeque<CommonUser>>();
+            takenBooksOrderedTime = new Hashtable<Integer, ArrayDeque<Long>>();
         }
         catch (NullOrEmptyStringException | InvalidIdException | InvalidLoginException e){
             logger.error("Error in LibContextInitForTests: " + e.getMessage());
@@ -111,17 +114,21 @@ public class LibraryContext {
      */
     public static void LibContextInit() {
         try {
+            currentAdmin = null;
+            currentUser = null;
+            Admin.clearAll();
             LibraryDatabase.initLoginInfo();
-
             autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
             autoAdmin.addObject(autoAdmin);
             currentAdmin = autoAdmin;
             autoAdmin.addObject(currentAdmin);
 
+
             var newAdmins = LibraryDatabase.getAdmins();
             for (var admin : newAdmins){
                 autoAdmin.addObject(admin);
             }
+
 
             var newUsers = LibraryDatabase.getCommonUsers();
             for(var user : newUsers){
@@ -134,6 +141,8 @@ public class LibraryContext {
                 autoAdmin.addObject(book);
             }
 
+            takenBooks = new Hashtable<>();
+            takenBooksOrderedTime = new Hashtable<>();
             takenBooks = LibraryDatabase.getTakenBooks();
             takenBooksOrderedTime = LibraryDatabase.getTakenBooksOrderedTime();
 
