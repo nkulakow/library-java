@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -215,6 +216,16 @@ public class LibraryContextTest {
     public void testOrderBook() throws NullOrEmptyStringException, InvalidIdException, InvalidBookNumberException, CannotConnectToDBException, InvalidLoginException {
         Book book1 = new Book("book1", "cat1", 1, "author1", true, null, null);
         Book book2 = new Book("book2", "cat2", 2, "author2", true, null, null);
+        Book book3 = new Book("book2", "cat2", 3, "author2", true, null, null);
+        CommonUser user = new CommonUser("testorderbook2", "pass2", "testorder2", "a", 151, "a", 0);
+        ArrayDeque<CommonUser> user_deque = new ArrayDeque<>();
+        user_deque.add(user);
+        ArrayDeque<Long> months_deque = new ArrayDeque<>();
+        months_deque.add(1L);
+        Hashtable<Integer, ArrayDeque<CommonUser>> taken_books = new Hashtable<>();
+        Hashtable<Integer, ArrayDeque<Long>> taken_books_time = new Hashtable<>();
+        taken_books.put(book3.getBookId(), user_deque);
+        taken_books_time.put(book3.getBookId(), months_deque);
         try (MockedStatic<LibraryDatabase> mocked = mockStatic(LibraryDatabase.class)){
             mocked.when(LibraryDatabase::getAdmins).thenReturn(new ArrayList<Admin>());
             ArrayList<CommonUser> users = new ArrayList<>();
@@ -222,19 +233,23 @@ public class LibraryContextTest {
             mocked.when(LibraryDatabase::getCommonUsers).thenReturn(users);
             mocked.when(LibraryDatabase::getBooks).thenReturn(new ArrayList<Book>());
             mocked.when(LibraryDatabase::initWaiting).then( invocationOnMock -> null);
-            mocked.when(LibraryDatabase::getTakenBooks).thenReturn(new Hashtable<>());
-            mocked.when(LibraryDatabase::getTakenBooksOrderedTime).thenReturn(new Hashtable<>());
+            mocked.when(LibraryDatabase::getTakenBooks).thenReturn(taken_books);
+            mocked.when(LibraryDatabase::getTakenBooksOrderedTime).thenReturn(taken_books_time);
             mocked.when(() -> LibraryDatabase.modifyBook(book1)).then(invocationOnMock -> null);
             mocked.when(() -> LibraryDatabase.modifyBook(book2)).then(invocationOnMock -> null);
+            mocked.when(() -> LibraryDatabase.modifyBook(book3)).then(invocationOnMock -> null);
             mocked.when(() -> LibraryDatabase.addBook(book1)).then(invocationOnMock -> null);
             mocked.when(() -> LibraryDatabase.addBook(book2)).then(invocationOnMock -> null);
+            mocked.when(() -> LibraryDatabase.addBook(book3)).then(invocationOnMock -> null);
             mocked.when(() -> LibraryDatabase.addWaiting(book1, 4, 15)).then(invocationOnMock -> null);
             mocked.when(() -> LibraryDatabase.addWaiting(book2, 5, 15)).then(invocationOnMock -> null);
+            mocked.when(() -> LibraryDatabase.addWaiting(book3, 6, 15)).then(invocationOnMock -> null);
 
             LibraryContext.LibContextInit();
             Assertions.assertTrue(LibraryContext.checkLoggingUsers("testorderbook", "pass"));
             LibraryContext.addObject(book1);
             LibraryContext.addObject(book2);
+            LibraryContext.addObject(book3);
             LibraryContext.orderBook(book1, 2);
             LibraryContext.orderBook(book2, 3);
 
@@ -243,11 +258,14 @@ public class LibraryContextTest {
             Assertions.assertEquals(ZonedDateTime.now().plusMonths(3).getMonth(), book2.getReturnDate().getMonth());
             Assertions.assertEquals(ZonedDateTime.now().plusMonths(2).getDayOfMonth(), book1.getReturnDate().getDayOfMonth());
             Assertions.assertEquals(LibraryContext.getCurrentUser().getUserId(), book1.getUserId());
+            Assertions.assertTrue(LibraryContext.getTakenBooks().containsKey(book3.getBookId()));
             LibraryContext.orderBook(book1, 4);
             LibraryContext.orderBook(book2, 5);
+            LibraryContext.orderBook(book3, 6);
             Assertions.assertEquals(1, LibraryContext.getTakenBooksOrderedTime().get(book2.getBookId()).size());
             Assertions.assertEquals(4, LibraryContext.getTakenBooksOrderedTime().get(book1.getBookId()).getFirst());
             Assertions.assertEquals(15, LibraryContext.getTakenBooks().get(book2.getBookId()).getFirst().getUserId());
+            Assertions.assertEquals(151, LibraryContext.getTakenBooks().get(book3.getBookId()).getFirst().getUserId());
         }
     }
 }
