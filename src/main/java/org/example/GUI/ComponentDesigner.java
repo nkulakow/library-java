@@ -108,7 +108,7 @@ public class ComponentDesigner {
         //south
         var adding_panel = getSpacer(-1, 150);
         adding_panel.setLayout(new BorderLayout());
-        adding_panel.add(ComponentDesigner.makeAddingPanel());
+        adding_panel.add(ComponentDesigner.makeUserAddingPanel());
         content_panel.add(adding_panel, BorderLayout.SOUTH);
 
         //content panel spacers
@@ -151,12 +151,14 @@ public class ComponentDesigner {
         search_button.setAction_manager(new Searcher());
 
         var remove_button = ComponentDesigner.makeOptionButton("Remove");
+        remove_button.addActionListener(LibraryGUI.main_page);
+        remove_button.setAction_manager(new UserDeleter());
 
         var add_button = ComponentDesigner.makeOptionButton("Add");
         add_button.addActionListener(LibraryGUI.main_page);
         add_button.setAction_manager(new AddingPanelShower());
 
-        var search_field = (JTextField) ComponentDesigner.makeBorderedComponent(new JTextField("Search..."), 3, 3, 3, 3);
+        var search_field = (JTextField) ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
         LibraryGUI.main_page.setSearch_field(search_field);
 
         int gap_vertical = 30; int button_size = 100; int field_size = 300; int gap_horizontal = 30;
@@ -197,7 +199,7 @@ public class ComponentDesigner {
 
         var search_button = ComponentDesigner.makeOptionButton("Search");
 
-        var search_field = (JTextField) ComponentDesigner.makeBorderedComponent(new JTextField("Search..."), 3, 3, 3, 3);
+        var search_field = (JTextField) ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
         LibraryGUI.main_page.setSearch_field(search_field);
 
         int gap_vertical = 30; int button_size = 150; int field_size = 300; int gap_horizontal = 30;
@@ -224,7 +226,7 @@ public class ComponentDesigner {
         order_panel.setLayout(layout);
         order_panel.setOpaque(false);
 
-        var months_field = ComponentDesigner.makeBorderedComponent(new JTextField("Months..."), 3, 3, 3, 3);
+        var months_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
 
         var months_label = ComponentDesigner.makeDefaultLabel("Enter months number", 15);
 
@@ -254,7 +256,7 @@ public class ComponentDesigner {
         return order_panel;
     }
 
-    private static JPanel makeDataPanel() {
+    private static JPanel makeUserDataPanel() {
         var adding_panel = new JPanel();
         var layout = new FlowLayout(FlowLayout.TRAILING, 30, 5);
         adding_panel.setLayout(layout);
@@ -266,17 +268,16 @@ public class ComponentDesigner {
         var button_panel_size = new Dimension(100, panel_size.height);
         int font_size = 15;
 
-        var name_field = ComponentDesigner.makeBorderedComponent(new JTextField("Name"), 3, 3, 3, 3);
+        var name_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
         name_field.setPreferredSize(field_size);
-        var surname_field = ComponentDesigner.makeBorderedComponent(new JTextField("Surname"), 3, 3, 3, 3);
+        var surname_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
         surname_field.setPreferredSize(field_size);
-        var login_field = ComponentDesigner.makeBorderedComponent(new JTextField("Login"), 3, 3, 3, 3);
+        var login_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
         login_field.setPreferredSize(field_size);
         var password_field = ComponentDesigner.makeBorderedComponent(new JPasswordField(), 3, 3, 3, 3);
         password_field.setPreferredSize(field_size);
-        var mail_field = ComponentDesigner.makeBorderedComponent(new JTextField("Mail"), 3, 3, 3, 3);
+        var mail_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
         mail_field.setPreferredSize(field_size);
-        var add_button = ComponentDesigner.makeOptionButton("Add", 100, field_size.height);
 
         var name_panel = new JPanel();
         name_panel.setPreferredSize(panel_size);
@@ -317,9 +318,53 @@ public class ComponentDesigner {
         return adding_panel;
     }
 
+    private static JPanel makeBookDataPanel() {
+        var adding_panel = new JPanel();
+        var layout = new FlowLayout(FlowLayout.TRAILING, 30, 5);
+        adding_panel.setLayout(layout);
+        adding_panel.setOpaque(false);
 
-    public static JPanel makeAddingPanel() {
-        var adding_panel = ComponentDesigner.makeDataPanel();
+        var field_size = new Dimension(200, 40);
+        var prompt_size = new Dimension(200, 15);
+        var panel_size = new Dimension(field_size.width, field_size.height + prompt_size.height + 10);
+        var button_panel_size = new Dimension(100, panel_size.height);
+        int font_size = 15;
+
+        var name_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
+        name_field.setPreferredSize(field_size);
+        var author_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
+        author_field.setPreferredSize(field_size);
+        var category_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
+        category_field.setPreferredSize(field_size);
+
+        var name_panel = new JPanel();
+        name_panel.setPreferredSize(panel_size);
+        var name_prompt = ComponentDesigner.makeDefaultLabel("Name:", font_size);
+        name_prompt.setPreferredSize(prompt_size);
+        name_panel.add(name_prompt); name_panel.add(name_field); name_panel.setOpaque(false);
+
+        var author_panel = new JPanel();
+        author_panel.setPreferredSize(panel_size);
+        var surname_prompt = ComponentDesigner.makeDefaultLabel("Author:", font_size);
+        surname_prompt.setPreferredSize(prompt_size);
+        author_panel.add(surname_prompt); author_panel.add(author_field); author_panel.setOpaque(false);
+
+        var category_panel = new JPanel();
+        category_panel.setPreferredSize(panel_size);
+        var login_prompt = ComponentDesigner.makeDefaultLabel("Category:", font_size);
+        login_prompt.setPreferredSize(prompt_size);
+        category_panel.add(login_prompt); category_panel.add(category_field); category_panel.setOpaque(false);
+
+        adding_panel.add(name_panel);
+        adding_panel.add(author_panel);
+        adding_panel.add(category_panel);
+
+        return adding_panel;
+    }
+
+
+    public static JPanel makeUserAddingPanel() {
+        var adding_panel = ComponentDesigner.makeUserDataPanel();
 
         var field_size = new Dimension(200, 40);
         var prompt_size = new Dimension(200, 15);
@@ -327,6 +372,8 @@ public class ComponentDesigner {
         var button_panel_size = new Dimension(100, panel_size.height);
 
         var add_button = ComponentDesigner.makeOptionButton("Add", 100, field_size.height);
+        add_button.addActionListener(LibraryGUI.main_page);
+        add_button.setAction_manager(new UserAdder());
 
         var button_panel = new JPanel();
         button_panel.setPreferredSize(button_panel_size);
@@ -339,8 +386,8 @@ public class ComponentDesigner {
         return adding_panel;
     }
 
-    public static JPanel makeModifyPanel() {
-        var adding_panel = ComponentDesigner.makeDataPanel();
+    public static JPanel makeUserModifyPanel() {
+        var adding_panel = ComponentDesigner.makeUserDataPanel();
 
         var field_size = new Dimension(200, 40);
         var prompt_size = new Dimension(200, 15);
@@ -362,14 +409,37 @@ public class ComponentDesigner {
         return adding_panel;
     }
 
+    public static JPanel makeBookModifyPanel() {
+        var modify_panel = ComponentDesigner.makeBookDataPanel();
+
+        var field_size = new Dimension(200, 40);
+        var prompt_size = new Dimension(200, 15);
+        var panel_size = new Dimension(field_size.width, field_size.height + prompt_size.height + 10);
+        var button_panel_size = new Dimension(100, panel_size.height);
+
+        var modify_button = ComponentDesigner.makeOptionButton("Modify", 100, field_size.height);
+        modify_button.addActionListener(LibraryGUI.main_page);
+        modify_button.setAction_manager(new BookModifier());
+
+        var button_panel = new JPanel();
+        button_panel.setPreferredSize(button_panel_size);
+        var button_prompt = ComponentDesigner.makeDefaultLabel("");
+        button_prompt.setPreferredSize(prompt_size);
+        button_panel.add(button_prompt); button_panel.add(modify_button); button_panel.setOpaque(false);
+
+        modify_panel.add(button_panel, 0);
+
+        return modify_panel;
+    }
+
     public static ObjectTable makeUserTable(String[][] data) {
         String[] column_names = {"Id", "Name", "Surname", "Login", "Mail"};
-        return new ObjectTable(data, column_names);
+        return new ObjectTable(data, column_names, FrameContentManager.USERS);
     }
 
     public static ObjectTable makeBookTable(String[][] data) {
         String[] column_names = {"Id", "Name", "Author", "Category"};
-        return new ObjectTable(data, column_names);
+        return new ObjectTable(data, column_names, FrameContentManager.BOOKS);
     }
 
     public static JPanel makeLeftAdminPanel() {
@@ -455,15 +525,15 @@ public class ComponentDesigner {
         var label = ComponentDesigner.makeDefaultLabel("Your data:", 40);
         label.setHorizontalAlignment(SwingConstants.CENTER);
 
-        var name_field = ComponentDesigner.makeBorderedComponent(new JTextField("Name"), 3, 3, 3, 3);
+        var name_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
         name_field.setPreferredSize(field_size);
-        var surname_field = ComponentDesigner.makeBorderedComponent(new JTextField("Surname"), 3, 3, 3, 3);
+        var surname_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
         surname_field.setPreferredSize(field_size);
-        var login_field = ComponentDesigner.makeBorderedComponent(new JTextField("Login"), 3, 3, 3, 3);
+        var login_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
         login_field.setPreferredSize(field_size);
         var password_field = ComponentDesigner.makeBorderedComponent(new JPasswordField(), 3, 3, 3, 3);
         password_field.setPreferredSize(field_size);
-        var mail_field = ComponentDesigner.makeBorderedComponent(new JTextField("Mail"), 3, 3, 3, 3);
+        var mail_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
         mail_field.setPreferredSize(field_size);
         var button = ComponentDesigner.makeOptionButton("Confirm");
 

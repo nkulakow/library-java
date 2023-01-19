@@ -11,10 +11,10 @@ public class ObjectTable extends JTable {
     public static final int column_user_login = 3;
     public static final int column_user_mail = 4;
 
-    public ObjectTable(String[][] data, String[] column_names) {
+    public ObjectTable(String[][] data, String[] column_names, int data_type) {
         super(new DefaultModel(data, column_names));
         this.initVisuals();
-        this.initSelectionModel();
+        this.changeSelectionModelListener(data_type);
     }
 
     private void initVisuals() {
@@ -26,9 +26,12 @@ public class ObjectTable extends JTable {
         this.getTableHeader().setFont(new Font(Font.SERIF, Font.ITALIC, 20));
     }
 
-    private void initSelectionModel() {
+    public void changeSelectionModelListener(int mode) {
         var model = this.getSelectionModel();
-        model.addListSelectionListener(new UserSelector());
+        if (mode == FrameContentManager.USERS)
+            model.addListSelectionListener(new UserSelector());
+        else
+            model.addListSelectionListener(new BookSelector());
     }
 
     public static class DefaultModel extends DefaultTableModel {

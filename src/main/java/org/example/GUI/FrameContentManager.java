@@ -7,6 +7,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -21,9 +22,6 @@ abstract class FrameContentManager {
     public static final int ADMIN_USER_MOD = 4;
     public static final int USER_USER_MOD = 5;
 
-    public FrameContentManager() {
-
-    }
     abstract void manage();
 
     public static void noDataPanic(JPanel content_panel) {
@@ -37,6 +35,38 @@ abstract class FrameContentManager {
         var center_panel = (JPanel) content_panel_layout.getLayoutComponent(BorderLayout.CENTER);
         var center_panel_layout = (BorderLayout) center_panel.getLayout();
         return (JPanel) center_panel_layout.getLayoutComponent(BorderLayout.SOUTH);
+    }
+
+    public static String[] getUserData() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+
+        var data_panel = (JPanel) bottom_panel.getComponent(0);
+
+        var name_panel = (JPanel)(data_panel.getComponent(1));
+        var name_field = (JTextField) (name_panel.getComponent(1));
+
+        var surname_panel = (JPanel)(data_panel.getComponent(2));
+        var surname_field = (JTextField) (surname_panel.getComponent(1));
+
+        var login_panel = (JPanel)(data_panel.getComponent(3));
+        var login_field = (JTextField) (login_panel.getComponent(1));
+
+        var password_panel = (JPanel)(data_panel.getComponent(4));
+        var password_field = (JPasswordField) (password_panel.getComponent(1));
+
+        var mail_panel = (JPanel)(data_panel.getComponent(5));
+        var mail_field = (JTextField) (mail_panel.getComponent(1));
+
+        String name, surname, login, mail, password_str;
+        char[] password;
+        name = name_field.getText();
+        surname = surname_field.getText();
+        login = login_field.getText();
+        password = password_field.getPassword();
+        password_str = new String(password);
+        mail = mail_field.getText();
+
+        return new String[]{name, surname, login, mail, password_str};
     }
 }
 
@@ -86,6 +116,7 @@ class BookTableShower extends FrameContentManager {
         LibraryGUI.main_page.setSearch_table(table);
 
         Searcher.search_mode = Searcher.BOOKS;
+        Searcher.last_results = null;
     }
 }
 
@@ -98,6 +129,7 @@ class UserTableShower extends FrameContentManager {
         LibraryGUI.main_page.setSearch_table(table);
 
         Searcher.search_mode = Searcher.USERS;
+        Searcher.last_results = null;
     }
 }
 
@@ -106,7 +138,7 @@ class ModifyPanelShower extends FrameContentManager {
     void manage() {
         var bottom_panel = FrameContentManager.getBottomFramePanel();
         bottom_panel.removeAll();
-        bottom_panel.add(ComponentDesigner.makeModifyPanel());
+        bottom_panel.add(ComponentDesigner.makeUserModifyPanel());
         bottom_panel.validate();
     }
 }
@@ -116,7 +148,7 @@ class AddingPanelShower extends FrameContentManager {
     void manage() {
         var bottom_panel = FrameContentManager.getBottomFramePanel();
         bottom_panel.removeAll();
-        bottom_panel.add(ComponentDesigner.makeAddingPanel());
+        bottom_panel.add(ComponentDesigner.makeUserModifyPanel());
         bottom_panel.validate();
     }
 }
@@ -175,7 +207,7 @@ class UserSelector extends FrameContentManager implements ListSelectionListener 
     void manage() {
         var bottom_panel = FrameContentManager.getBottomFramePanel();
         bottom_panel.removeAll();
-        bottom_panel.add(ComponentDesigner.makeModifyPanel());
+        bottom_panel.add(ComponentDesigner.makeUserModifyPanel());
         bottom_panel.validate();
 
         var searched = Searcher.last_results.toArray();
@@ -220,40 +252,21 @@ class UserSelector extends FrameContentManager implements ListSelectionListener 
 class UserModifier extends FrameContentManager {
     @Override
     void manage() {
-        var bottom_panel = FrameContentManager.getBottomFramePanel();
+        String name, surname, login, mail, password;
+        String[] data = FrameContentManager.getUserData();
 
-        var modify_panel = (JPanel) bottom_panel.getComponent(0);
-
-        var name_panel = (JPanel)(modify_panel.getComponent(1));
-        var name_field = (JTextField) (name_panel.getComponent(1));
-
-        var surname_panel = (JPanel)(modify_panel.getComponent(2));
-        var surname_field = (JTextField) (surname_panel.getComponent(1));
-
-        var login_panel = (JPanel)(modify_panel.getComponent(3));
-        var login_field = (JTextField) (login_panel.getComponent(1));
-
-        var password_panel = (JPanel)(modify_panel.getComponent(4));
-        var password_field = (JPasswordField) (password_panel.getComponent(1));
-
-        var mail_panel = (JPanel)(modify_panel.getComponent(5));
-        var mail_field = (JTextField) (mail_panel.getComponent(1));
-
-        String name, surname, login, mail, password_str;
-        char[] password;
-        name = name_field.getText();
-        surname = surname_field.getText();
-        login = login_field.getText();
-        password = password_field.getPassword();
-        password_str = new String(password);
-        mail = mail_field.getText();
+        name = data[0];
+        surname = data[1];
+        login = data[2];
+        mail = data[3];
+        password = data[4];
 
         Map<AttributesNames, String> map= new HashMap<>();
         map.put(AttributesNames.name, name);
         map.put(AttributesNames.surname, surname);
         map.put(AttributesNames.mail, mail);
         map.put(AttributesNames.login, login);
-        map.put(AttributesNames.password, password_str);
+        map.put(AttributesNames.password, password);
         try {
             LibraryContext.modifyFewUserAttributes(map, UserSelector.selected_id);
             int row_index = UserSelector.selected_index;
@@ -270,6 +283,115 @@ class UserModifier extends FrameContentManager {
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
         }
+    }
+}
+
+class UserDeleter extends FrameContentManager {
+    @Override
+    void manage() {
+        int index = UserSelector.selected_index;
+        var selected = Searcher.last_results.toArray();
+        CommonUser user;
+        try {
+            user = (CommonUser) selected[index];
+            LibraryContext.removeObject(user);
+            ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).removeRow(index);
+
+            System.out.println("User successfully deleted");
+        } catch (CannotConnectToDBException e) {
+            System.out.println("Cannot connect to database, check your connection");
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+
+        }
+    }
+}
+
+class UserAdder extends FrameContentManager {
+    @Override
+    void manage() {
+        String name, surname, login, mail, password;
+        String[] data = FrameContentManager.getUserData();
+
+        name = data[0];
+        surname = data[1];
+        login = data[2];
+        mail = data[3];
+        password = data[4];
+
+        int id = LibraryContext.generateCommonUserID();
+
+        try {
+            LibraryContext.addObject(new CommonUser(
+                    login,
+                    password,
+                    name,
+                    surname,
+                    id,
+                    mail,
+                    0   //books number
+            ));
+            ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).addRow(new String[]{Integer.toString(id), name, surname, login, mail});
+            System.out.println("User successfully added");
+        } catch (NullOrEmptyStringException e) {
+            System.out.println("User data cannot be empty");
+        } catch (InvalidIdException | NumberFormatException e) {
+            System.out.println("Incorrect user id");
+        } catch (InvalidLoginException e) {
+            System.out.println("Login already exists");
+        } catch (CannotConnectToDBException e) {
+            System.out.println("Cannot connect to database, check your connection");
+        } catch (InvalidBookNumberException ignored) {
+
+        }
+    }
+}
+
+class BookSelector extends FrameContentManager implements ListSelectionListener {
+
+    public static int selected_id;
+    public static int selected_index;
+    @Override
+    void manage() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+        bottom_panel.removeAll();
+        bottom_panel.add(ComponentDesigner.makeBookModifyPanel());
+        bottom_panel.validate();
+
+        var searched = Searcher.last_results.toArray();
+
+        var selected = (Book) searched[selected_index];
+        BookSelector.selected_id = selected.getBookId();
+
+        var modify_panel = (JPanel) bottom_panel.getComponent(0);
+
+        var name_panel = (JPanel)(modify_panel.getComponent(1));
+        var name_field = (JTextField) (name_panel.getComponent(1));
+
+        var author_panel = (JPanel)(modify_panel.getComponent(2));
+        var author_field = (JTextField) (author_panel.getComponent(1));
+
+        var category_panel = (JPanel)(modify_panel.getComponent(3));
+        var category_field = (JTextField) (category_panel.getComponent(1));
+
+        name_field.setText(selected.getName());
+        author_field.setText(selected.getAuthor());
+        category_field.setText(selected.getCategory());
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        var model = (ListSelectionModel) e.getSource();
+        if(!model.isSelectionEmpty()) {
+            selected_index = model.getMinSelectionIndex();
+            this.manage();
+        }
+    }
+}
+
+class BookModifier extends FrameContentManager {
+    @Override
+    void manage() {
+
     }
 }
 
