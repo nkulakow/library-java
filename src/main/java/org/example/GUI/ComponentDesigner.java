@@ -644,9 +644,13 @@ public class ComponentDesigner {
         account_button.addActionListener(LibraryGUI.main_page);
         account_button.setAction_manager(new AccountPanelSwitcher());
 
-        var library_button = ComponentDesigner.makeOptionButton("Library", 140, 100);
-        library_button.addActionListener(LibraryGUI.main_page);
-        library_button.setAction_manager(new BorrowedBooksShower());
+        var borrowed_button = ComponentDesigner.makeOptionButton("Borrowed books", 140, 100);
+        borrowed_button.addActionListener(LibraryGUI.main_page);
+        borrowed_button.setAction_manager(new BorrowedBooksShower());
+
+        var ordered_button = ComponentDesigner.makeOptionButton("Ordered books", 140, 100);
+        ordered_button.addActionListener(LibraryGUI.main_page);
+        ordered_button.setAction_manager(new OrderedBooksShower());
 
         var exit_button = ComponentDesigner.makeOptionButton("EXIT", 300, 60);
         exit_button.addActionListener(LibraryGUI.main_page);
@@ -667,15 +671,23 @@ public class ComponentDesigner {
         layout.putConstraint(SpringLayout.SOUTH, welcome_label, 100, SpringLayout.NORTH, left_desktop);
 
         layout.putConstraint(SpringLayout.SOUTH, exit_button, -20, SpringLayout.SOUTH, left_desktop);
-        layout.putConstraint(SpringLayout.WEST, exit_button, 10, SpringLayout.WEST, left_desktop);
-        layout.putConstraint(SpringLayout.EAST, exit_button, -10, SpringLayout.EAST, left_desktop);
+        layout.putConstraint(SpringLayout.WEST, exit_button, 20, SpringLayout.WEST, left_desktop);
+        layout.putConstraint(SpringLayout.EAST, exit_button, -20, SpringLayout.EAST, left_desktop);
 
-        layout.putConstraint(SpringLayout.SOUTH, account_button, -60, SpringLayout.NORTH, exit_button);
-        layout.putConstraint(SpringLayout.WEST, account_button, 10, SpringLayout.WEST, left_desktop);
+        layout.putConstraint(SpringLayout.WEST, ordered_button, 20, SpringLayout.WEST, left_desktop);
+        layout.putConstraint(SpringLayout.EAST, ordered_button, -20, SpringLayout.EAST, left_desktop);
+        layout.putConstraint(SpringLayout.SOUTH, ordered_button, -40, SpringLayout.NORTH, exit_button);
+        layout.putConstraint(SpringLayout.NORTH, ordered_button, -80, SpringLayout.NORTH, exit_button);
 
-        layout.putConstraint(SpringLayout.SOUTH, library_button, -60, SpringLayout.NORTH, exit_button);
-        layout.putConstraint(SpringLayout.WEST, library_button, 20, SpringLayout.EAST, account_button);
-        layout.putConstraint(SpringLayout.EAST, library_button, -10, SpringLayout.EAST, left_desktop);
+        layout.putConstraint(SpringLayout.WEST, borrowed_button, 20, SpringLayout.WEST, left_desktop);
+        layout.putConstraint(SpringLayout.EAST, borrowed_button, -20, SpringLayout.EAST, left_desktop);
+        layout.putConstraint(SpringLayout.SOUTH, borrowed_button, -20, SpringLayout.NORTH, ordered_button);
+        layout.putConstraint(SpringLayout.NORTH, borrowed_button, -60, SpringLayout.NORTH, ordered_button);
+
+        layout.putConstraint(SpringLayout.WEST, account_button, 20, SpringLayout.WEST, left_desktop);
+        layout.putConstraint(SpringLayout.EAST, account_button, -20, SpringLayout.EAST, left_desktop);
+        layout.putConstraint(SpringLayout.SOUTH, account_button, -20, SpringLayout.NORTH, borrowed_button);
+        layout.putConstraint(SpringLayout.NORTH, account_button, -60, SpringLayout.NORTH, borrowed_button);
 
         layout.putConstraint(SpringLayout.NORTH, info_panel, 20, SpringLayout.SOUTH, welcome_label);
         layout.putConstraint(SpringLayout.WEST, info_panel, 20, SpringLayout.WEST, left_desktop);
@@ -683,7 +695,8 @@ public class ComponentDesigner {
 
         left_desktop.add(welcome_label);
         left_desktop.add(account_button);
-        left_desktop.add(library_button);
+        left_desktop.add(ordered_button);
+        left_desktop.add(borrowed_button);
         left_desktop.add(exit_button);
         left_desktop.add(info_panel);
 
@@ -744,7 +757,7 @@ public class ComponentDesigner {
 
     public static JPanel makeBookReturnPanel () {
         var return_panel = new JPanel();
-        var layout = new FlowLayout(FlowLayout.TRAILING, 30, 5);
+        var layout = new FlowLayout(FlowLayout.TRAILING, 50, 5);
         return_panel.setLayout(layout);
         return_panel.setOpaque(false);
 

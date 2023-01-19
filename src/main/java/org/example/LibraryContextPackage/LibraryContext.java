@@ -561,6 +561,18 @@ public class LibraryContext {
         return borrowed;
     }
 
+    static public String[][] getOrderedBooksRepresentation() {
+        var borrowed = LibraryContext.getOrderedBooks();
+        String[][] result = new String[borrowed.size()][5];
+        int i = 0;
+        for(var book :  borrowed) {
+            result[i] = new String[]{Integer.toString(book.getBookId()), book.getName(), book.getAuthor(), book.getCategory(), book.getReturnDate().toString()};
+            i++;
+        }
+
+        return result;
+    }
+
     /**
      * Generate ID for CommonUser.
      */

@@ -97,9 +97,10 @@ abstract class FrameContentManager {
             panel.add(ComponentDesigner.makeUserAddingPanel());
         else if (mode == FrameContentManager.BOOKS)
             panel.add(ComponentDesigner.makeBookAddingPanel());
-        else
+        else if (mode == FrameContentManager.BOOKS_BORROWED)
             panel.add(ComponentDesigner.makeBookReturnPanel());
         panel.validate();
+        panel.repaint();
     }
 
     public static String[] getSelfData() {
@@ -701,6 +702,22 @@ class BooksReturner extends FrameContentManager {
         } catch (CannotConnectToDBException e) {
             System.out.println("Cannot connect");
         }
+    }
+}
+
+class OrderedBooksShower extends FrameContentManager {
+    @Override
+    void manage() {
+        var table = ComponentDesigner.makeOrderedBookTable(LibraryContext.getOrderedBooksRepresentation(), FrameContentManager.BOOKS_BORROWED);
+        var pane = LibraryGUI.main_page.getTable_pane();
+        pane.setViewportView(table);
+        LibraryGUI.main_page.setSearch_table(table);
+        LibraryGUI.main_page.current_mode = FrameContentManager.BOOKS_ORDERED;
+
+        Searcher.search_mode = Searcher.BOOKS_ORDERED;
+        Searcher.last_results = null;
+
+        FrameContentManager.clearBottomPanel(FrameContentManager.BOOKS_ORDERED);
     }
 }
 
