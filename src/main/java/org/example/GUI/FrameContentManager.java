@@ -156,13 +156,14 @@ class Searcher extends FrameContentManager {
             data[i] = object.getRepresentation();
             i++;
         }
-        JTable table;
+        ObjectTable table;
         if(Searcher.search_mode == Searcher.USERS)
             table = ComponentDesigner.makeUserTable(data);
         else
             table = ComponentDesigner.makeBookTable(data);
         var pane = LibraryGUI.main_page.getTable_pane();
         pane.setViewportView(table);
+        LibraryGUI.main_page.setSearch_table(table);
     }
 }
 
@@ -172,12 +173,17 @@ class UserSelector extends FrameContentManager implements ListSelectionListener 
     public static int selected_index;
     @Override
     void manage() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+        bottom_panel.removeAll();
+        bottom_panel.add(ComponentDesigner.makeModifyPanel());
+        bottom_panel.validate();
+
         var searched = Searcher.last_results.toArray();
         
         var selected = (CommonUser) searched[selected_index];
-        selected_id = selected.getUserId();
-//
-        var modify_panel = (JPanel) FrameContentManager.getBottomFramePanel().getComponent(0);
+        UserSelector.selected_id = selected.getUserId();
+
+        var modify_panel = (JPanel) bottom_panel.getComponent(0);
 
         var name_panel = (JPanel)(modify_panel.getComponent(1));
         var name_field = (JTextField) (name_panel.getComponent(1));
@@ -205,8 +211,7 @@ class UserSelector extends FrameContentManager implements ListSelectionListener 
     public void valueChanged(ListSelectionEvent e) {
         var model = (ListSelectionModel) e.getSource();
         if(!model.isSelectionEmpty()) {
-            int index = model.getMinSelectionIndex();
-            selected_index = index;
+            selected_index = model.getMinSelectionIndex();
             this.manage();
         }
     }
@@ -215,39 +220,56 @@ class UserSelector extends FrameContentManager implements ListSelectionListener 
 class UserModifier extends FrameContentManager {
     @Override
     void manage() {
-//        var modify_panel = FrameContentManager.getBottomFramePanel();
-//        var name_field = (JTextField) modify_panel.getComponent(1);
-//        var surname_field = (JTextField) modify_panel.getComponent(2);
-//        var login_field = (JTextField) modify_panel.getComponent(3);
-//        var password_field = (JPasswordField) modify_panel.getComponent(4);
-//        var mail_field = (JTextField) modify_panel.getComponent(5);
-//
-//        String name, surname, login, mail, password_str;
-//        char[] password;
-//        name = name_field.getText();
-//        surname = surname_field.getText();
-//        login = login_field.getText();
-//        password = password_field.getPassword();
-//        password_str = new String(password);
-//        mail = mail_field.getText();
-//
-//        Map<AttributesNames, String> map= new HashMap<>();
-//        map.put(AttributesNames.name, name);
-//        map.put(AttributesNames.surname, surname);
-//        map.put(AttributesNames.mail, mail);
-//        map.put(AttributesNames.login, login);
-//        map.put(AttributesNames.password, password_str);
-//        try {
-//            LibraryContext.modifyFewUserAttributes(map, );
-//        } catch (NullOrEmptyStringException e) {
-//            System.out.println("User data cannot be empty");
-//        } catch (InvalidLoginException e) {
-//            System.out.println("Login already exists");
-//        } catch (CannotConnectToDBException e) {
-//            System.out.println("Cannot connect to database, check your connection");
-//        } catch (InvalidBookNumberException | InvalidIdException ignored) {
-//
-//        }
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+
+        var modify_panel = (JPanel) bottom_panel.getComponent(0);
+
+        var name_panel = (JPanel)(modify_panel.getComponent(1));
+        var name_field = (JTextField) (name_panel.getComponent(1));
+
+        var surname_panel = (JPanel)(modify_panel.getComponent(2));
+        var surname_field = (JTextField) (surname_panel.getComponent(1));
+
+        var login_panel = (JPanel)(modify_panel.getComponent(3));
+        var login_field = (JTextField) (login_panel.getComponent(1));
+
+        var password_panel = (JPanel)(modify_panel.getComponent(4));
+        var password_field = (JPasswordField) (password_panel.getComponent(1));
+
+        var mail_panel = (JPanel)(modify_panel.getComponent(5));
+        var mail_field = (JTextField) (mail_panel.getComponent(1));
+
+        String name, surname, login, mail, password_str;
+        char[] password;
+        name = name_field.getText();
+        surname = surname_field.getText();
+        login = login_field.getText();
+        password = password_field.getPassword();
+        password_str = new String(password);
+        mail = mail_field.getText();
+
+        Map<AttributesNames, String> map= new HashMap<>();
+        map.put(AttributesNames.name, name);
+        map.put(AttributesNames.surname, surname);
+        map.put(AttributesNames.mail, mail);
+        map.put(AttributesNames.login, login);
+        map.put(AttributesNames.password, password_str);
+        try {
+            LibraryContext.modifyFewUserAttributes(map, UserSelector.selected_id);
+            int row_index = UserSelector.selected_index;
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(name, row_index, ObjectTable.column_user_name);
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(surname, row_index, ObjectTable.column_user_surname);
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(login, row_index, ObjectTable.column_user_login);
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(mail, row_index, ObjectTable.column_user_mail);
+        } catch (NullOrEmptyStringException e) {
+            System.out.println("User data cannot be empty");
+        } catch (InvalidLoginException e) {
+            System.out.println("Login already exists");
+        } catch (CannotConnectToDBException e) {
+            System.out.println("Cannot connect to database, check your connection");
+        } catch (InvalidBookNumberException | InvalidIdException ignored) {
+
+        }
     }
 }
 

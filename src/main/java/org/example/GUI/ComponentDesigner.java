@@ -150,10 +150,6 @@ public class ComponentDesigner {
         search_button.addActionListener(LibraryGUI.main_page);
         search_button.setAction_manager(new Searcher());
 
-        var modify_button = ComponentDesigner.makeOptionButton("Modify");
-        modify_button.addActionListener(LibraryGUI.main_page);
-        modify_button.setAction_manager(new ModifyPanelShower());
-
         var remove_button = ComponentDesigner.makeOptionButton("Remove");
 
         var add_button = ComponentDesigner.makeOptionButton("Add");
@@ -175,15 +171,10 @@ public class ComponentDesigner {
         layout.putConstraint(SpringLayout.WEST, remove_button, -(button_size + gap_horizontal), SpringLayout.WEST, add_button);
         layout.putConstraint(SpringLayout.EAST, remove_button, -gap_horizontal, SpringLayout.WEST, add_button);
 
-        layout.putConstraint(SpringLayout.NORTH, modify_button, gap_vertical, SpringLayout.NORTH, search_panel);
-        layout.putConstraint(SpringLayout.SOUTH, modify_button, -gap_vertical, SpringLayout.SOUTH, search_panel);
-        layout.putConstraint(SpringLayout.WEST, modify_button, -(button_size + gap_horizontal), SpringLayout.WEST, remove_button);
-        layout.putConstraint(SpringLayout.EAST, modify_button, -gap_horizontal, SpringLayout.WEST, remove_button);
-
         layout.putConstraint(SpringLayout.NORTH, search_field, gap_vertical, SpringLayout.NORTH, search_panel);
         layout.putConstraint(SpringLayout.SOUTH, search_field, -gap_vertical, SpringLayout.SOUTH, search_panel);
-        layout.putConstraint(SpringLayout.WEST, search_field, -(field_size + gap_horizontal), SpringLayout.WEST, modify_button);
-        layout.putConstraint(SpringLayout.EAST, search_field, -gap_horizontal, SpringLayout.WEST, modify_button);
+        layout.putConstraint(SpringLayout.WEST, search_field, -(field_size + gap_horizontal), SpringLayout.WEST, remove_button);
+        layout.putConstraint(SpringLayout.EAST, search_field, -gap_horizontal, SpringLayout.WEST, remove_button);
 
         layout.putConstraint(SpringLayout.NORTH, search_button, gap_vertical, SpringLayout.NORTH, search_panel);
         layout.putConstraint(SpringLayout.SOUTH, search_button, -gap_vertical, SpringLayout.SOUTH, search_panel);
@@ -192,7 +183,6 @@ public class ComponentDesigner {
 
         search_panel.add(search_button);
         search_panel.add(search_field);
-        search_panel.add(modify_button);
         search_panel.add(remove_button);
         search_panel.add(add_button);
 
@@ -358,6 +348,8 @@ public class ComponentDesigner {
         var button_panel_size = new Dimension(100, panel_size.height);
 
         var modify_button = ComponentDesigner.makeOptionButton("Modify", 100, field_size.height);
+        modify_button.addActionListener(LibraryGUI.main_page);
+        modify_button.setAction_manager(new UserModifier());
 
         var button_panel = new JPanel();
         button_panel.setPreferredSize(button_panel_size);

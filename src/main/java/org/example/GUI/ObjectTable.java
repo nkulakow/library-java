@@ -1,12 +1,16 @@
 package org.example.GUI;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class ObjectTable extends JTable {
+    public static final int column_user_id = 0;
+    public static final int column_user_name = 1;
+    public static final int column_user_surname = 2;
+    public static final int column_user_login = 3;
+    public static final int column_user_mail = 4;
+
     public ObjectTable(String[][] data, String[] column_names) {
         super(new DefaultModel(data, column_names));
         this.initVisuals();
