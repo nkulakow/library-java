@@ -1,15 +1,19 @@
 package org.example.GUI;
 
+import javax.swing.*;
 import java.awt.*;
 
 public class LibraryGUI {
     public static final int LOG_FRAME = 0;
     public static final int MAIN_FRAME = 1;
-    private static Page login_frame;
+    private static LogInPage login_frame;
     public static MainPage main_page;
     public static Page user_page;
+
+    public static JLabel main_prompt;
     public static void GUIInit() {
-        login_frame = new LogInPage();
+        LibraryGUI.main_prompt = ComponentDesigner.makeDefaultLabel("");
+        LibraryGUI.login_frame = new LogInPage();
         LibraryGUI.main_page = new MainPage();
         LibraryGUI.user_page = new UserPage();
     }
@@ -30,7 +34,7 @@ public class LibraryGUI {
     }
 
     public static void sendMessageToLoginPage(final String mes){
-        LibraryGUI.login_frame.sendMessageToPrompt(mes);
+
     }
 
     public static class GUIData {
