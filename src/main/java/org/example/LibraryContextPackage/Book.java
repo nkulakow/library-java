@@ -146,6 +146,11 @@ public class Book implements LibraryContextActions{
     }
 
     @Override
+    public String[] getRepresentation() {
+       return new String[]{Integer.toString(this.bookId), this.name, this.author, this.category};
+    }
+
+    @Override
     public boolean askToJoinCollection(Admin admin) {
         Book book = this;
         return admin.updateBooks(book, LibObjectsChangeMode.Add);

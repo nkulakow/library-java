@@ -2,6 +2,7 @@ package org.example.GUI;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.LibraryContextPackage.User;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -88,10 +89,11 @@ public class ComponentDesigner {
         var content_panel = new JPanel();
         content_panel.setLayout(new BorderLayout());
         content_panel.setBackground(BACKGROUND_COLOR);
-        var table = ComponentDesigner.makeUserTable();
+        var table = ComponentDesigner.makeUserTable(new String[][]{});
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setPreferredSize(new Dimension(400, 600));
         scrollPane.setViewportView(table);
+        LibraryGUI.main_page.setTable_pane(scrollPane);
         content_panel.add(scrollPane, BorderLayout.CENTER);
 
         // north
@@ -142,22 +144,38 @@ public class ComponentDesigner {
         search_panel.setOpaque(false);
 
         var search_button = ComponentDesigner.makeOptionButton("Search");
+        search_button.addActionListener(LibraryGUI.main_page);
+        search_button.setAction_manager(new Searcher());
+
         var modify_button = ComponentDesigner.makeOptionButton("Modify");
+        modify_button.addActionListener(LibraryGUI.main_page);
+        modify_button.setAction_manager(new ModifyPanelShower());
+
         var remove_button = ComponentDesigner.makeOptionButton("Remove");
 
-        var search_field = ComponentDesigner.makeBorderedComponent(new JTextField("Search..."), 3, 3, 3, 3);
+        var add_button = ComponentDesigner.makeOptionButton("Add");
+        add_button.addActionListener(LibraryGUI.main_page);
+        add_button.setAction_manager(new AddingPanelShower());
 
-        int gap_vertical = 30; int button_size = 150; int field_size = 300; int gap_horizontal = 30;
+        var search_field = (JTextField) ComponentDesigner.makeBorderedComponent(new JTextField("Search..."), 3, 3, 3, 3);
+        LibraryGUI.main_page.setSearch_field(search_field);
+
+        int gap_vertical = 30; int button_size = 100; int field_size = 300; int gap_horizontal = 30;
+
+        layout.putConstraint(SpringLayout.NORTH, add_button, gap_vertical, SpringLayout.NORTH, search_panel);
+        layout.putConstraint(SpringLayout.SOUTH, add_button, -gap_vertical, SpringLayout.SOUTH, search_panel);
+        layout.putConstraint(SpringLayout.WEST, add_button, -(button_size + 50), SpringLayout.EAST, search_panel);
+        layout.putConstraint(SpringLayout.EAST, add_button, -50, SpringLayout.EAST, search_panel);
 
         layout.putConstraint(SpringLayout.NORTH, remove_button, gap_vertical, SpringLayout.NORTH, search_panel);
         layout.putConstraint(SpringLayout.SOUTH, remove_button, -gap_vertical, SpringLayout.SOUTH, search_panel);
-        layout.putConstraint(SpringLayout.WEST, remove_button, -(button_size + 50), SpringLayout.EAST, search_panel);
-        layout.putConstraint(SpringLayout.EAST, remove_button, -50, SpringLayout.EAST, search_panel);
+        layout.putConstraint(SpringLayout.WEST, remove_button, -(button_size + gap_horizontal), SpringLayout.WEST, add_button);
+        layout.putConstraint(SpringLayout.EAST, remove_button, -gap_horizontal, SpringLayout.WEST, add_button);
 
         layout.putConstraint(SpringLayout.NORTH, modify_button, gap_vertical, SpringLayout.NORTH, search_panel);
         layout.putConstraint(SpringLayout.SOUTH, modify_button, -gap_vertical, SpringLayout.SOUTH, search_panel);
         layout.putConstraint(SpringLayout.WEST, modify_button, -(button_size + gap_horizontal), SpringLayout.WEST, remove_button);
-        layout.putConstraint(SpringLayout.EAST, modify_button, -30, SpringLayout.WEST, remove_button);
+        layout.putConstraint(SpringLayout.EAST, modify_button, -gap_horizontal, SpringLayout.WEST, remove_button);
 
         layout.putConstraint(SpringLayout.NORTH, search_field, gap_vertical, SpringLayout.NORTH, search_panel);
         layout.putConstraint(SpringLayout.SOUTH, search_field, -gap_vertical, SpringLayout.SOUTH, search_panel);
@@ -173,6 +191,7 @@ public class ComponentDesigner {
         search_panel.add(search_field);
         search_panel.add(modify_button);
         search_panel.add(remove_button);
+        search_panel.add(add_button);
 
         return search_panel;
     }
@@ -185,7 +204,8 @@ public class ComponentDesigner {
 
         var search_button = ComponentDesigner.makeOptionButton("Search");
 
-        var search_field = ComponentDesigner.makeBorderedComponent(new JTextField("Search..."), 3, 3, 3, 3);
+        var search_field = (JTextField) ComponentDesigner.makeBorderedComponent(new JTextField("Search..."), 3, 3, 3, 3);
+        LibraryGUI.main_page.setSearch_field(search_field);
 
         int gap_vertical = 30; int button_size = 150; int field_size = 300; int gap_horizontal = 30;
 
@@ -241,7 +261,7 @@ public class ComponentDesigner {
         return order_panel;
     }
 
-    private static JPanel makeAddingPanel() {
+    private static JPanel makeDataPanel() {
         var adding_panel = new JPanel();
         var layout = new FlowLayout(FlowLayout.TRAILING, 30, 5);
         adding_panel.setLayout(layout);
@@ -250,6 +270,7 @@ public class ComponentDesigner {
         var field_size = new Dimension(200, 40);
         var prompt_size = new Dimension(200, 15);
         var panel_size = new Dimension(field_size.width, field_size.height + prompt_size.height + 10);
+        var button_panel_size = new Dimension(100, panel_size.height);
         int font_size = 15;
 
         var name_field = ComponentDesigner.makeBorderedComponent(new JTextField("Name"), 3, 3, 3, 3);
@@ -262,7 +283,7 @@ public class ComponentDesigner {
         password_field.setPreferredSize(field_size);
         var mail_field = ComponentDesigner.makeBorderedComponent(new JTextField("Mail"), 3, 3, 3, 3);
         mail_field.setPreferredSize(field_size);
-        var add_button = ComponentDesigner.makeOptionButton("Add", 150, field_size.height);
+        var add_button = ComponentDesigner.makeOptionButton("Add", 100, field_size.height);
 
         var name_panel = new JPanel();
         name_panel.setPreferredSize(panel_size);
@@ -294,13 +315,6 @@ public class ComponentDesigner {
         mail_prompt.setPreferredSize(prompt_size);
         mail_panel.add(mail_prompt); mail_panel.add(mail_field); mail_panel.setOpaque(false);
 
-        var button_panel = new JPanel();
-        button_panel.setPreferredSize(panel_size);
-        var button_prompt = ComponentDesigner.makeDefaultLabel("");
-        button_prompt.setPreferredSize(prompt_size);
-        button_panel.add(button_prompt); button_panel.add(add_button); button_panel.setOpaque(false);
-
-        adding_panel.add(button_panel);
         adding_panel.add(name_panel);
         adding_panel.add(surname_panel);
         adding_panel.add(login_panel);
@@ -310,21 +324,56 @@ public class ComponentDesigner {
         return adding_panel;
     }
 
-    public static JTable makeUserTable() {
-        String[] column_names = {"Id", "Name", "Surname"};
-        String[][] data = {
-                {"1", "Jan", "Kowalski"},
-                {"2", "Antoni", "Nowak"}
-        };
+
+    public static JPanel makeAddingPanel() {
+        var adding_panel = ComponentDesigner.makeDataPanel();
+
+        var field_size = new Dimension(200, 40);
+        var prompt_size = new Dimension(200, 15);
+        var panel_size = new Dimension(field_size.width, field_size.height + prompt_size.height + 10);
+        var button_panel_size = new Dimension(100, panel_size.height);
+
+        var add_button = ComponentDesigner.makeOptionButton("Add", 100, field_size.height);
+
+        var button_panel = new JPanel();
+        button_panel.setPreferredSize(button_panel_size);
+        var button_prompt = ComponentDesigner.makeDefaultLabel("");
+        button_prompt.setPreferredSize(prompt_size);
+        button_panel.add(button_prompt); button_panel.add(add_button); button_panel.setOpaque(false);
+
+        adding_panel.add(button_panel, 0);
+
+        return adding_panel;
+    }
+
+    public static JPanel makeModifyPanel() {
+        var adding_panel = ComponentDesigner.makeDataPanel();
+
+        var field_size = new Dimension(200, 40);
+        var prompt_size = new Dimension(200, 15);
+        var panel_size = new Dimension(field_size.width, field_size.height + prompt_size.height + 10);
+        var button_panel_size = new Dimension(100, panel_size.height);
+
+        var add_button = ComponentDesigner.makeOptionButton("Modify", 100, field_size.height);
+
+        var button_panel = new JPanel();
+        button_panel.setPreferredSize(button_panel_size);
+        var button_prompt = ComponentDesigner.makeDefaultLabel("");
+        button_prompt.setPreferredSize(prompt_size);
+        button_panel.add(button_prompt); button_panel.add(add_button); button_panel.setOpaque(false);
+
+        adding_panel.add(button_panel, 0);
+
+        return adding_panel;
+    }
+
+    public static JTable makeUserTable(String[][] data) {
+        String[] column_names = {"Id", "Name", "Surname", "Login", "Mail"};
         return new ObjectTable(data, column_names);
     }
 
-    public static JTable makeBookTable() {
-        String[] column_names = {"Id", "Name", "Author"};
-        String[][] data = {
-                {"1", "The Witcher", "Andrzej Sapkowski"},
-                {"2", "The Lord of the Rings", "John Ronald Reuel Tolkien"}
-        };
+    public static JTable makeBookTable(String[][] data) {
+        String[] column_names = {"Id", "Name", "Author", "Category"};
         return new ObjectTable(data, column_names);
     }
 
@@ -348,8 +397,16 @@ public class ComponentDesigner {
 
         //buttons
         var users_button = ComponentDesigner.makeOptionButton("Users", 140, 60);
+        users_button.addActionListener(LibraryGUI.main_page);
+        users_button.setAction_manager(new UserTableShower());
+
         var books_button = ComponentDesigner.makeOptionButton("Books", 140, 60);
+        books_button.addActionListener(LibraryGUI.main_page);
+        books_button.setAction_manager(new BookTableShower());
+
         var exit_button = ComponentDesigner.makeOptionButton("EXIT", 300, 60);
+        exit_button.addActionListener(LibraryGUI.main_page);
+        exit_button.setAction_manager(new Exiter());
 
         //left options panel layout
         var layout = new SpringLayout();
@@ -519,10 +576,11 @@ public class ComponentDesigner {
         var content_panel = new JPanel();
         content_panel.setLayout(new BorderLayout());
         content_panel.setBackground(BACKGROUND_COLOR);
-        var table = ComponentDesigner.makeBookTable();
+        var table = ComponentDesigner.makeBookTable(new String[][]{});
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setPreferredSize(new Dimension(400, 600));
         scrollPane.setViewportView(table);
+        LibraryGUI.main_page.setTable_pane(scrollPane);
         content_panel.add(scrollPane, BorderLayout.CENTER);
 
         // north

@@ -134,6 +134,11 @@ public class CommonUser extends User implements LibraryContextActions{
     }
 
     @Override
+    public String[] getRepresentation() {
+        return new String[]{Integer.toString(this.userId), this.getName(), this.getSurname(), this.getLogin(), this.getMail()};
+    }
+
+    @Override
     public boolean askToJoinCollection(Admin admin) {
         CommonUser user = (CommonUser) this;
         return admin.updateUsers(user, LibObjectsChangeMode.Add);

@@ -1,17 +1,28 @@
 package org.example.GUI;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class MainPage extends JFrame {
+public class MainPage extends JFrame implements ActionListener {
+    @Getter
     private JPanel content_panel;
+
+    @Getter @Setter
+    private JScrollPane table_pane;
+    @Getter @Setter
+    private JTextField search_field;
+    @Getter
+    private JPanel left_panel;
     public MainPage() {
         super();
         this.setSize(1400, 800);
         this.center();
         this.initLayout();
-        this.initAdminLeft();
-        this.initAdminContent();
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setMinimumSize(new Dimension(340, 450));
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -55,8 +66,8 @@ public class MainPage extends JFrame {
     }
 
     private void initUserLeft() {
-        var left_panel = ComponentDesigner.makeLeftUserPanel();
-        this.add(left_panel, BorderLayout.WEST);
+        this.left_panel = ComponentDesigner.makeLeftUserPanel();
+        this.add(this.left_panel, BorderLayout.WEST);
     }
 
     private void initUserContent() {
@@ -68,5 +79,12 @@ public class MainPage extends JFrame {
         scroll_pane.setOpaque(false);
         scroll_pane.setBorder(BorderFactory.createMatteBorder(3, 0, 3, 3, Color.BLACK));
         this.add(scroll_pane, BorderLayout.CENTER);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource() instanceof ComponentDesigner.OptionButton button) {
+            button.getAction_manager().manage();
+        }
     }
 }

@@ -10,4 +10,5 @@ public interface LibraryContextActions {
     public String describe();
     public int hashCode();
     public boolean equals(Object obj);
+    String[] getRepresentation();
 }

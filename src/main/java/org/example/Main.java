@@ -9,7 +9,8 @@ public class Main {
 
         LibraryGUI.GUIInit();
         LibraryContext.LibContextInit();
-        LibraryGUI.showFrame(LibraryGUI.LOG_FRAME);
+//        LibraryGUI.showFrame(LibraryGUI.LOG_FRAME);
+    LibraryGUI.changeAfterLogged(LibraryGUI.ADMIN);
     }
 
     public static void exit() {

@@ -33,7 +33,7 @@ class LogInPage extends JFrame implements ActionListener {
         this.setLayout(this.layout);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.initContent();
-        this.setVisible(true);
+//        this.setVisible(true);
     }
 
     private void initContent() {
@@ -115,7 +115,7 @@ class LogInPage extends JFrame implements ActionListener {
 
         this.adminbox = new JCheckBox("Admin");
         this.adminbox.setFont(ComponentDesigner.getDefaultFont(20));
-        this.userbox.setFocusPainted(false);
+        this.adminbox.setFocusPainted(false);
         this.adminbox.setOpaque(false);
 
         ButtonGroup checksGroup = new ButtonGroup();
@@ -152,7 +152,7 @@ class LogInPage extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() instanceof ComponentDesigner.OptionButton button) {
-            button.getAction_manager().manage(new JPanel());
+            button.getAction_manager().manage();
         }
     }
 }
