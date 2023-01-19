@@ -3,16 +3,15 @@ package org.example.GUI;
 import org.example.LibraryContextPackage.*;
 import org.example.Main;
 
-import javax.imageio.stream.ImageInputStream;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.font.LineBreakMeasurer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.ServiceConfigurationError;
 
 abstract class FrameContentManager {
     public static final int USERS = 0;
@@ -101,6 +100,36 @@ abstract class FrameContentManager {
         else
             panel.add(ComponentDesigner.makeBookAddingPanel());
         panel.validate();
+    }
+
+    public static String[] getSelfData() {
+        var data_panel = LibraryGUI.main_page.getAccount_panel();
+
+        var name_panel = (JPanel)(data_panel.getComponent(1));
+        var name_field = (JTextField) (name_panel.getComponent(1));
+
+        var surname_panel = (JPanel)(data_panel.getComponent(2));
+        var surname_field = (JTextField) (surname_panel.getComponent(1));
+
+        var login_panel = (JPanel)(data_panel.getComponent(3));
+        var login_field = (JTextField) (login_panel.getComponent(1));
+
+        var password_panel = (JPanel)(data_panel.getComponent(4));
+        var password_field = (JPasswordField) (password_panel.getComponent(1));
+
+        var mail_panel = (JPanel)(data_panel.getComponent(5));
+        var mail_field = (JTextField) (mail_panel.getComponent(1));
+
+        String name, surname, login, mail, password_str;
+        char[] password;
+        name = name_field.getText();
+        surname = surname_field.getText();
+        login = login_field.getText();
+        password = password_field.getPassword();
+        password_str = new String(password);
+        mail = mail_field.getText();
+
+        return new String[]{name, surname, login, mail, password_str};
     }
 }
 
@@ -391,6 +420,42 @@ class UserAdder extends FrameContentManager {
     }
 }
 
+class SelfModifier extends FrameContentManager {
+    @Override
+    void manage() {
+        String name, surname, login, mail, password;
+        String[] data = FrameContentManager.getSelfData();
+
+        name = data[0];
+        surname = data[1];
+        login = data[2];
+        mail = data[3];
+        password = data[4];
+
+        Map<AttributesNames, String> map= new HashMap<>();
+        map.put(AttributesNames.name, name);
+        map.put(AttributesNames.surname, surname);
+        map.put(AttributesNames.mail, mail);
+        map.put(AttributesNames.login, login);
+        map.put(AttributesNames.password, password);
+        try {
+            if (LibraryContext.getCurrentUser() != null)
+                LibraryContext.modifyFewUserAttributes(map, LibraryContext.getCurrentUser().getUserId());
+            else
+                LibraryContext.modifyFewUserAttributes(map, LibraryContext.getCurrentAdmin().getAdminId());
+            System.out.println("Your data successfully modified");
+        } catch (NullOrEmptyStringException e) {
+            System.out.println("User data cannot be empty");
+        } catch (InvalidLoginException e) {
+            System.out.println("Login already exists");
+        } catch (CannotConnectToDBException e) {
+            System.out.println("Cannot connect to database, check your connection");
+        } catch (InvalidBookNumberException | InvalidIdException ignored) {
+
+        }
+    }
+}
+
 class BookSelector extends FrameContentManager implements ListSelectionListener {
 
     public static int selected_id;
@@ -584,6 +649,24 @@ class Deleter extends FrameContentManager {
             Deleter.user_deleter.manage();
         else
             Deleter.book_deleter.manage();
+    }
+}
+
+class AccountPanelSwitcher extends FrameContentManager {
+    @Override
+    void manage() {
+        int min_height = 1000;
+        if(LibraryGUI.main_page.getAccount_panel().isVisible()) {
+            LibraryGUI.main_page.getAccount_panel().setVisible(false);
+            LibraryGUI.main_page.setMinimumSize(MainPage.default_minimum_size);
+        }
+        else {
+            LibraryGUI.main_page.getAccount_panel().setVisible(true);
+            if(LibraryGUI.main_page.getHeight() < min_height) {
+                LibraryGUI.main_page.setSize(new Dimension(LibraryGUI.main_page.getWidth(), min_height));
+            }
+            LibraryGUI.main_page.setMinimumSize(new Dimension(LibraryGUI.main_page.getMinimumSize().width, min_height));
+        }
     }
 }
 

@@ -2,6 +2,7 @@ package org.example.GUI;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.Main;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,16 +19,19 @@ public class MainPage extends JFrame implements ActionListener {
     private JTextField search_field;
     @Getter @Setter
     private ObjectTable search_table;
+    @Getter @Setter
+    private JPanel account_panel;
     @Getter
     private JPanel left_panel;
     public int current_mode;
+    public static final Dimension default_minimum_size = new Dimension(340, 450);
     public MainPage() {
         super();
         this.setSize(1400, 800);
         this.center();
         this.initLayout();
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        this.setMinimumSize(new Dimension(340, 450));
+        this.setMinimumSize(MainPage.default_minimum_size);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.current_mode = FrameContentManager.USERS;
     }

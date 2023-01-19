@@ -3,6 +3,7 @@ package org.example.GUI;
 import lombok.Getter;
 import lombok.Setter;
 import org.example.LibraryContextPackage.Book;
+import org.example.LibraryContextPackage.LibraryContext;
 import org.example.LibraryContextPackage.User;
 
 import javax.swing.*;
@@ -554,17 +555,26 @@ public class ComponentDesigner {
         var label = ComponentDesigner.makeDefaultLabel("Your data:", 40);
         label.setHorizontalAlignment(SwingConstants.CENTER);
 
-        var name_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
+        User current_user;
+        if (LibraryContext.getCurrentUser() != null)
+            current_user = LibraryContext.getCurrentUser();
+        else
+            current_user = LibraryContext.getCurrentAdmin();
+
+        var name_field = ComponentDesigner.makeBorderedComponent(new JTextField(current_user.getName()), 3, 3, 3, 3);
         name_field.setPreferredSize(field_size);
-        var surname_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
+        var surname_field = ComponentDesigner.makeBorderedComponent(new JTextField(current_user.getSurname()), 3, 3, 3, 3);
         surname_field.setPreferredSize(field_size);
-        var login_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
+        var login_field = ComponentDesigner.makeBorderedComponent(new JTextField(current_user.getLogin()), 3, 3, 3, 3);
         login_field.setPreferredSize(field_size);
-        var password_field = ComponentDesigner.makeBorderedComponent(new JPasswordField(), 3, 3, 3, 3);
+        var password_field = ComponentDesigner.makeBorderedComponent(new JPasswordField(current_user.getPassword()), 3, 3, 3, 3);
         password_field.setPreferredSize(field_size);
-        var mail_field = ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
+        var mail_field = ComponentDesigner.makeBorderedComponent(new JTextField(current_user.getMail()), 3, 3, 3, 3);
         mail_field.setPreferredSize(field_size);
+
         var button = ComponentDesigner.makeOptionButton("Confirm");
+        button.addActionListener(LibraryGUI.main_page);
+        button.setAction_manager(new SelfModifier());
 
         var name_panel = new JPanel();
         name_panel.setPreferredSize(panel_size);
@@ -622,11 +632,19 @@ public class ComponentDesigner {
 
         //buttons
         var account_button = ComponentDesigner.makeOptionButton("My account", 140, 100);
+        account_button.addActionListener(LibraryGUI.main_page);
+        account_button.setAction_manager(new AccountPanelSwitcher());
+
         var library_button = ComponentDesigner.makeOptionButton("Library", 140, 100);
+
         var exit_button = ComponentDesigner.makeOptionButton("EXIT", 300, 60);
+        exit_button.addActionListener(LibraryGUI.main_page);
+        exit_button.setAction_manager(new Exiter());
 
         //user info
         var info_panel = ComponentDesigner.makeInfoPanel();
+        LibraryGUI.main_page.setAccount_panel(info_panel);
+        info_panel.setVisible(false);
 
         //left options panel layout
         var layout = new SpringLayout();
