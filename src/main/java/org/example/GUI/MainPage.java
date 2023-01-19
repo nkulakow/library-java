@@ -16,6 +16,8 @@ public class MainPage extends JFrame implements ActionListener {
     private JScrollPane table_pane;
     @Getter @Setter
     private JTextField search_field;
+    @Getter @Setter
+    private ObjectTable search_table;
     @Getter
     private JPanel left_panel;
     public MainPage() {

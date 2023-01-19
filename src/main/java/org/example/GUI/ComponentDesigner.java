@@ -93,7 +93,10 @@ public class ComponentDesigner {
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setPreferredSize(new Dimension(400, 600));
         scrollPane.setViewportView(table);
+        scrollPane.getViewport().setBackground(ComponentDesigner.BACKGROUND_COLOR);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
         LibraryGUI.main_page.setTable_pane(scrollPane);
+        LibraryGUI.main_page.setSearch_table(table);
         content_panel.add(scrollPane, BorderLayout.CENTER);
 
         // north
@@ -354,25 +357,25 @@ public class ComponentDesigner {
         var panel_size = new Dimension(field_size.width, field_size.height + prompt_size.height + 10);
         var button_panel_size = new Dimension(100, panel_size.height);
 
-        var add_button = ComponentDesigner.makeOptionButton("Modify", 100, field_size.height);
+        var modify_button = ComponentDesigner.makeOptionButton("Modify", 100, field_size.height);
 
         var button_panel = new JPanel();
         button_panel.setPreferredSize(button_panel_size);
         var button_prompt = ComponentDesigner.makeDefaultLabel("");
         button_prompt.setPreferredSize(prompt_size);
-        button_panel.add(button_prompt); button_panel.add(add_button); button_panel.setOpaque(false);
+        button_panel.add(button_prompt); button_panel.add(modify_button); button_panel.setOpaque(false);
 
         adding_panel.add(button_panel, 0);
 
         return adding_panel;
     }
 
-    public static JTable makeUserTable(String[][] data) {
+    public static ObjectTable makeUserTable(String[][] data) {
         String[] column_names = {"Id", "Name", "Surname", "Login", "Mail"};
         return new ObjectTable(data, column_names);
     }
 
-    public static JTable makeBookTable(String[][] data) {
+    public static ObjectTable makeBookTable(String[][] data) {
         String[] column_names = {"Id", "Name", "Author", "Category"};
         return new ObjectTable(data, column_names);
     }
@@ -581,6 +584,7 @@ public class ComponentDesigner {
         scrollPane.setPreferredSize(new Dimension(400, 600));
         scrollPane.setViewportView(table);
         LibraryGUI.main_page.setTable_pane(scrollPane);
+        LibraryGUI.main_page.setSearch_table(table);
         content_panel.add(scrollPane, BorderLayout.CENTER);
 
         // north

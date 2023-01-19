@@ -4,8 +4,13 @@ import org.example.LibraryContextPackage.*;
 import org.example.Main;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableModelListener;
 import java.awt.*;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 abstract class FrameContentManager {
     public static final int USERS = 0;
@@ -78,6 +83,7 @@ class BookTableShower extends FrameContentManager {
         var table = ComponentDesigner.makeBookTable(new String[][]{});
         var pane = LibraryGUI.main_page.getTable_pane();
         pane.setViewportView(table);
+        LibraryGUI.main_page.setSearch_table(table);
 
         Searcher.search_mode = Searcher.BOOKS;
     }
@@ -89,6 +95,7 @@ class UserTableShower extends FrameContentManager {
         var table = ComponentDesigner.makeUserTable(new String[][]{});
         var pane = LibraryGUI.main_page.getTable_pane();
         pane.setViewportView(table);
+        LibraryGUI.main_page.setSearch_table(table);
 
         Searcher.search_mode = Searcher.USERS;
     }
@@ -118,6 +125,8 @@ class Searcher extends FrameContentManager {
     public static final int USERS = 0;
     public static final int BOOKS = 1;
     public static int search_mode;
+
+    public static HashSet<LibraryContextActions> last_results;
     @Override
     void manage() {
         var pattern = LibraryGUI.main_page.getSearch_field().getText();
@@ -138,6 +147,7 @@ class Searcher extends FrameContentManager {
             }, pattern);
             columns_number = 4;
         }
+        Searcher.last_results = results;
         data_length = results.size();
 
         String[][] data = new String[data_length][columns_number];
@@ -153,6 +163,91 @@ class Searcher extends FrameContentManager {
             table = ComponentDesigner.makeBookTable(data);
         var pane = LibraryGUI.main_page.getTable_pane();
         pane.setViewportView(table);
+    }
+}
+
+class UserSelector extends FrameContentManager implements ListSelectionListener {
+
+    public static int selected_id;
+    public static int selected_index;
+    @Override
+    void manage() {
+        var searched = Searcher.last_results.toArray();
+        
+        var selected = (CommonUser) searched[selected_index];
+        selected_id = selected.getUserId();
+//
+        var modify_panel = (JPanel) FrameContentManager.getBottomFramePanel().getComponent(0);
+
+        var name_panel = (JPanel)(modify_panel.getComponent(1));
+        var name_field = (JTextField) (name_panel.getComponent(1));
+
+        var surname_panel = (JPanel)(modify_panel.getComponent(2));
+        var surname_field = (JTextField) (surname_panel.getComponent(1));
+
+        var login_panel = (JPanel)(modify_panel.getComponent(3));
+        var login_field = (JTextField) (login_panel.getComponent(1));
+
+        var password_panel = (JPanel)(modify_panel.getComponent(4));
+        var password_field = (JPasswordField) (password_panel.getComponent(1));
+
+        var mail_panel = (JPanel)(modify_panel.getComponent(5));
+        var mail_field = (JTextField) (mail_panel.getComponent(1));
+
+        name_field.setText(selected.getName());
+        surname_field.setText(selected.getSurname());
+        login_field.setText(selected.getLogin());
+        password_field.setText(selected.getPassword());
+        mail_field.setText(selected.getMail());
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        var model = (ListSelectionModel) e.getSource();
+        if(!model.isSelectionEmpty()) {
+            int index = model.getMinSelectionIndex();
+            selected_index = index;
+            this.manage();
+        }
+    }
+}
+
+class UserModifier extends FrameContentManager {
+    @Override
+    void manage() {
+//        var modify_panel = FrameContentManager.getBottomFramePanel();
+//        var name_field = (JTextField) modify_panel.getComponent(1);
+//        var surname_field = (JTextField) modify_panel.getComponent(2);
+//        var login_field = (JTextField) modify_panel.getComponent(3);
+//        var password_field = (JPasswordField) modify_panel.getComponent(4);
+//        var mail_field = (JTextField) modify_panel.getComponent(5);
+//
+//        String name, surname, login, mail, password_str;
+//        char[] password;
+//        name = name_field.getText();
+//        surname = surname_field.getText();
+//        login = login_field.getText();
+//        password = password_field.getPassword();
+//        password_str = new String(password);
+//        mail = mail_field.getText();
+//
+//        Map<AttributesNames, String> map= new HashMap<>();
+//        map.put(AttributesNames.name, name);
+//        map.put(AttributesNames.surname, surname);
+//        map.put(AttributesNames.mail, mail);
+//        map.put(AttributesNames.login, login);
+//        map.put(AttributesNames.password, password_str);
+//        try {
+//            LibraryContext.modifyFewUserAttributes(map, );
+//        } catch (NullOrEmptyStringException e) {
+//            System.out.println("User data cannot be empty");
+//        } catch (InvalidLoginException e) {
+//            System.out.println("Login already exists");
+//        } catch (CannotConnectToDBException e) {
+//            System.out.println("Cannot connect to database, check your connection");
+//        } catch (InvalidBookNumberException | InvalidIdException ignored) {
+//
+//        }
     }
 }
 
