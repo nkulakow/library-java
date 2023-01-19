@@ -1,8 +1,6 @@
 package org.example.GUI;
 
 import lombok.Getter;
-import org.example.LibraryContextPackage.LibraryContext;
-import org.example.Main;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,17 +17,11 @@ class LogInPage extends JFrame implements ActionListener {
     private JTextField login_field;
     @Getter
     private JPasswordField password_field;
-    private ComponentDesigner.OptionButton login_button;
-    private ComponentDesigner.OptionButton exit_button;
     @Getter
     private JCheckBox userbox;
-    private ButtonGroup checksGroup;
     @Getter
     private JCheckBox adminbox;
-    private JLabel box_prompt;
-    private SpringLayout layout;
-
-    private JPanel box_panel;
+    private final SpringLayout layout;
 
     public LogInPage() {
         int x_pos = (Toolkit.getDefaultToolkit().getScreenSize().width - width) / 2;
@@ -94,30 +86,28 @@ class LogInPage extends JFrame implements ActionListener {
     }
 
     private void initButtons() {
-        this.login_button = ComponentDesigner.makeOptionButton("Log in");
-        this.login_button.addActionListener(this);
-        this.login_button.setAction_manager(new AppLogger());
-        this.exit_button = ComponentDesigner.makeOptionButton("EXIT");
-        this.exit_button.addActionListener(this);
-        this.exit_button.setAction_manager(new Exiter());
+        ComponentDesigner.OptionButton login_button = ComponentDesigner.makeOptionButton("Log in");
+        login_button.addActionListener(this);
+        login_button.setAction_manager(new AppLogger());
+        ComponentDesigner.OptionButton exit_button = ComponentDesigner.makeOptionButton("EXIT");
+        exit_button.addActionListener(this);
+        exit_button.setAction_manager(new Exiter());
 
-        this.layout.putConstraint(SpringLayout.SOUTH, this.exit_button, -20, SpringLayout.SOUTH, this.getContentPane());
-        this.layout.putConstraint(SpringLayout.NORTH, this.exit_button, -80, SpringLayout.SOUTH, this.getContentPane());
-        this.layout.putConstraint(SpringLayout.WEST, this.exit_button, -100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
-        this.layout.putConstraint(SpringLayout.EAST, this.exit_button, 100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.SOUTH, exit_button, -20, SpringLayout.SOUTH, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.NORTH, exit_button, -80, SpringLayout.SOUTH, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.WEST, exit_button, -100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.EAST, exit_button, 100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
 
-        this.layout.putConstraint(SpringLayout.SOUTH, this.login_button, -20, SpringLayout.NORTH, this.exit_button);
-        this.layout.putConstraint(SpringLayout.NORTH, this.login_button, -80, SpringLayout.NORTH, this.exit_button);
-        this.layout.putConstraint(SpringLayout.WEST, this.login_button, -100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
-        this.layout.putConstraint(SpringLayout.EAST, this.login_button, 100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.SOUTH, login_button, -20, SpringLayout.NORTH, exit_button);
+        this.layout.putConstraint(SpringLayout.NORTH, login_button, -80, SpringLayout.NORTH, exit_button);
+        this.layout.putConstraint(SpringLayout.WEST, login_button, -100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.EAST, login_button, 100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
 
-        this.add(this.exit_button);
-        this.add(this.login_button);
+        this.add(exit_button);
+        this.add(login_button);
     }
 
     private void initCheckBocks() {
-        this.box_panel = new JPanel();
-
         this.userbox = new JCheckBox("User");
         this.userbox.setFont(ComponentDesigner.getDefaultFont(20));
         this.userbox.setFocusPainted(false);
@@ -128,9 +118,9 @@ class LogInPage extends JFrame implements ActionListener {
         this.userbox.setFocusPainted(false);
         this.adminbox.setOpaque(false);
 
-        this.checksGroup = new ButtonGroup();
-        this.checksGroup.add(userbox);
-        this.checksGroup.add(adminbox);
+        ButtonGroup checksGroup = new ButtonGroup();
+        checksGroup.add(userbox);
+        checksGroup.add(adminbox);
 
         this.layout.putConstraint(SpringLayout.WEST, this.userbox, -100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
         this.layout.putConstraint(SpringLayout.EAST, this.userbox, -10, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());

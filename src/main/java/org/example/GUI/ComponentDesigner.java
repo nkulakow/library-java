@@ -6,8 +6,6 @@ import lombok.Setter;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.security.DigestException;
-import java.util.Vector;
 
 public class ComponentDesigner {
 
@@ -118,11 +116,9 @@ public class ComponentDesigner {
         spacer.setLayout(new BorderLayout());
 
         //library label
-        var library_label = new JLabel("Library");
-        library_label.setFont(ComponentDesigner.getDefaultFont(50));
+        var library_label = ComponentDesigner.makeDefaultLabel("Library", 50);
         library_label.setHorizontalAlignment(SwingConstants.CENTER);
         library_label.setVerticalAlignment(SwingConstants.CENTER);
-        library_label.setOpaque(false);
         spacer.add(library_label);
 
         main_panel.add(spacer, BorderLayout.NORTH);
@@ -217,9 +213,7 @@ public class ComponentDesigner {
 
         var months_field = ComponentDesigner.makeBorderedComponent(new JTextField("Months..."), 3, 3, 3, 3);
 
-        var months_label = new JLabel("Enter months number:");
-        months_label.setFont(ComponentDesigner.getDefaultFont(15));
-        months_label.setOpaque(false);
+        var months_label = ComponentDesigner.makeDefaultLabel("Enter months number", 15);
 
         var months_panel = new JPanel();
         months_panel.setOpaque(false);
@@ -272,37 +266,37 @@ public class ComponentDesigner {
 
         var name_panel = new JPanel();
         name_panel.setPreferredSize(panel_size);
-        var name_prompt = new JLabel("Name:"); name_prompt.setOpaque(false);
-        name_prompt.setFont(ComponentDesigner.getDefaultFont(font_size)); name_prompt.setPreferredSize(prompt_size);
+        var name_prompt = ComponentDesigner.makeDefaultLabel("Name:", font_size);
+        name_prompt.setPreferredSize(prompt_size);
         name_panel.add(name_prompt); name_panel.add(name_field); name_panel.setOpaque(false);
 
         var surname_panel = new JPanel();
         surname_panel.setPreferredSize(panel_size);
-        var surname_prompt = new JLabel("Surname:"); surname_prompt.setOpaque(false);
-        surname_prompt.setFont(ComponentDesigner.getDefaultFont(font_size)); surname_prompt.setPreferredSize(prompt_size);
+        var surname_prompt = ComponentDesigner.makeDefaultLabel("Surname:", font_size);
+        surname_prompt.setPreferredSize(prompt_size);
         surname_panel.add(surname_prompt); surname_panel.add(surname_field); surname_panel.setOpaque(false);
 
         var login_panel = new JPanel();
         login_panel.setPreferredSize(panel_size);
-        var login_prompt = new JLabel("Login:"); login_prompt.setOpaque(false);
-        login_prompt.setFont(ComponentDesigner.getDefaultFont(font_size)); login_prompt.setPreferredSize(prompt_size);
+        var login_prompt = ComponentDesigner.makeDefaultLabel("Login:", font_size);
+        login_prompt.setPreferredSize(prompt_size);
         login_panel.add(login_prompt); login_panel.add(login_field); login_panel.setOpaque(false);
 
         var password_panel = new JPanel();
         password_panel.setPreferredSize(panel_size);
-        var password_prompt = new JLabel("Password:"); password_prompt.setOpaque(false);
-        password_prompt.setFont(ComponentDesigner.getDefaultFont(font_size)); password_prompt.setPreferredSize(prompt_size);
+        var password_prompt = ComponentDesigner.makeDefaultLabel("Password:", font_size);
+        password_prompt.setPreferredSize(prompt_size);
         password_panel.add(password_prompt); password_panel.add(password_field); password_panel.setOpaque(false);
 
         var mail_panel = new JPanel();
         mail_panel.setPreferredSize(panel_size);
-        var mail_prompt = new JLabel("Mail:"); mail_prompt.setOpaque(false);
-        mail_prompt.setFont(ComponentDesigner.getDefaultFont(font_size)); mail_prompt.setPreferredSize(prompt_size);
+        var mail_prompt = ComponentDesigner.makeDefaultLabel("Mail:", font_size);
+        mail_prompt.setPreferredSize(prompt_size);
         mail_panel.add(mail_prompt); mail_panel.add(mail_field); mail_panel.setOpaque(false);
 
         var button_panel = new JPanel();
         button_panel.setPreferredSize(panel_size);
-        var button_prompt = new JLabel(); button_prompt.setOpaque(false);
+        var button_prompt = ComponentDesigner.makeDefaultLabel("");
         button_prompt.setPreferredSize(prompt_size);
         button_panel.add(button_prompt); button_panel.add(add_button); button_panel.setOpaque(false);
 
@@ -342,20 +336,15 @@ public class ComponentDesigner {
         left_desktop.setBorder(BorderFactory.createMatteBorder(0, 3, 3, 3, Color.BLACK));
 
         //label WELCOME on top
-        var welcome_label = new JLabel("Welcome!");
-        welcome_label.setFont(ComponentDesigner.getDefaultFont(50));
+        var welcome_label = ComponentDesigner.makeDefaultLabel("Welcome!", 50);
         welcome_label.setHorizontalAlignment(SwingConstants.CENTER);
         welcome_label.setVerticalAlignment(SwingConstants.CENTER);
         welcome_label.setBorder(BorderFactory.createMatteBorder(3, 0, 3, 0, Color.BLACK));
-        welcome_label.setOpaque(false);
 
         //label MANAGE below
-        var manage_label = new JLabel("Manage:");
-        manage_label.setFont(ComponentDesigner.getDefaultFont());
-        manage_label.setFont(ComponentDesigner.getDefaultFont(50));
+        var manage_label = ComponentDesigner.makeDefaultLabel("Manage:", 50);
         manage_label.setHorizontalAlignment(SwingConstants.CENTER);
         manage_label.setVerticalAlignment(SwingConstants.CENTER);
-        manage_label.setOpaque(false);
 
         //buttons
         var users_button = ComponentDesigner.makeOptionButton("Users", 140, 60);
@@ -411,8 +400,7 @@ public class ComponentDesigner {
         layout.setVgap(gap);
         info_panel.setLayout(layout);
 
-        var label = new JLabel("Your data:"); label.setFont(ComponentDesigner.getDefaultFont(40));
-        label.setOpaque(false);
+        var label = ComponentDesigner.makeDefaultLabel("Your data:", 40);
         label.setHorizontalAlignment(SwingConstants.CENTER);
 
         var name_field = ComponentDesigner.makeBorderedComponent(new JTextField("Name"), 3, 3, 3, 3);
@@ -429,32 +417,32 @@ public class ComponentDesigner {
 
         var name_panel = new JPanel();
         name_panel.setPreferredSize(panel_size);
-        var name_prompt = new JLabel("Name:"); name_prompt.setOpaque(false);
-        name_prompt.setFont(ComponentDesigner.getDefaultFont(font_size)); name_prompt.setPreferredSize(prompt_size);
+        var name_prompt = ComponentDesigner.makeDefaultLabel("Name:", font_size);
+        name_prompt.setPreferredSize(prompt_size);
         name_panel.add(name_prompt); name_panel.add(name_field); name_panel.setOpaque(false);
 
         var surname_panel = new JPanel();
         surname_panel.setPreferredSize(panel_size);
-        var surname_prompt = new JLabel("Surname:"); surname_prompt.setOpaque(false);
-        surname_prompt.setFont(ComponentDesigner.getDefaultFont(font_size)); surname_prompt.setPreferredSize(prompt_size);
+        var surname_prompt = ComponentDesigner.makeDefaultLabel("Surname:", font_size);
+        surname_prompt.setPreferredSize(prompt_size);
         surname_panel.add(surname_prompt); surname_panel.add(surname_field); surname_panel.setOpaque(false);
 
         var login_panel = new JPanel();
         login_panel.setPreferredSize(panel_size);
-        var login_prompt = new JLabel("Login:"); login_prompt.setOpaque(false);
-        login_prompt.setFont(ComponentDesigner.getDefaultFont(font_size)); login_prompt.setPreferredSize(prompt_size);
+        var login_prompt = ComponentDesigner.makeDefaultLabel("Login:", font_size);
+        login_prompt.setPreferredSize(prompt_size);
         login_panel.add(login_prompt); login_panel.add(login_field); login_panel.setOpaque(false);
 
         var password_panel = new JPanel();
         password_panel.setPreferredSize(panel_size);
-        var password_prompt = new JLabel("Password:"); password_prompt.setOpaque(false);
-        password_prompt.setFont(ComponentDesigner.getDefaultFont(font_size)); password_prompt.setPreferredSize(prompt_size);
+        var password_prompt = ComponentDesigner.makeDefaultLabel("Password:", font_size);
+        password_prompt.setPreferredSize(prompt_size);
         password_panel.add(password_prompt); password_panel.add(password_field); password_panel.setOpaque(false);
 
         var mail_panel = new JPanel();
         mail_panel.setPreferredSize(panel_size);
-        var mail_prompt = new JLabel("Mail:"); mail_prompt.setOpaque(false);
-        mail_prompt.setFont(ComponentDesigner.getDefaultFont(font_size)); mail_prompt.setPreferredSize(prompt_size);
+        var mail_prompt = ComponentDesigner.makeDefaultLabel("Mail:", font_size);
+        mail_prompt.setPreferredSize(prompt_size);
         mail_panel.add(mail_prompt); mail_panel.add(mail_field); mail_panel.setOpaque(false);
 
         info_panel.add(label);
@@ -476,12 +464,10 @@ public class ComponentDesigner {
         left_desktop.setBorder(BorderFactory.createMatteBorder(0, 3, 3, 3, Color.BLACK));
 
         //label WELCOME on top
-        var welcome_label = new JLabel("Welcome!");
-        welcome_label.setFont(ComponentDesigner.getDefaultFont(50));
+        var welcome_label = ComponentDesigner.makeDefaultLabel("Welcome!", 50);
         welcome_label.setHorizontalAlignment(SwingConstants.CENTER);
         welcome_label.setVerticalAlignment(SwingConstants.CENTER);
         welcome_label.setBorder(BorderFactory.createMatteBorder(3, 0, 3, 0, Color.BLACK));
-        welcome_label.setOpaque(false);
 
         //buttons
         var account_button = ComponentDesigner.makeOptionButton("My account", 140, 100);
@@ -561,11 +547,9 @@ public class ComponentDesigner {
         spacer.setLayout(new BorderLayout());
 
         //library label
-        var library_label = new JLabel("Library");
-        library_label.setFont(ComponentDesigner.getDefaultFont(50));
+        var library_label = ComponentDesigner.makeDefaultLabel("Library", 50);
         library_label.setHorizontalAlignment(SwingConstants.CENTER);
         library_label.setVerticalAlignment(SwingConstants.CENTER);
-        library_label.setOpaque(false);
         spacer.add(library_label);
 
         main_panel.add(spacer, BorderLayout.NORTH);
