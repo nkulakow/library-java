@@ -35,7 +35,7 @@ public class ObjectTable extends JTable {
             model.addListSelectionListener(new UserSelector());
         else if (mode == FrameContentManager.BOOKS)
             model.addListSelectionListener(new BookSelector());
-        else
+        else if (mode == FrameContentManager.BOOKS_ORDERING)
             model.addListSelectionListener(new BookOrderSelector());
     }
 

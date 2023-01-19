@@ -2,7 +2,6 @@ package org.example.GUI;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.LibraryContextPackage.Book;
 import org.example.LibraryContextPackage.LibraryContext;
 import org.example.LibraryContextPackage.User;
 
@@ -472,6 +471,16 @@ public class ComponentDesigner {
         return new ObjectTable(data, column_names, mode);
     }
 
+    public static ObjectTable makeBorrowedBookTable(String[][] data, int mode) {
+        String[] column_names = {"Id", "Name", "Author", "Category", "Return date"};
+        return new ObjectTable(data, column_names, mode);
+    }
+
+    public static ObjectTable makeOrderedBookTable(String[][] data, int mode) {
+        String[] column_names = {"Id", "Name", "Author", "Category", "Available date"};
+        return new ObjectTable(data, column_names, mode);
+    }
+
     public static JPanel makeLeftAdminPanel() {
         // main panel for left options
         var left_desktop = new JPanel();
@@ -636,6 +645,8 @@ public class ComponentDesigner {
         account_button.setAction_manager(new AccountPanelSwitcher());
 
         var library_button = ComponentDesigner.makeOptionButton("Library", 140, 100);
+        library_button.addActionListener(LibraryGUI.main_page);
+        library_button.setAction_manager(new BorrowedBooksShower());
 
         var exit_button = ComponentDesigner.makeOptionButton("EXIT", 300, 60);
         exit_button.addActionListener(LibraryGUI.main_page);
@@ -729,6 +740,21 @@ public class ComponentDesigner {
         main_panel.add(content_panel, BorderLayout.CENTER);
 
         return main_panel;
+    }
+
+    public static JPanel makeBookReturnPanel () {
+        var return_panel = new JPanel();
+        var layout = new FlowLayout(FlowLayout.TRAILING, 30, 5);
+        return_panel.setLayout(layout);
+        return_panel.setOpaque(false);
+
+        var return_button = ComponentDesigner.makeOptionButton("Return");
+        return_button.addActionListener(LibraryGUI.main_page);
+        return_button.setAction_manager(new BooksReturner());
+
+        return_panel.add(return_button);
+
+        return return_panel;
     }
 
     public static JPanel getSpacer(int width, int height) {

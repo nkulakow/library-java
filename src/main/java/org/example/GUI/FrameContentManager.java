@@ -8,7 +8,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.font.LineBreakMeasurer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -18,10 +17,9 @@ abstract class FrameContentManager {
     public static final int BOOKS = 1;
     public static final int BOOKS_ORDERING = 2;
 
-    public static final int ORDERED_BOOKS = 2;
-    public static final int BORROWED_BOOKS = 3;
-    public static final int ADMIN_USER_MOD = 4;
-    public static final int USER_USER_MOD = 5;
+    public static final int BOOKS_ORDERED = 3;
+    public static final int BOOKS_BORROWED = 4;
+
 
     abstract void manage();
 
@@ -97,8 +95,10 @@ abstract class FrameContentManager {
         panel.removeAll();
         if(mode == FrameContentManager.USERS)
             panel.add(ComponentDesigner.makeUserAddingPanel());
-        else
+        else if (mode == FrameContentManager.BOOKS)
             panel.add(ComponentDesigner.makeBookAddingPanel());
+        else
+            panel.add(ComponentDesigner.makeBookReturnPanel());
         panel.validate();
     }
 
@@ -666,6 +666,40 @@ class AccountPanelSwitcher extends FrameContentManager {
                 LibraryGUI.main_page.setSize(new Dimension(LibraryGUI.main_page.getWidth(), min_height));
             }
             LibraryGUI.main_page.setMinimumSize(new Dimension(LibraryGUI.main_page.getMinimumSize().width, min_height));
+        }
+    }
+}
+
+class BorrowedBooksShower extends FrameContentManager {
+    @Override
+    void manage() {
+        var table = ComponentDesigner.makeBorrowedBookTable(LibraryContext.getBorrowedBooksRepresentation(), FrameContentManager.BOOKS_BORROWED);
+        var pane = LibraryGUI.main_page.getTable_pane();
+        pane.setViewportView(table);
+        LibraryGUI.main_page.setSearch_table(table);
+        LibraryGUI.main_page.current_mode = FrameContentManager.BOOKS_BORROWED;
+
+        Searcher.search_mode = Searcher.BOOKS_BORROWED;
+        Searcher.last_results = null;
+
+        FrameContentManager.clearBottomPanel(FrameContentManager.BOOKS_BORROWED);
+    }
+}
+
+class BooksReturner extends FrameContentManager {
+    @Override
+    void manage() {
+        var books = LibraryContext.getBorrowedBooks().toArray();
+        int index = LibraryGUI.main_page.getSearch_table().getSelectedRow();
+        var to_return = (Book) books[index];
+        try {
+            LibraryContext.returnBook(to_return);
+            ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).removeRow(index);
+            System.out.println("Book returned " + to_return.describe());
+        } catch (CannotReturnBookException e) {
+            System.out.println("Could not return");
+        } catch (CannotConnectToDBException e) {
+            System.out.println("Cannot connect");
         }
     }
 }
