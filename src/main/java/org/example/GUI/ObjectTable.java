@@ -33,8 +33,10 @@ public class ObjectTable extends JTable {
         var model = this.getSelectionModel();
         if (mode == FrameContentManager.USERS)
             model.addListSelectionListener(new UserSelector());
-        else
+        else if (mode == FrameContentManager.BOOKS)
             model.addListSelectionListener(new BookSelector());
+        else
+            model.addListSelectionListener(new BookOrderSelector());
     }
 
     public static class DefaultModel extends DefaultTableModel {

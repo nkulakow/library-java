@@ -12,10 +12,12 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.ServiceConfigurationError;
 
 abstract class FrameContentManager {
     public static final int USERS = 0;
     public static final int BOOKS = 1;
+    public static final int BOOKS_ORDERING = 2;
 
     public static final int ORDERED_BOOKS = 2;
     public static final int BORROWED_BOOKS = 3;
@@ -142,7 +144,7 @@ class AppLogger extends FrameContentManager {
 class BookTableShower extends FrameContentManager {
     @Override
     void manage() {
-        var table = ComponentDesigner.makeBookTable(new String[][]{});
+        var table = ComponentDesigner.makeBookTable(new String[][]{}, FrameContentManager.BOOKS);
         var pane = LibraryGUI.main_page.getTable_pane();
         pane.setViewportView(table);
         LibraryGUI.main_page.setSearch_table(table);
@@ -197,6 +199,7 @@ class AddingPanelShower extends FrameContentManager {
 class Searcher extends FrameContentManager {
     public static final int USERS = 0;
     public static final int BOOKS = 1;
+    public static final int BOOKS_ORDER = 2;
     public static int search_mode;
 
     public static HashSet<LibraryContextActions> last_results;
@@ -232,8 +235,10 @@ class Searcher extends FrameContentManager {
         ObjectTable table;
         if(Searcher.search_mode == Searcher.USERS)
             table = ComponentDesigner.makeUserTable(data);
+        else if (Searcher.search_mode == Searcher.BOOKS)
+            table = ComponentDesigner.makeBookTable(data, FrameContentManager.BOOKS);
         else
-            table = ComponentDesigner.makeBookTable(data);
+            table = ComponentDesigner.makeBookTable(data, FrameContentManager.BOOKS_ORDERING);
         var pane = LibraryGUI.main_page.getTable_pane();
         pane.setViewportView(table);
         LibraryGUI.main_page.setSearch_table(table);
@@ -453,6 +458,65 @@ class BookModifier extends FrameContentManager {
         }  catch (CannotConnectToDBException e) {
             System.out.println("Cannot connect to database, check your connection");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
+
+        }
+    }
+}
+
+class BookOrderSelector extends FrameContentManager implements ListSelectionListener {
+
+    public static int selected_id;
+    public static int selected_index;
+    @Override
+    void manage() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+        bottom_panel.removeAll();
+        bottom_panel.add(ComponentDesigner.makeOrderPanel());
+        bottom_panel.validate();
+
+        var searched = Searcher.last_results.toArray();
+
+        var selected = (Book) searched[selected_index];
+        BookOrderSelector.selected_id = selected.getBookId();
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        var model = (ListSelectionModel) e.getSource();
+        if(!model.isSelectionEmpty()) {
+            BookOrderSelector.selected_index = model.getMinSelectionIndex();
+            this.manage();
+        }
+    }
+}
+
+class BookOrderer extends FrameContentManager {
+    @Override
+    void manage() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+
+        var order_panel = (JPanel) bottom_panel.getComponent(0);
+        var months_panel = (JPanel) order_panel.getComponent(1);
+        var months_field = (JTextField) months_panel.getComponent(1);
+
+        int index = BookOrderSelector.selected_index;
+        var selected = Searcher.last_results.toArray();
+        long months;
+        try {
+            months = Long.parseLong(months_field.getText());
+        }
+        catch (java.lang.NumberFormatException e){
+            System.out.println("Input valid months number.");
+            return;
+        }
+        Book book;
+        try {
+            book = (Book) selected[index];
+            LibraryContext.orderBook(book, months);
+            System.out.println(book.getName() + " by " + book.getAuthor() + " successfully ordered");
+        } catch (CannotConnectToDBException e) {
+            System.out.println("Cannot connect to database, check your connection");
+        } catch (ArrayIndexOutOfBoundsException ignored) {
 
         }
     }

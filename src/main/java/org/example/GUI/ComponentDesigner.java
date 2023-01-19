@@ -199,6 +199,9 @@ public class ComponentDesigner {
         search_panel.setOpaque(false);
 
         var search_button = ComponentDesigner.makeOptionButton("Search");
+        search_button.addActionListener(LibraryGUI.main_page);
+        Searcher.search_mode = Searcher.BOOKS_ORDER;
+        search_button.setAction_manager(new Searcher());
 
         var search_field = (JTextField) ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
         LibraryGUI.main_page.setSearch_field(search_field);
@@ -221,7 +224,7 @@ public class ComponentDesigner {
         return search_panel;
     }
 
-    private static JPanel makeOrderPanel() {
+    public static JPanel makeOrderPanel() {
         var order_panel = new JPanel();
         var layout = new SpringLayout();
         order_panel.setLayout(layout);
@@ -238,6 +241,8 @@ public class ComponentDesigner {
         months_panel.add(months_field);
 
         var order_button = ComponentDesigner.makeOptionButton("Order");
+        order_button.addActionListener(LibraryGUI.main_page);
+        order_button.setAction_manager(new BookOrderer());
 
         int panel_size = 300 + 6; int button_size = 150; int upper_gap = 30; int bottom_gap = 60; int gap = 30;
 
@@ -461,9 +466,9 @@ public class ComponentDesigner {
         return new ObjectTable(data, column_names, FrameContentManager.USERS);
     }
 
-    public static ObjectTable makeBookTable(String[][] data) {
+    public static ObjectTable makeBookTable(String[][] data, int mode) {
         String[] column_names = {"Id", "Name", "Author", "Category"};
-        return new ObjectTable(data, column_names, FrameContentManager.BOOKS);
+        return new ObjectTable(data, column_names, mode);
     }
 
     public static JPanel makeLeftAdminPanel() {
@@ -665,10 +670,12 @@ public class ComponentDesigner {
         var content_panel = new JPanel();
         content_panel.setLayout(new BorderLayout());
         content_panel.setBackground(BACKGROUND_COLOR);
-        var table = ComponentDesigner.makeBookTable(new String[][]{});
+        var table = ComponentDesigner.makeBookTable(new String[][]{}, FrameContentManager.BOOKS_ORDERING);
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setPreferredSize(new Dimension(400, 600));
         scrollPane.setViewportView(table);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        scrollPane.getViewport().setBackground(ComponentDesigner.BACKGROUND_COLOR);
         LibraryGUI.main_page.setTable_pane(scrollPane);
         LibraryGUI.main_page.setSearch_table(table);
         content_panel.add(scrollPane, BorderLayout.CENTER);
