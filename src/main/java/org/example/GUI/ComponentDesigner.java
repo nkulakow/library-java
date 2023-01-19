@@ -2,6 +2,7 @@ package org.example.GUI;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.LibraryContextPackage.Book;
 import org.example.LibraryContextPackage.User;
 
 import javax.swing.*;
@@ -152,7 +153,7 @@ public class ComponentDesigner {
 
         var remove_button = ComponentDesigner.makeOptionButton("Remove");
         remove_button.addActionListener(LibraryGUI.main_page);
-        remove_button.setAction_manager(new UserDeleter());
+        remove_button.setAction_manager(new Deleter());
 
         var add_button = ComponentDesigner.makeOptionButton("Add");
         add_button.addActionListener(LibraryGUI.main_page);
@@ -430,6 +431,29 @@ public class ComponentDesigner {
         modify_panel.add(button_panel, 0);
 
         return modify_panel;
+    }
+
+    public static JPanel makeBookAddingPanel() {
+        var adding_panel = ComponentDesigner.makeBookDataPanel();
+
+        var field_size = new Dimension(200, 40);
+        var prompt_size = new Dimension(200, 15);
+        var panel_size = new Dimension(field_size.width, field_size.height + prompt_size.height + 10);
+        var button_panel_size = new Dimension(100, panel_size.height);
+
+        var add_button = ComponentDesigner.makeOptionButton("Add", 100, field_size.height);
+        add_button.addActionListener(LibraryGUI.main_page);
+        add_button.setAction_manager(new BookAdder());
+
+        var button_panel = new JPanel();
+        button_panel.setPreferredSize(button_panel_size);
+        var button_prompt = ComponentDesigner.makeDefaultLabel("");
+        button_prompt.setPreferredSize(prompt_size);
+        button_panel.add(button_prompt); button_panel.add(add_button); button_panel.setOpaque(false);
+
+        adding_panel.add(button_panel, 0);
+
+        return adding_panel;
     }
 
     public static ObjectTable makeUserTable(String[][] data) {

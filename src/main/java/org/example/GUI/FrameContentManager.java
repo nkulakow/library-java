@@ -3,10 +3,10 @@ package org.example.GUI;
 import org.example.LibraryContextPackage.*;
 import org.example.Main;
 
+import javax.imageio.stream.ImageInputStream;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.HashMap;
@@ -68,6 +68,38 @@ abstract class FrameContentManager {
 
         return new String[]{name, surname, login, mail, password_str};
     }
+
+    public static String[] getBookData() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+
+        var data_panel = (JPanel) bottom_panel.getComponent(0);
+
+        var name_panel = (JPanel)(data_panel.getComponent(1));
+        var name_field = (JTextField) (name_panel.getComponent(1));
+
+        var author_panel = (JPanel)(data_panel.getComponent(2));
+        var author_field = (JTextField) (author_panel.getComponent(1));
+
+        var category_panel = (JPanel)(data_panel.getComponent(3));
+        var category_field = (JTextField) (category_panel.getComponent(1));
+
+        String name, author, category;
+        name = name_field.getText();
+        author = author_field.getText();
+        category = category_field.getText();
+
+        return new String[]{name, author, category};
+    }
+
+    public static void clearBottomPanel(int mode) {
+        var panel = FrameContentManager.getBottomFramePanel();
+        panel.removeAll();
+        if(mode == FrameContentManager.USERS)
+            panel.add(ComponentDesigner.makeUserAddingPanel());
+        else
+            panel.add(ComponentDesigner.makeBookAddingPanel());
+        panel.validate();
+    }
 }
 
 class Exiter extends FrameContentManager {
@@ -114,9 +146,12 @@ class BookTableShower extends FrameContentManager {
         var pane = LibraryGUI.main_page.getTable_pane();
         pane.setViewportView(table);
         LibraryGUI.main_page.setSearch_table(table);
+        LibraryGUI.main_page.current_mode = FrameContentManager.BOOKS;
 
         Searcher.search_mode = Searcher.BOOKS;
         Searcher.last_results = null;
+
+        FrameContentManager.clearBottomPanel(FrameContentManager.BOOKS);
     }
 }
 
@@ -127,9 +162,12 @@ class UserTableShower extends FrameContentManager {
         var pane = LibraryGUI.main_page.getTable_pane();
         pane.setViewportView(table);
         LibraryGUI.main_page.setSearch_table(table);
+        LibraryGUI.main_page.current_mode = FrameContentManager.USERS;
 
         Searcher.search_mode = Searcher.USERS;
         Searcher.last_results = null;
+
+        FrameContentManager.clearBottomPanel(FrameContentManager.USERS);
     }
 }
 
@@ -148,7 +186,10 @@ class AddingPanelShower extends FrameContentManager {
     void manage() {
         var bottom_panel = FrameContentManager.getBottomFramePanel();
         bottom_panel.removeAll();
-        bottom_panel.add(ComponentDesigner.makeUserModifyPanel());
+        if(LibraryGUI.main_page.current_mode == FrameContentManager.USERS)
+            bottom_panel.add(ComponentDesigner.makeUserAddingPanel());
+        else
+            bottom_panel.add(ComponentDesigner.makeBookAddingPanel());
         bottom_panel.validate();
     }
 }
@@ -330,7 +371,6 @@ class UserAdder extends FrameContentManager {
                     mail,
                     0   //books number
             ));
-            ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).addRow(new String[]{Integer.toString(id), name, surname, login, mail});
             System.out.println("User successfully added");
         } catch (NullOrEmptyStringException e) {
             System.out.println("User data cannot be empty");
@@ -391,7 +431,95 @@ class BookSelector extends FrameContentManager implements ListSelectionListener 
 class BookModifier extends FrameContentManager {
     @Override
     void manage() {
+        String name, author, category;
+        String[] data = FrameContentManager.getBookData();
 
+        name = data[0];
+        author = data[1];
+        category = data[2];
+
+        Map<AttributesNames, String> map= new HashMap<>();
+        map.put(AttributesNames.name, name);
+        map.put(AttributesNames.author, author);
+        map.put(AttributesNames.category, category);
+        try {
+            LibraryContext.modifyFewBookAttributes(map, BookSelector.selected_id);
+            int row_index = BookSelector.selected_index;
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(name, row_index, ObjectTable.column_book_name);
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(author, row_index, ObjectTable.column_book_author_);
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(category, row_index, ObjectTable.column_book_category);
+        } catch (NullOrEmptyStringException e) {
+            System.out.println("Book data cannot be empty");
+        }  catch (CannotConnectToDBException e) {
+            System.out.println("Cannot connect to database, check your connection");
+        } catch (InvalidBookNumberException | InvalidIdException ignored) {
+
+        }
+    }
+}
+
+class BookAdder extends FrameContentManager {
+    @Override
+    void manage() {
+        String name, author, category;
+        String[] data = FrameContentManager.getBookData();
+
+        name = data[0];
+        author = data[1];
+        category = data[2];
+
+        int id = LibraryContext.generateBookID();
+
+        try {
+            LibraryContext.addObject(new Book(
+                    name,
+                    category,
+                    id,
+                    author,
+                    true,
+                    null,
+                    null   //books number
+            ));
+            System.out.println("Book successfully added");
+        } catch (NullOrEmptyStringException e) {
+            System.out.println("Book data cannot be empty");
+        } catch (InvalidIdException | NumberFormatException e) {
+            System.out.println("Incorrect book id");
+        } catch (CannotConnectToDBException e) {
+            System.out.println("Cannot connect to database, check your connection");
+        }
+    }
+}
+
+class BookDeleter extends FrameContentManager {
+    @Override
+    void manage() {
+        int index = BookSelector.selected_index;
+        var selected = Searcher.last_results.toArray();
+        Book book;
+        try {
+            book = (Book) selected[index];
+            LibraryContext.removeObject(book);
+            ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).removeRow(index);
+
+            System.out.println("Book successfully deleted");
+        } catch (CannotConnectToDBException e) {
+            System.out.println("Cannot connect to database, check your connection");
+        } catch (ArrayIndexOutOfBoundsException ignored) {
+
+        }
+    }
+}
+
+class Deleter extends FrameContentManager {
+    private static final UserDeleter user_deleter = new UserDeleter();
+    private static final BookDeleter book_deleter = new BookDeleter();
+    @Override
+    void manage() {
+        if(LibraryGUI.main_page.current_mode == FrameContentManager.USERS)
+            Deleter.user_deleter.manage();
+        else
+            Deleter.book_deleter.manage();
     }
 }
 

@@ -20,6 +20,7 @@ public class MainPage extends JFrame implements ActionListener {
     private ObjectTable search_table;
     @Getter
     private JPanel left_panel;
+    public int current_mode;
     public MainPage() {
         super();
         this.setSize(1400, 800);
@@ -28,6 +29,7 @@ public class MainPage extends JFrame implements ActionListener {
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setMinimumSize(new Dimension(340, 450));
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        this.current_mode = FrameContentManager.USERS;
     }
 
     public void showContent(int mode) {

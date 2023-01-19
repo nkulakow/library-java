@@ -5,11 +5,14 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
 public class ObjectTable extends JTable {
-    public static final int column_user_id = 0;
     public static final int column_user_name = 1;
     public static final int column_user_surname = 2;
     public static final int column_user_login = 3;
     public static final int column_user_mail = 4;
+
+    public static final int column_book_name = 1;
+    public static final int column_book_author_ = 2;
+    public static final int column_book_category = 3;
 
     public ObjectTable(String[][] data, String[] column_names, int data_type) {
         super(new DefaultModel(data, column_names));
