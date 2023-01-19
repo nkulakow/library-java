@@ -1,5 +1,6 @@
 package org.example.GUI;
 
+import lombok.Getter;
 import org.example.LibraryContextPackage.LibraryContext;
 import org.example.Main;
 
@@ -7,7 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 import javax.swing.JCheckBox;
 
 
@@ -15,12 +15,16 @@ class LogInPage extends JFrame implements ActionListener {
     private static final int width = 700;
     private static final int height = 600;
     // private variables
+    @Getter
     private JTextField login_field;
+    @Getter
     private JPasswordField password_field;
-    private JButton login_button;
-    private JButton exit_button;
+    private ComponentDesigner.OptionButton login_button;
+    private ComponentDesigner.OptionButton exit_button;
+    @Getter
     private JCheckBox userbox;
     private ButtonGroup checksGroup;
+    @Getter
     private JCheckBox adminbox;
     private JLabel box_prompt;
     private SpringLayout layout;
@@ -92,8 +96,10 @@ class LogInPage extends JFrame implements ActionListener {
     private void initButtons() {
         this.login_button = ComponentDesigner.makeOptionButton("Log in");
         this.login_button.addActionListener(this);
+        this.login_button.setAction_manager(new AppLogger());
         this.exit_button = ComponentDesigner.makeOptionButton("EXIT");
         this.exit_button.addActionListener(this);
+        this.exit_button.setAction_manager(new Exiter());
 
         this.layout.putConstraint(SpringLayout.SOUTH, this.exit_button, -20, SpringLayout.SOUTH, this.getContentPane());
         this.layout.putConstraint(SpringLayout.NORTH, this.exit_button, -80, SpringLayout.SOUTH, this.getContentPane());
@@ -155,32 +161,8 @@ class LogInPage extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == this.login_button) {
-            LibraryGUI.main_prompt.setFont(ComponentDesigner.getDefaultFont(25));
-            String login = this.login_field.getText();
-            String password = String.valueOf(this.password_field.getPassword());
-            if (this.userbox.isSelected())
-            {
-                if(LibraryContext.checkLoggingUsers(login, password)) {
-                    LibraryGUI.changeAfterLoggedToUserSite();
-                }
-                else {
-                    LibraryGUI.main_prompt.setText("Incorrect login and/or password");
-                }
-            }
-            else if (this.adminbox.isSelected()) {
-                if (LibraryContext.checkLoggingAdmins(login, password)) {
-                    LibraryGUI.changeAfterLoggedToAdminSite();
-                }
-                else {
-                    LibraryGUI.main_prompt.setText("Incorrect login and/or password");
-                }
-            }
-            else {
-                LibraryGUI.main_prompt.setText("Select 'User' or 'Admin'");
-            }
-        } else if (e.getSource() == this.exit_button) {
-            Main.exit();
+        if(e.getSource() instanceof ComponentDesigner.OptionButton button) {
+            button.getAction_manager().manage(new JPanel());
         }
     }
 }

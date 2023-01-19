@@ -57,11 +57,11 @@ public class ComponentDesigner {
             });
         }
     }
-    public static JButton makeOptionButton(String text, int width, int height) {
+    public static OptionButton makeOptionButton(String text, int width, int height) {
         return new ComponentDesigner.OptionButton(text, new Dimension(width, height));
     }
 
-    public static JButton makeOptionButton(String text) {
+    public static OptionButton makeOptionButton(String text) {
         return ComponentDesigner.makeOptionButton(text, 150, 50);
     }
 
