@@ -147,7 +147,8 @@ public class ComponentDesigner {
         search_panel.setLayout(layout);
         search_panel.setOpaque(false);
 
-        var search_button = ComponentDesigner.makeOptionButton("Search");
+        var search_button = ComponentDesigner.makeOptionButton("");
+        search_button.setIcon(new ImageIcon("src/main/resources/images/serarch.png"));
         search_button.addActionListener(LibraryGUI.main_page);
         search_button.setAction_manager(new Searcher());
 
@@ -198,7 +199,8 @@ public class ComponentDesigner {
         search_panel.setLayout(layout);
         search_panel.setOpaque(false);
 
-        var search_button = ComponentDesigner.makeOptionButton("Search");
+        var search_button = ComponentDesigner.makeOptionButton("");
+        search_button.setIcon(new ImageIcon("src/main/resources/images/serarch.png"));
         search_button.addActionListener(LibraryGUI.main_page);
         Searcher.search_mode = Searcher.BOOKS_ORDER;
         search_button.setAction_manager(new Searcher());
@@ -206,20 +208,28 @@ public class ComponentDesigner {
         var search_field = (JTextField) ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
         LibraryGUI.main_page.setSearch_field(search_field);
 
-        int gap_vertical = 30; int button_size = 150; int field_size = 300; int gap_horizontal = 30;
+        var search_label = ComponentDesigner.makeDefaultLabel("Search for new books:", 15);
 
-        layout.putConstraint(SpringLayout.NORTH, search_field, gap_vertical, SpringLayout.NORTH, search_panel);
-        layout.putConstraint(SpringLayout.SOUTH, search_field, -gap_vertical, SpringLayout.SOUTH, search_panel);
-        layout.putConstraint(SpringLayout.WEST, search_field, -50 - field_size, SpringLayout.EAST, search_panel);
-        layout.putConstraint(SpringLayout.EAST, search_field, -50, SpringLayout.EAST, search_panel);
+        var field_panel = new JPanel();
+        field_panel.setOpaque(false);
+        field_panel.setLayout(new GridLayout(2, 1));
+        field_panel.add(search_label);
+        field_panel.add(search_field);
+
+        int gap_vertical = 30; int button_size = 100; int field_size = 400; int gap_horizontal = 30;
+
+        layout.putConstraint(SpringLayout.NORTH, field_panel, 0, SpringLayout.NORTH, search_panel);
+        layout.putConstraint(SpringLayout.SOUTH, field_panel, -gap_vertical, SpringLayout.SOUTH, search_panel);
+        layout.putConstraint(SpringLayout.WEST, field_panel, -50 - field_size, SpringLayout.EAST, search_panel);
+        layout.putConstraint(SpringLayout.EAST, field_panel, -50, SpringLayout.EAST, search_panel);
 
         layout.putConstraint(SpringLayout.NORTH, search_button, gap_vertical, SpringLayout.NORTH, search_panel);
         layout.putConstraint(SpringLayout.SOUTH, search_button, -gap_vertical, SpringLayout.SOUTH, search_panel);
-        layout.putConstraint(SpringLayout.WEST, search_button, -(gap_horizontal + button_size), SpringLayout.WEST, search_field);
-        layout.putConstraint(SpringLayout.EAST, search_button, -gap_horizontal, SpringLayout.WEST, search_field);
+        layout.putConstraint(SpringLayout.WEST, search_button, -(gap_horizontal + button_size), SpringLayout.WEST, field_panel);
+        layout.putConstraint(SpringLayout.EAST, search_button, -gap_horizontal, SpringLayout.WEST, field_panel);
 
         search_panel.add(search_button);
-        search_panel.add(search_field);
+        search_panel.add(field_panel);
 
         return search_panel;
     }
@@ -418,7 +428,7 @@ public class ComponentDesigner {
     public static JPanel makeBookModifyPanel() {
         var modify_panel = ComponentDesigner.makeBookDataPanel();
 
-        var field_size = new Dimension(200, 40);
+        var field_size = new Dimension(300, 40);
         var prompt_size = new Dimension(200, 15);
         var panel_size = new Dimension(field_size.width, field_size.height + prompt_size.height + 10);
         var button_panel_size = new Dimension(100, panel_size.height);
@@ -441,7 +451,7 @@ public class ComponentDesigner {
     public static JPanel makeBookAddingPanel() {
         var adding_panel = ComponentDesigner.makeBookDataPanel();
 
-        var field_size = new Dimension(200, 40);
+        var field_size = new Dimension(300, 40);
         var prompt_size = new Dimension(200, 15);
         var panel_size = new Dimension(field_size.width, field_size.height + prompt_size.height + 10);
         var button_panel_size = new Dimension(100, panel_size.height);
@@ -501,14 +511,17 @@ public class ComponentDesigner {
 
         //buttons
         var users_button = ComponentDesigner.makeOptionButton("Users", 140, 60);
+        users_button.setIcon(new ImageIcon("src/main/resources/images/users.png"));
         users_button.addActionListener(LibraryGUI.main_page);
         users_button.setAction_manager(new UserTableShower());
 
         var books_button = ComponentDesigner.makeOptionButton("Books", 140, 60);
+        books_button.setIcon(new ImageIcon("src/main/resources/images/books.png"));
         books_button.addActionListener(LibraryGUI.main_page);
         books_button.setAction_manager(new BookTableShower());
 
         var account_button = ComponentDesigner.makeOptionButton("My account", 140, 60);
+        account_button.setIcon(new ImageIcon("src/main/resources/images/account.png"));
         account_button.addActionListener(LibraryGUI.main_page);
         account_button.setAction_manager(new AccountPanelSwitcher());
 
@@ -666,14 +679,17 @@ public class ComponentDesigner {
 
         //buttons
         var account_button = ComponentDesigner.makeOptionButton("My account", 140, 100);
+        account_button.setIcon(new ImageIcon("src/main/resources/images/account.png"));
         account_button.addActionListener(LibraryGUI.main_page);
         account_button.setAction_manager(new AccountPanelSwitcher());
 
         var borrowed_button = ComponentDesigner.makeOptionButton("Borrowed books", 140, 100);
+        borrowed_button.setIcon(new ImageIcon("src/main/resources/images/borrowed.png"));
         borrowed_button.addActionListener(LibraryGUI.main_page);
         borrowed_button.setAction_manager(new BorrowedBooksShower());
 
         var ordered_button = ComponentDesigner.makeOptionButton("Ordered books", 140, 100);
+        ordered_button.setIcon(new ImageIcon("src/main/resources/images/ordered.png"));
         ordered_button.addActionListener(LibraryGUI.main_page);
         ordered_button.setAction_manager(new OrderedBooksShower());
 
