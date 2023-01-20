@@ -7,7 +7,6 @@ public class Main {
         LibraryGUI.GUIInit();
         LibraryContext.LibContextInit();
         LibraryGUI.showFrame(LibraryGUI.LOG_FRAME);
-//    LibraryGUI.changeAfterLogged(LibraryGUI.USER);
     }
 
     public static void exit() {

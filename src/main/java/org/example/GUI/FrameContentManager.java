@@ -106,19 +106,25 @@ abstract class FrameContentManager {
     public static String[] getSelfData() {
         var data_panel = LibraryGUI.main_page.getAccount_panel();
 
-        var name_panel = (JPanel)(data_panel.getComponent(1));
+        int first;
+        if (LibraryContext.getCurrentUser() != null)
+            first = 1;
+        else
+            first = 0;
+
+        var name_panel = (JPanel)(data_panel.getComponent(first));
         var name_field = (JTextField) (name_panel.getComponent(1));
 
-        var surname_panel = (JPanel)(data_panel.getComponent(2));
+        var surname_panel = (JPanel)(data_panel.getComponent(first + 1));
         var surname_field = (JTextField) (surname_panel.getComponent(1));
 
-        var login_panel = (JPanel)(data_panel.getComponent(3));
+        var login_panel = (JPanel)(data_panel.getComponent(first + 2));
         var login_field = (JTextField) (login_panel.getComponent(1));
 
-        var password_panel = (JPanel)(data_panel.getComponent(4));
+        var password_panel = (JPanel)(data_panel.getComponent(first + 3));
         var password_field = (JPasswordField) (password_panel.getComponent(1));
 
-        var mail_panel = (JPanel)(data_panel.getComponent(5));
+        var mail_panel = (JPanel)(data_panel.getComponent(first + 4));
         var mail_field = (JTextField) (mail_panel.getComponent(1));
 
         String name, surname, login, mail, password_str;
@@ -272,6 +278,8 @@ class Searcher extends FrameContentManager {
         var pane = LibraryGUI.main_page.getTable_pane();
         pane.setViewportView(table);
         LibraryGUI.main_page.setSearch_table(table);
+        if(results.isEmpty())
+            LibraryGUI.changePrompt("No fitting data found");
     }
 }
 
@@ -323,7 +331,7 @@ class UserSelector extends FrameContentManager implements ListSelectionListener 
                 selected_index = model.getMinSelectionIndex();
                 this.manage();
             } catch (NullPointerException exception) {
-                System.out.println("Choose non empty table position");
+                LibraryGUI.changePrompt("Choose non empty table position");
             } catch (IndexOutOfBoundsException ignored) {
 
             }
@@ -350,18 +358,23 @@ class UserModifier extends FrameContentManager {
         map.put(AttributesNames.login, login);
         map.put(AttributesNames.password, password);
         try {
-            LibraryContext.modifyFewUserAttributes(map, UserSelector.selected_id);
             int row_index = UserSelector.selected_index;
+            if (row_index >= Searcher.last_results.size())
+                throw new IndexOutOfBoundsException();
+            LibraryContext.modifyFewUserAttributes(map, UserSelector.selected_id);
             LibraryGUI.main_page.getSearch_table().getModel().setValueAt(name, row_index, ObjectTable.column_user_name);
             LibraryGUI.main_page.getSearch_table().getModel().setValueAt(surname, row_index, ObjectTable.column_user_surname);
             LibraryGUI.main_page.getSearch_table().getModel().setValueAt(login, row_index, ObjectTable.column_user_login);
             LibraryGUI.main_page.getSearch_table().getModel().setValueAt(mail, row_index, ObjectTable.column_user_mail);
+            LibraryGUI.changePrompt("User successfully modified");
         } catch (NullOrEmptyStringException e) {
-            System.out.println("User data cannot be empty");
+            LibraryGUI.changePrompt("User data cannot be empty");
         } catch (InvalidLoginException e) {
-            System.out.println("Login already exists");
+            LibraryGUI.changePrompt("Login already exists");
+        } catch (IndexOutOfBoundsException | NullPointerException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
         } catch (CannotConnectToDBException e) {
-            System.out.println("Cannot connect to database, check your connection");
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
         }
@@ -371,38 +384,36 @@ class UserModifier extends FrameContentManager {
 class UserDeleter extends FrameContentManager {
     @Override
     void manage() {
-        int index = UserSelector.selected_index;
-        var selected = Searcher.last_results.toArray();
-        CommonUser user;
         try {
+            int index = UserSelector.selected_index;
+            var selected = Searcher.last_results.toArray();
+            CommonUser user;
             user = (CommonUser) selected[index];
             LibraryContext.removeObject(user);
             ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).removeRow(index);
 
-            System.out.println("User successfully deleted");
+            LibraryGUI.changePrompt("User successfully deleted");
         } catch (CannotConnectToDBException e) {
-            System.out.println("Cannot connect to database, check your connection");
-        } catch (ArrayIndexOutOfBoundsException ignored) {
-
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
         }
     }
 }
-
 class UserAdder extends FrameContentManager {
     @Override
     void manage() {
-        String name, surname, login, mail, password;
-        String[] data = FrameContentManager.getUserData();
-
-        name = data[0];
-        surname = data[1];
-        login = data[2];
-        mail = data[3];
-        password = data[4];
-
-        int id = LibraryContext.generateCommonUserID();
-
         try {
+            String name, surname, login, mail, password;
+            String[] data = FrameContentManager.getUserData();
+
+            name = data[0];
+            surname = data[1];
+            login = data[2];
+            mail = data[3];
+            password = data[4];
+
+            int id = LibraryContext.generateCommonUserID();
             LibraryContext.addObject(new CommonUser(
                     login,
                     password,
@@ -412,15 +423,15 @@ class UserAdder extends FrameContentManager {
                     mail,
                     0   //books number
             ));
-            System.out.println("User successfully added");
+            LibraryGUI.changePrompt("User successfully added");
         } catch (NullOrEmptyStringException e) {
-            System.out.println("User data cannot be empty");
+            LibraryGUI.changePrompt("User data cannot be empty");
         } catch (InvalidIdException | NumberFormatException e) {
-            System.out.println("Incorrect user id");
+            LibraryGUI.changePrompt("Incorrect user id");
         } catch (InvalidLoginException e) {
-            System.out.println("Login already exists");
+            LibraryGUI.changePrompt("Login already exists");
         } catch (CannotConnectToDBException e) {
-            System.out.println("Cannot connect to database, check your connection");
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
         } catch (InvalidBookNumberException ignored) {
 
         }
@@ -449,14 +460,14 @@ class SelfModifier extends FrameContentManager {
             if (LibraryContext.getCurrentUser() != null)
                 LibraryContext.modifyFewUserAttributes(map, LibraryContext.getCurrentUser().getUserId());
             else
-                LibraryContext.modifyFewUserAttributes(map, LibraryContext.getCurrentAdmin().getAdminId());
-            System.out.println("Your data successfully modified");
+                LibraryContext.modifyFewAdminAttributes(map);
+            LibraryGUI.changePrompt("Your data successfully modified");
         } catch (NullOrEmptyStringException e) {
-            System.out.println("User data cannot be empty");
+            LibraryGUI.changePrompt("User data cannot be empty");
         } catch (InvalidLoginException e) {
-            System.out.println("Login already exists");
+            LibraryGUI.changePrompt("Login already exists");
         } catch (CannotConnectToDBException e) {
-            System.out.println("Cannot connect to database, check your connection");
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
         }
@@ -503,8 +514,8 @@ class BookSelector extends FrameContentManager implements ListSelectionListener 
                 selected_index = model.getMinSelectionIndex();
                 this.manage();
             } catch (NullPointerException exception) {
-                System.out.println("Choose non empty table position");
-            } catch (IndexOutOfBoundsException ignored) {
+                LibraryGUI.changePrompt("Choose non empty table position");
+            } catch (ArrayIndexOutOfBoundsException ignored) {
 
             }
         }
@@ -526,15 +537,20 @@ class BookModifier extends FrameContentManager {
         map.put(AttributesNames.author, author);
         map.put(AttributesNames.category, category);
         try {
-            LibraryContext.modifyFewBookAttributes(map, BookSelector.selected_id);
             int row_index = BookSelector.selected_index;
+            if (row_index >= Searcher.last_results.size())
+                throw new IndexOutOfBoundsException();
+            LibraryContext.modifyFewBookAttributes(map, BookSelector.selected_id);
             LibraryGUI.main_page.getSearch_table().getModel().setValueAt(name, row_index, ObjectTable.column_book_name);
             LibraryGUI.main_page.getSearch_table().getModel().setValueAt(author, row_index, ObjectTable.column_book_author_);
             LibraryGUI.main_page.getSearch_table().getModel().setValueAt(category, row_index, ObjectTable.column_book_category);
+            LibraryGUI.changePrompt("Book successfully modified");
         } catch (NullOrEmptyStringException e) {
-            System.out.println("Book data cannot be empty");
+            LibraryGUI.changePrompt("Book data cannot be empty");
         }  catch (CannotConnectToDBException e) {
-            System.out.println("Cannot connect to database, check your connection");
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
+        } catch (IndexOutOfBoundsException | NullPointerException exception) {
+            LibraryGUI.changePrompt("Select non-empty table row");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
         }
@@ -566,7 +582,7 @@ class BookOrderSelector extends FrameContentManager implements ListSelectionList
                 selected_index = model.getMinSelectionIndex();
                 this.manage();
             } catch (NullPointerException exception) {
-                System.out.println("Choose non empty table position");
+                LibraryGUI.changePrompt("Choose non empty table position");
             } catch (IndexOutOfBoundsException ignored) {
 
             }
@@ -583,25 +599,31 @@ class BookOrderer extends FrameContentManager {
         var months_panel = (JPanel) order_panel.getComponent(1);
         var months_field = (JTextField) months_panel.getComponent(1);
 
+        Object[] selected;
         int index = BookOrderSelector.selected_index;
-        var selected = Searcher.last_results.toArray();
+        try {
+            selected = Searcher.last_results.toArray();
+        } catch (NullPointerException e) {
+            LibraryGUI.changePrompt("Select a book");
+            return;
+        }
         long months;
         try {
             months = Long.parseLong(months_field.getText());
         }
         catch (java.lang.NumberFormatException e){
-            System.out.println("Input valid months number.");
+            LibraryGUI.changePrompt("Input valid months number.");
             return;
         }
         Book book;
         try {
             book = (Book) selected[index];
             LibraryContext.orderBook(book, months);
-            System.out.println(book.getName() + " by " + book.getAuthor() + " successfully ordered");
+            LibraryGUI.changePrompt(book.getName() + " by " + book.getAuthor() + " successfully ordered");
         } catch (CannotConnectToDBException e) {
-            System.out.println("Cannot connect to database, check your connection");
-        } catch (ArrayIndexOutOfBoundsException ignored) {
-
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
         }
     }
 }
@@ -628,13 +650,13 @@ class BookAdder extends FrameContentManager {
                     null,
                     null   //books number
             ));
-            System.out.println("Book successfully added");
+            LibraryGUI.changePrompt("Book successfully added");
         } catch (NullOrEmptyStringException e) {
-            System.out.println("Book data cannot be empty");
+            LibraryGUI.changePrompt("Book data cannot be empty");
         } catch (InvalidIdException | NumberFormatException e) {
-            System.out.println("Incorrect book id");
+            LibraryGUI.changePrompt("Incorrect book id");
         } catch (CannotConnectToDBException e) {
-            System.out.println("Cannot connect to database, check your connection");
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
         }
     }
 }
@@ -642,19 +664,19 @@ class BookAdder extends FrameContentManager {
 class BookDeleter extends FrameContentManager {
     @Override
     void manage() {
-        int index = BookSelector.selected_index;
-        var selected = Searcher.last_results.toArray();
-        Book book;
         try {
+            int index = BookSelector.selected_index;
+            var selected = Searcher.last_results.toArray();
+            Book book;
             book = (Book) selected[index];
             LibraryContext.removeObject(book);
             ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).removeRow(index);
 
-            System.out.println("Book successfully deleted");
+            LibraryGUI.changePrompt("Book successfully deleted");
         } catch (CannotConnectToDBException e) {
-            System.out.println("Cannot connect to database, check your connection");
-        } catch (ArrayIndexOutOfBoundsException ignored) {
-
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
         }
     }
 }
@@ -708,17 +730,19 @@ class BorrowedBooksShower extends FrameContentManager {
 class BooksReturner extends FrameContentManager {
     @Override
     void manage() {
-        var books = LibraryContext.getBorrowedBooks().toArray();
-        int index = LibraryGUI.main_page.getSearch_table().getSelectedRow();
-        var to_return = (Book) books[index];
         try {
+            var books = LibraryContext.getBorrowedBooks().toArray();
+            int index = LibraryGUI.main_page.getSearch_table().getSelectedRow();
+            var to_return = (Book) books[index];
             LibraryContext.returnBook(to_return);
             ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).removeRow(index);
-            System.out.println("Book returned " + to_return.describe());
+            LibraryGUI.changePrompt("Book returned " + to_return.describe());
         } catch (CannotReturnBookException e) {
-            System.out.println("Could not return");
+            LibraryGUI.changePrompt("Could not return");
         } catch (CannotConnectToDBException e) {
-            System.out.println("Cannot connect");
+            LibraryGUI.changePrompt("Cannot connect");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
         }
     }
 }

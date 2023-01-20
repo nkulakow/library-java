@@ -2,6 +2,7 @@ package org.example.GUI;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.Database.LibraryDatabase;
 import org.example.LibraryContextPackage.LibraryContext;
 import org.example.LibraryContextPackage.User;
 
@@ -147,7 +148,8 @@ public class ComponentDesigner {
         search_panel.setLayout(layout);
         search_panel.setOpaque(false);
 
-        var search_button = ComponentDesigner.makeOptionButton("Search");
+        var search_button = ComponentDesigner.makeOptionButton("");
+        search_button.setIcon(new ImageIcon("src/main/resources/images/serarch.png"));
         search_button.addActionListener(LibraryGUI.main_page);
         search_button.setAction_manager(new Searcher());
 
@@ -198,7 +200,8 @@ public class ComponentDesigner {
         search_panel.setLayout(layout);
         search_panel.setOpaque(false);
 
-        var search_button = ComponentDesigner.makeOptionButton("Search");
+        var search_button = ComponentDesigner.makeOptionButton("");
+        search_button.setIcon(new ImageIcon("src/main/resources/images/serarch.png"));
         search_button.addActionListener(LibraryGUI.main_page);
         Searcher.search_mode = Searcher.BOOKS_ORDER;
         search_button.setAction_manager(new Searcher());
@@ -206,20 +209,28 @@ public class ComponentDesigner {
         var search_field = (JTextField) ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3, 3);
         LibraryGUI.main_page.setSearch_field(search_field);
 
-        int gap_vertical = 30; int button_size = 150; int field_size = 300; int gap_horizontal = 30;
+        var search_label = ComponentDesigner.makeDefaultLabel("Search for new books:", 15);
 
-        layout.putConstraint(SpringLayout.NORTH, search_field, gap_vertical, SpringLayout.NORTH, search_panel);
-        layout.putConstraint(SpringLayout.SOUTH, search_field, -gap_vertical, SpringLayout.SOUTH, search_panel);
-        layout.putConstraint(SpringLayout.WEST, search_field, -50 - field_size, SpringLayout.EAST, search_panel);
-        layout.putConstraint(SpringLayout.EAST, search_field, -50, SpringLayout.EAST, search_panel);
+        var field_panel = new JPanel();
+        field_panel.setOpaque(false);
+        field_panel.setLayout(new GridLayout(2, 1));
+        field_panel.add(search_label);
+        field_panel.add(search_field);
+
+        int gap_vertical = 30; int button_size = 100; int field_size = 400; int gap_horizontal = 30;
+
+        layout.putConstraint(SpringLayout.NORTH, field_panel, 0, SpringLayout.NORTH, search_panel);
+        layout.putConstraint(SpringLayout.SOUTH, field_panel, -gap_vertical, SpringLayout.SOUTH, search_panel);
+        layout.putConstraint(SpringLayout.WEST, field_panel, -50 - field_size, SpringLayout.EAST, search_panel);
+        layout.putConstraint(SpringLayout.EAST, field_panel, -50, SpringLayout.EAST, search_panel);
 
         layout.putConstraint(SpringLayout.NORTH, search_button, gap_vertical, SpringLayout.NORTH, search_panel);
         layout.putConstraint(SpringLayout.SOUTH, search_button, -gap_vertical, SpringLayout.SOUTH, search_panel);
-        layout.putConstraint(SpringLayout.WEST, search_button, -(gap_horizontal + button_size), SpringLayout.WEST, search_field);
-        layout.putConstraint(SpringLayout.EAST, search_button, -gap_horizontal, SpringLayout.WEST, search_field);
+        layout.putConstraint(SpringLayout.WEST, search_button, -(gap_horizontal + button_size), SpringLayout.WEST, field_panel);
+        layout.putConstraint(SpringLayout.EAST, search_button, -gap_horizontal, SpringLayout.WEST, field_panel);
 
         search_panel.add(search_button);
-        search_panel.add(search_field);
+        search_panel.add(field_panel);
 
         return search_panel;
     }
@@ -418,7 +429,7 @@ public class ComponentDesigner {
     public static JPanel makeBookModifyPanel() {
         var modify_panel = ComponentDesigner.makeBookDataPanel();
 
-        var field_size = new Dimension(200, 40);
+        var field_size = new Dimension(300, 40);
         var prompt_size = new Dimension(200, 15);
         var panel_size = new Dimension(field_size.width, field_size.height + prompt_size.height + 10);
         var button_panel_size = new Dimension(100, panel_size.height);
@@ -441,7 +452,7 @@ public class ComponentDesigner {
     public static JPanel makeBookAddingPanel() {
         var adding_panel = ComponentDesigner.makeBookDataPanel();
 
-        var field_size = new Dimension(200, 40);
+        var field_size = new Dimension(300, 40);
         var prompt_size = new Dimension(200, 15);
         var panel_size = new Dimension(field_size.width, field_size.height + prompt_size.height + 10);
         var button_panel_size = new Dimension(100, panel_size.height);
@@ -501,16 +512,27 @@ public class ComponentDesigner {
 
         //buttons
         var users_button = ComponentDesigner.makeOptionButton("Users", 140, 60);
+        users_button.setIcon(new ImageIcon("src/main/resources/images/users.png"));
         users_button.addActionListener(LibraryGUI.main_page);
         users_button.setAction_manager(new UserTableShower());
 
         var books_button = ComponentDesigner.makeOptionButton("Books", 140, 60);
+        books_button.setIcon(new ImageIcon("src/main/resources/images/books.png"));
         books_button.addActionListener(LibraryGUI.main_page);
         books_button.setAction_manager(new BookTableShower());
+
+        var account_button = ComponentDesigner.makeOptionButton("My account", 140, 60);
+        account_button.setIcon(new ImageIcon("src/main/resources/images/account.png"));
+        account_button.addActionListener(LibraryGUI.main_page);
+        account_button.setAction_manager(new AccountPanelSwitcher());
 
         var exit_button = ComponentDesigner.makeOptionButton("EXIT", 300, 60);
         exit_button.addActionListener(LibraryGUI.main_page);
         exit_button.setAction_manager(new Exiter());
+
+        var info_panel = ComponentDesigner.makeInfoPanel();
+        LibraryGUI.main_page.setAccount_panel(info_panel);
+        info_panel.setVisible(false);
 
         //left options panel layout
         var layout = new SpringLayout();
@@ -523,7 +545,7 @@ public class ComponentDesigner {
 
         layout.putConstraint(SpringLayout.NORTH, manage_label, 20, SpringLayout.SOUTH, welcome_label);
         layout.putConstraint(SpringLayout.WEST, manage_label, 10, SpringLayout.WEST, left_desktop);
-        layout.putConstraint(SpringLayout.EAST, manage_label, 10, SpringLayout.EAST, left_desktop);
+        layout.putConstraint(SpringLayout.EAST, manage_label, -10, SpringLayout.EAST, left_desktop);
         layout.putConstraint(SpringLayout.SOUTH, manage_label, 100 + 20, SpringLayout.SOUTH, welcome_label);
 
         layout.putConstraint(SpringLayout.NORTH, users_button, 20, SpringLayout.SOUTH, manage_label);
@@ -534,30 +556,46 @@ public class ComponentDesigner {
         layout.putConstraint(SpringLayout.EAST, books_button, -10, SpringLayout.EAST, left_desktop);
 
         layout.putConstraint(SpringLayout.SOUTH, exit_button, -20, SpringLayout.SOUTH, left_desktop);
-        layout.putConstraint(SpringLayout.WEST, exit_button, 10, SpringLayout.WEST, left_desktop);
-        layout.putConstraint(SpringLayout.EAST, exit_button, -10, SpringLayout.EAST, left_desktop);
+        layout.putConstraint(SpringLayout.WEST, exit_button, 20, SpringLayout.WEST, left_desktop);
+        layout.putConstraint(SpringLayout.EAST, exit_button, -20, SpringLayout.EAST, left_desktop);
+
+        layout.putConstraint(SpringLayout.SOUTH, account_button, -20, SpringLayout.NORTH, exit_button);
+        layout.putConstraint(SpringLayout.WEST, account_button, 20, SpringLayout.WEST, left_desktop);
+        layout.putConstraint(SpringLayout.EAST, account_button, -20, SpringLayout.EAST, left_desktop);
+        layout.putConstraint(SpringLayout.NORTH, account_button, -80, SpringLayout.NORTH, exit_button);
+
+        layout.putConstraint(SpringLayout.SOUTH, info_panel, -20, SpringLayout.NORTH, account_button);
+        layout.putConstraint(SpringLayout.WEST, info_panel, 20, SpringLayout.WEST, left_desktop);
+        layout.putConstraint(SpringLayout.EAST, info_panel, -20, SpringLayout.EAST, left_desktop);
 
         left_desktop.add(welcome_label);
         left_desktop.add(manage_label);
         left_desktop.add(users_button);
         left_desktop.add(books_button);
         left_desktop.add(exit_button);
+        left_desktop.add(info_panel);
+        left_desktop.add(account_button);
 
         return left_desktop;
     }
 
     public static JPanel makeInfoPanel() {
+        int rows;
+        if(LibraryContext.getCurrentUser() != null)
+            rows = 7;
+        else
+            rows = 6;
         int gap = 10;
         var field_size = new Dimension(300 - 6, 40);
         var font_size = 15;
         var prompt_size = new Dimension(field_size.width, 15);
         var panel_size = new Dimension(field_size.width, prompt_size.height + field_size.height + 25);
-        var info_panel_size = new Dimension(field_size.width, 6 * (panel_size.height + gap));
+        var info_panel_size = new Dimension(field_size.width, (rows - 1) * (panel_size.height + gap));
 
         var info_panel = new JPanel();
         info_panel.setOpaque(false);
         info_panel.setPreferredSize(info_panel_size);
-        var layout = new GridLayout(7, 1);
+        var layout = new GridLayout(rows, 1);
         layout.setVgap(gap);
         info_panel.setLayout(layout);
 
@@ -570,13 +608,17 @@ public class ComponentDesigner {
         else
             current_user = LibraryContext.getCurrentAdmin();
 
+        var password = current_user.getPassword();
+        if(LibraryContext.getCurrentUser() == null)
+            password = LibraryContext.decodePassword(password.getBytes());
+
         var name_field = ComponentDesigner.makeBorderedComponent(new JTextField(current_user.getName()), 3, 3, 3, 3);
         name_field.setPreferredSize(field_size);
         var surname_field = ComponentDesigner.makeBorderedComponent(new JTextField(current_user.getSurname()), 3, 3, 3, 3);
         surname_field.setPreferredSize(field_size);
         var login_field = ComponentDesigner.makeBorderedComponent(new JTextField(current_user.getLogin()), 3, 3, 3, 3);
         login_field.setPreferredSize(field_size);
-        var password_field = ComponentDesigner.makeBorderedComponent(new JPasswordField(current_user.getPassword()), 3, 3, 3, 3);
+        var password_field = ComponentDesigner.makeBorderedComponent(new JPasswordField(password), 3, 3, 3, 3);
         password_field.setPreferredSize(field_size);
         var mail_field = ComponentDesigner.makeBorderedComponent(new JTextField(current_user.getMail()), 3, 3, 3, 3);
         mail_field.setPreferredSize(field_size);
@@ -615,7 +657,8 @@ public class ComponentDesigner {
         mail_prompt.setPreferredSize(prompt_size);
         mail_panel.add(mail_prompt); mail_panel.add(mail_field); mail_panel.setOpaque(false);
 
-        info_panel.add(label);
+        if(LibraryContext.getCurrentUser() != null)
+            info_panel.add(label);
         info_panel.add(name_panel);
         info_panel.add(surname_panel);
         info_panel.add(login_panel);
@@ -641,14 +684,17 @@ public class ComponentDesigner {
 
         //buttons
         var account_button = ComponentDesigner.makeOptionButton("My account", 140, 100);
+        account_button.setIcon(new ImageIcon("src/main/resources/images/account.png"));
         account_button.addActionListener(LibraryGUI.main_page);
         account_button.setAction_manager(new AccountPanelSwitcher());
 
         var borrowed_button = ComponentDesigner.makeOptionButton("Borrowed books", 140, 100);
+        borrowed_button.setIcon(new ImageIcon("src/main/resources/images/borrowed.png"));
         borrowed_button.addActionListener(LibraryGUI.main_page);
         borrowed_button.setAction_manager(new BorrowedBooksShower());
 
         var ordered_button = ComponentDesigner.makeOptionButton("Ordered books", 140, 100);
+        ordered_button.setIcon(new ImageIcon("src/main/resources/images/ordered.png"));
         ordered_button.addActionListener(LibraryGUI.main_page);
         ordered_button.setAction_manager(new OrderedBooksShower());
 
