@@ -599,8 +599,14 @@ class BookOrderer extends FrameContentManager {
         var months_panel = (JPanel) order_panel.getComponent(1);
         var months_field = (JTextField) months_panel.getComponent(1);
 
+        Object[] selected;
         int index = BookOrderSelector.selected_index;
-        var selected = Searcher.last_results.toArray();
+        try {
+            selected = Searcher.last_results.toArray();
+        } catch (NullPointerException e) {
+            LibraryGUI.changePrompt("Select a book");
+            return;
+        }
         long months;
         try {
             months = Long.parseLong(months_field.getText());
