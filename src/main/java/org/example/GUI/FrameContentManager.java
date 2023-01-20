@@ -106,19 +106,25 @@ abstract class FrameContentManager {
     public static String[] getSelfData() {
         var data_panel = LibraryGUI.main_page.getAccount_panel();
 
-        var name_panel = (JPanel)(data_panel.getComponent(1));
+        int first;
+        if (LibraryContext.getCurrentUser() != null)
+            first = 1;
+        else
+            first = 0;
+
+        var name_panel = (JPanel)(data_panel.getComponent(first));
         var name_field = (JTextField) (name_panel.getComponent(1));
 
-        var surname_panel = (JPanel)(data_panel.getComponent(2));
+        var surname_panel = (JPanel)(data_panel.getComponent(first + 1));
         var surname_field = (JTextField) (surname_panel.getComponent(1));
 
-        var login_panel = (JPanel)(data_panel.getComponent(3));
+        var login_panel = (JPanel)(data_panel.getComponent(first + 2));
         var login_field = (JTextField) (login_panel.getComponent(1));
 
-        var password_panel = (JPanel)(data_panel.getComponent(4));
+        var password_panel = (JPanel)(data_panel.getComponent(first + 3));
         var password_field = (JPasswordField) (password_panel.getComponent(1));
 
-        var mail_panel = (JPanel)(data_panel.getComponent(5));
+        var mail_panel = (JPanel)(data_panel.getComponent(first + 4));
         var mail_field = (JTextField) (mail_panel.getComponent(1));
 
         String name, surname, login, mail, password_str;

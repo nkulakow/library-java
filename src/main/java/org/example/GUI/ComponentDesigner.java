@@ -508,9 +508,17 @@ public class ComponentDesigner {
         books_button.addActionListener(LibraryGUI.main_page);
         books_button.setAction_manager(new BookTableShower());
 
+        var account_button = ComponentDesigner.makeOptionButton("My account", 140, 60);
+        account_button.addActionListener(LibraryGUI.main_page);
+        account_button.setAction_manager(new AccountPanelSwitcher());
+
         var exit_button = ComponentDesigner.makeOptionButton("EXIT", 300, 60);
         exit_button.addActionListener(LibraryGUI.main_page);
         exit_button.setAction_manager(new Exiter());
+
+        var info_panel = ComponentDesigner.makeInfoPanel();
+        LibraryGUI.main_page.setAccount_panel(info_panel);
+        info_panel.setVisible(false);
 
         //left options panel layout
         var layout = new SpringLayout();
@@ -523,7 +531,7 @@ public class ComponentDesigner {
 
         layout.putConstraint(SpringLayout.NORTH, manage_label, 20, SpringLayout.SOUTH, welcome_label);
         layout.putConstraint(SpringLayout.WEST, manage_label, 10, SpringLayout.WEST, left_desktop);
-        layout.putConstraint(SpringLayout.EAST, manage_label, 10, SpringLayout.EAST, left_desktop);
+        layout.putConstraint(SpringLayout.EAST, manage_label, -10, SpringLayout.EAST, left_desktop);
         layout.putConstraint(SpringLayout.SOUTH, manage_label, 100 + 20, SpringLayout.SOUTH, welcome_label);
 
         layout.putConstraint(SpringLayout.NORTH, users_button, 20, SpringLayout.SOUTH, manage_label);
@@ -534,30 +542,46 @@ public class ComponentDesigner {
         layout.putConstraint(SpringLayout.EAST, books_button, -10, SpringLayout.EAST, left_desktop);
 
         layout.putConstraint(SpringLayout.SOUTH, exit_button, -20, SpringLayout.SOUTH, left_desktop);
-        layout.putConstraint(SpringLayout.WEST, exit_button, 10, SpringLayout.WEST, left_desktop);
-        layout.putConstraint(SpringLayout.EAST, exit_button, -10, SpringLayout.EAST, left_desktop);
+        layout.putConstraint(SpringLayout.WEST, exit_button, 20, SpringLayout.WEST, left_desktop);
+        layout.putConstraint(SpringLayout.EAST, exit_button, -20, SpringLayout.EAST, left_desktop);
+
+        layout.putConstraint(SpringLayout.SOUTH, account_button, -20, SpringLayout.NORTH, exit_button);
+        layout.putConstraint(SpringLayout.WEST, account_button, 20, SpringLayout.WEST, left_desktop);
+        layout.putConstraint(SpringLayout.EAST, account_button, -20, SpringLayout.EAST, left_desktop);
+        layout.putConstraint(SpringLayout.NORTH, account_button, -80, SpringLayout.NORTH, exit_button);
+
+        layout.putConstraint(SpringLayout.SOUTH, info_panel, -20, SpringLayout.NORTH, account_button);
+        layout.putConstraint(SpringLayout.WEST, info_panel, 20, SpringLayout.WEST, left_desktop);
+        layout.putConstraint(SpringLayout.EAST, info_panel, -20, SpringLayout.EAST, left_desktop);
 
         left_desktop.add(welcome_label);
         left_desktop.add(manage_label);
         left_desktop.add(users_button);
         left_desktop.add(books_button);
         left_desktop.add(exit_button);
+        left_desktop.add(info_panel);
+        left_desktop.add(account_button);
 
         return left_desktop;
     }
 
     public static JPanel makeInfoPanel() {
+        int rows;
+        if(LibraryContext.getCurrentUser() != null)
+            rows = 7;
+        else
+            rows = 6;
         int gap = 10;
         var field_size = new Dimension(300 - 6, 40);
         var font_size = 15;
         var prompt_size = new Dimension(field_size.width, 15);
         var panel_size = new Dimension(field_size.width, prompt_size.height + field_size.height + 25);
-        var info_panel_size = new Dimension(field_size.width, 6 * (panel_size.height + gap));
+        var info_panel_size = new Dimension(field_size.width, (rows - 1) * (panel_size.height + gap));
 
         var info_panel = new JPanel();
         info_panel.setOpaque(false);
         info_panel.setPreferredSize(info_panel_size);
-        var layout = new GridLayout(7, 1);
+        var layout = new GridLayout(rows, 1);
         layout.setVgap(gap);
         info_panel.setLayout(layout);
 
@@ -615,7 +639,8 @@ public class ComponentDesigner {
         mail_prompt.setPreferredSize(prompt_size);
         mail_panel.add(mail_prompt); mail_panel.add(mail_field); mail_panel.setOpaque(false);
 
-        info_panel.add(label);
+        if(LibraryContext.getCurrentUser() != null)
+            info_panel.add(label);
         info_panel.add(name_panel);
         info_panel.add(surname_panel);
         info_panel.add(login_panel);

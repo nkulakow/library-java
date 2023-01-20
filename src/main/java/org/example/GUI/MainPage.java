@@ -24,7 +24,7 @@ public class MainPage extends JFrame implements ActionListener {
     @Getter
     private JPanel left_panel;
     public int current_mode;
-    public static final Dimension default_minimum_size = new Dimension(340, 450);
+    public static Dimension default_minimum_size = new Dimension(340, 450);
     public MainPage() {
         super();
         this.setSize(1400, 800);
@@ -38,6 +38,7 @@ public class MainPage extends JFrame implements ActionListener {
 
     public void showContent(int mode) {
         if(mode == LibraryGUI.ADMIN) {
+            default_minimum_size = new Dimension(340, 550);
             this.initAdminLeft();
             this.initAdminContent();
         } else if (mode == LibraryGUI.USER) {
