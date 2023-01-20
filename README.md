@@ -9,7 +9,6 @@
 ## Aktualności
 <ins>Zrealizowane do te pory:</ins>
 - Prorotypy klas zarządzających aplikacją (LibraryContext, LibraryDatabase itp.)
-- Wstępne GUI
 - Przestawienie się na Oracle
 - Dostęp do bazy danych i podstawowe operacje
 - Prototypowe logowanie (dla administratora)
@@ -23,9 +22,8 @@
 - Testy
 - Refaktoryzacja
 - Logi
+- Mockowanie
 
-<ins>Do zrobienia:</ins>
-- Refaktoryzacja (?)
 
 <ins>Co się nie udało?:</ins>
 - Stworzenie "mail server"
@@ -54,13 +52,12 @@ Chcemy stworzyć aplikację **desktopową** pozwalającą na **zarządzanie bibl
 5. Konto administratora (login, hasło)
 
 **Dodatkowe funkcjonalności:**
-1. Przypomnienia o zbliżaniu się terminu zwrotu
-2. Możliwość automatycznego wysyłania maili
-3. Utworzenie kont dla klientów (login i hasło, wypożyczenia, zamówienia, naliczone opłaty, zbliżające się terminy zwrotu, oceny książek itd.)
+1. Przypomnienia o zbliżaniu się terminu zwrotu - nie udało się
+2. Możliwość automatycznego wysyłania maili - nie udało się
+3. Utworzenie kont dla klientów (login i hasło, wypożyczenia, zamówienia, naliczone opłaty, zbliżające się terminy zwrotu, oceny książek itd.) - udało się
 
 **Implementacja interfejsu graficznego:**  
-Do implementacji interfejsu graficznego wykorzystamy narzędzia środowiska IntelliJ IDEA pozwalająca na zautomatyzowanie projektowania interfejsu graficznego(np. mechanizm pozwalający wygenerować formularze).
-Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarządzających interfejsem graficznym. 
+Jeśli chodzi o implementację interfejsu graficznego, to zmiany do GUI wprowadzaliśmy ręcznie, pisząc kod klas zarządzających interfejsem graficznym. 
 
 **Klasy:**
 1. GUI
@@ -88,10 +85,9 @@ Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarząd
     - Klasa DatabaseConstants - znajdują się w niej stałe z których korzysta klasa LibraryDatabase.
 
 **Testy:**  
-Do implementacji testów jednostkowych planujemy używać JUnit. Poszczególne metody i funkcjonalności będą sprawdzane oddzielnie.
-
-**Implementacja testów**
-Przygotowane testy jednostkowe weryfikują działanie metod z klasy LibraryContext odpowiedzialnych za wdrożenie logiki aplikacji. Sprawdzone zostało działanie metod odpowiedzialnych za wyszukiwanie obiektów, ich dodawanie i usuwanie, a także modyfikację kolekcji bibliotecznych. Testy można uruchomić z poziomu programu IntelliJ Idea otwierając folder z testami i wybierając klasę testującą, a następnie klikając zielony trójkąt, który wyświetla się przy nazwie klasy. 
+Do implementacji testów jednostkowych używamy JUnit.
+Przygotowane testy jednostkowe weryfikują działanie metod m.in. z klasy LibraryContext odpowiedzialnych za wdrożenie logiki aplikacji. Sprawdzone zostało działanie metod odpowiedzialnych za wyszukiwanie obiektów, ich dodawanie i usuwanie, a także modyfikację kolekcji bibliotecznych. 
+Testy testujące klasę LibraryContext mockują statyczne metody klasy LibraryDatabase, aby nie zależały od wartości BD ani jej nie zmieniały. Testy, poza wyżej wymienionymi metodami, można uruchomić za pomocą komendy *mvn test*.
 
 **Logowanie:**  
 Klasy zarządzające częścią logiczną, tzn.: LibraryContext, User, LibraryDatabase, a także klasy testujące posiadają obiekty klasy Logger. Za ich pomocą odpowiednich plików wysyłane są logi informujące o wykonaniu bardziej skomplikowanych zadań i o złapanych wyjątkach
@@ -106,11 +102,11 @@ w danej metodzie wraz z wiadomością co dokładnie poszło nie tak. Wykorzystan
     - java.sql - wykorzystywana do operacji na bazach danych
     - java.awt - bilbioteka graficzna, używana obok biblioteki swing, m.in. do obsługi zdarzeń (np. zalogowanie) i kolorów 
     - java.io - wykorzystywania do odczytywania treści plików np. info.txt zawierający dane logowania do bazy danych
-    - javax.mail - wykorzystywana do automatycznego wysyłania maili 
     - org.apache.logging.log4j - wykorzystywania do tworzenia logów
     - java.util - podstawowe narzędzie do przechowywania danych lokalnie w kolekcjach oraz do dekodowania haseł adminów
     - lombok - wykorzystywana do automatycznego tworzenia getterów i setterów
     - java.time - wykorzystywana do reprezentowania danych typu czas/data
+    - org.mockito - wykorzystywana do mockowania
 - JDBC
 - Maven
 - Sqldeveloper / baza Oracle
