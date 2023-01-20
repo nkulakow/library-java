@@ -33,7 +33,6 @@ class LogInPage extends JFrame implements ActionListener {
         this.setLayout(this.layout);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.initContent();
-//        this.setVisible(true);
     }
 
     private void initContent() {
@@ -78,6 +77,9 @@ class LogInPage extends JFrame implements ActionListener {
         this.layout.putConstraint(SpringLayout.EAST, this.password_field, -80, SpringLayout.EAST, this.getContentPane());
         this.layout.putConstraint(SpringLayout.NORTH, this.password_field, 20, SpringLayout.SOUTH, this.login_field);
         this.layout.putConstraint(SpringLayout.SOUTH, this.password_field, 60, SpringLayout.SOUTH, this.login_field);
+
+        ImageIcon image = new ImageIcon("src/main/resources/images/winnie.jpeg");
+        this.setIconImage(image.getImage());
 
         this.add(login_label);
         this.add(this.login_field);

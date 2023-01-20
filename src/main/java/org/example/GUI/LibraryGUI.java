@@ -48,7 +48,4 @@ public class LibraryGUI {
         LibraryGUI.prompt.setVisible(true);
     }
 
-    public static class GUIData {
-        public static final Color BACKGROUND_COLOR = new Color(252, 252, 189);
-    }
 }

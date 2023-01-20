@@ -2,7 +2,6 @@ package org.example.GUI;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.example.Main;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,6 +29,7 @@ public class MainPage extends JFrame implements ActionListener {
         this.setSize(1400, 800);
         this.center();
         this.initLayout();
+        this.initIcon();
         this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.setMinimumSize(MainPage.default_minimum_size);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -88,6 +88,11 @@ public class MainPage extends JFrame implements ActionListener {
         scroll_pane.setOpaque(false);
         scroll_pane.setBorder(BorderFactory.createMatteBorder(3, 0, 3, 3, Color.BLACK));
         this.add(scroll_pane, BorderLayout.CENTER);
+    }
+
+    private void initIcon(){
+        ImageIcon image = new ImageIcon("src/main/resources/images/winnie.jpeg");
+        this.setIconImage(image.getImage());
     }
 
     @Override
