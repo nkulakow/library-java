@@ -22,7 +22,7 @@ public class LibraryContext {
     @Getter
     private static Admin autoAdmin = null;
 
-    private static float penalty = 0.5f;
+    private static final float penalty = 0.5f;
 
     @Getter
     private static Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks = new Hashtable<>();
@@ -34,11 +34,9 @@ public class LibraryContext {
      * Method responsible for assigning a book to a user by assigning values to its two parameters: returnDate and userId.
      * If these parameters were set previously it means that a book is assignined to another user and the current user must be put in a book's queue indicated
      * by its id.
-     *
      * params:
      * book - object representing a book in a library.
      * months - positive number representing time reserved by a certain user to have the book.
-     *
      * returns:
      * no value
      */
@@ -74,61 +72,31 @@ public class LibraryContext {
         }
     }
 
-    /**
-    * Initializes LibContext specifically for tests - without allowing to connect do DB and without any Gui initialization.
-     *
-     * params:
-     * AsUser - a boolean value used to determine whether a user or an admin is trying to log in.
-     *
-     * returns:
-     * lack of value
-     */
-    public static void LibContextInitForTests(boolean AsUser) throws InvalidBookNumberException {
-        try {
-            LibraryDatabase.initLoginInfoForTests();
-
-            autoAdmin = null;
-            currentAdmin = null;
-            currentUser = null;
-            Admin.clearAll();
-            autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
-            autoAdmin.addObject(autoAdmin);
-            currentAdmin = autoAdmin;
-            autoAdmin.addObject(currentAdmin);
-
-            if(AsUser){
-                currentUser = new CommonUser("user", "Null", "user", "Null", 1, "mail", 0);
-                currentAdmin.addObject(currentUser);
-            }
-        }
-        catch (NullOrEmptyStringException | InvalidIdException | InvalidLoginException e){
-            logger.error("Error in LibContextInitForTests: " + e.getMessage());
-        }
-    }
 
     /**
      * Initializes LibContext. Using LibraryDatabase gets Admins, Books, Users and books orders info and creates objects corresponding to them.
-     *
      * params:
      * lack of params
-     *
      * returns:
-     *
      * lack of value
      */
     public static void LibContextInit() {
         try {
+            currentAdmin = null;
+            currentUser = null;
+            Admin.clearAll();
             LibraryDatabase.initLoginInfo();
-
             autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
             autoAdmin.addObject(autoAdmin);
             currentAdmin = autoAdmin;
             autoAdmin.addObject(currentAdmin);
+
 
             var newAdmins = LibraryDatabase.getAdmins();
             for (var admin : newAdmins){
                 autoAdmin.addObject(admin);
             }
+
 
             var newUsers = LibraryDatabase.getCommonUsers();
             for(var user : newUsers){
@@ -141,6 +109,8 @@ public class LibraryContext {
                 autoAdmin.addObject(book);
             }
 
+            takenBooks = new Hashtable<>();
+            takenBooksOrderedTime = new Hashtable<>();
             takenBooks = LibraryDatabase.getTakenBooks();
             takenBooksOrderedTime = LibraryDatabase.getTakenBooksOrderedTime();
 
@@ -157,12 +127,9 @@ public class LibraryContext {
 
     /**
      * Allows currentUser to return borrowed Book.
-     *
      * params:
      * book - object representing a book in a library.
-     *
      * returns:
-     *
      * lack of value
      */
     public static void returnBook(Book book) throws CannotReturnBookException, CannotConnectToDBException {
@@ -210,12 +177,9 @@ public class LibraryContext {
 
     /**
      * Returns hash table of penalties for borrowed by currentUser books
-     *
      * params:
      * lack of params
-     *
      * returns:
-     *
      * hashtable containing pairs: book's id and a penalty greater than zero if a book had not been returned by user before given time had passed.
      */
     public static Hashtable<Integer, Float> showPenalties()
@@ -244,30 +208,10 @@ public class LibraryContext {
     }
 
     /**
-     * Prepares current user's books and returns them.
-     *
-     * params:
-     * lack of params
-     *
-     * returns:
-     * current user's books.
-     */
-    private static HashSet<Book> showBooks()
-    {
-        if(currentUser != null)
-        {
-            return currentUser.showBooks(autoAdmin);
-        }
-        return  null;
-    }
-
-    /**
      * Returns true if Admins login information are correct. Sets currentAdmin to the one logged in.
-     *
      * params:
      * login - text destined to be compared with admins' logins.
      * password - text destined to be compared with admins' passwords.
-     *
      * returns:
      * true if login and password are valid, false otherwise.
      */
@@ -289,7 +233,6 @@ public class LibraryContext {
      params:
      * login - text destined to be compared with users' logins.
      * password - text destined to be compared with users' passwords.
-     *
      * returns:
      * true if login and password are valid, false otherwise.
      */
@@ -310,11 +253,9 @@ public class LibraryContext {
 
     /**
      * Add Object to local data and to Database. Returns true if object was added to Database, false if only locally.
-     *
      * params:
      * libObject - object implementing LibraryContextActions interface that guarantees it can be added to a certain collection of library objects.
      * The mechanism of choosing a proper collection and asking current admin to modify it by adding an element to it is encapsulated in libObject.
-     *
      * returns:
      * lack of data.
      */
@@ -346,11 +287,9 @@ public class LibraryContext {
 
     /**
      * Remove Object from local data and from Database. Returns true if object was removed Database, false if only locally.
-     *
      * params:
      * libObject - object implementing LibraryContextActions interface that guarantees it can be removed from a certain collection of library objects.
      * The mechanism of choosing a proper collection and asking current admin to modify it by removing an element from it is encapsulated in libObject.
-     *
      * returns:
      * lack of data.
      */
@@ -382,11 +321,9 @@ public class LibraryContext {
 
     /**
      * Searches for Object by given pattern. Return set of matching Objects.
-     *
      * params:
      * searchObject - implements interface Isearch that has one method responsible for preparing environment for searching an object in library.
      * searchPattern - pattern describing object or objects that should be returned by this method.
-     *
      * returns:
      * set of objects described by the searchPattern.
      */

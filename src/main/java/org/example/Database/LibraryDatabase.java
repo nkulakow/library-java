@@ -1,6 +1,5 @@
 package org.example.Database;
 
-import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.example.LibraryContextPackage.*;
@@ -20,9 +19,7 @@ public class LibraryDatabase {
     private static String LOGIN;
     private static String HASHEDPASSWORD;
     private static Connection CONNECTION;
-    @Getter
     private static Hashtable<Integer, ArrayDeque<CommonUser>> takenBooks;
-    @Getter
     private static Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime;
     public static void initLoginInfo() throws IOException {
         try {
@@ -36,61 +33,6 @@ public class LibraryDatabase {
             logger.error("Could not get login to database info in initLoginInfo method " + e.getMessage());
             throw e;
         }
-    }
-    public static void initLoginInfoForTests()  {
-            LOGIN = "n";
-            HASHEDPASSWORD = "password";
-    }
-
-    /**
-     * Shows users based on the searched terms.
-     *
-     * params:
-     * query_str - searched terms changed into a sql_statement.
-     *
-     * returns:
-     * users that match the searched term.
-     */
-    private static ArrayList<UserInDB> showUsers(final String query_str) throws SQLException {
-        ArrayList<UserInDB> users = new ArrayList<>();
-        try {
-            CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
-            logger.info("Connected to database.");
-            Statement query = CONNECTION.createStatement();
-            ResultSet result = query.executeQuery(query_str);
-            while (result.next()) {
-                int id = result.getInt(DatabaseConstants.BasicConstants.USER_ID);
-                String name = result.getString(DatabaseConstants.UserConstants.USER_NAME);
-                String surname = result.getString(DatabaseConstants.UserConstants.USER_SURNAME);
-                String mail = result.getString(DatabaseConstants.BasicConstants.MAIL);
-                int booksNumber = result.getInt(DatabaseConstants.UserConstants.USER_BOOKS_NR);
-                users.add(new UserInDB(id, name, surname, mail, booksNumber));
-            }
-            logger.info("Executed searchUsers method.");
-            CONNECTION.close();
-        } catch (java.sql.SQLException e) {
-            logger.warn("Could not execute query in searchUsers method. " + e.getMessage());
-            throw e;
-        }
-        return users;
-
-    }
-
-    public static ArrayList<String> getUsers(final String query_str) throws SQLException{
-        ArrayList<String> result = new ArrayList<>();
-        ArrayList<UserInDB> users;
-        try {
-            users = showUsers(query_str);
-            for(var user : users) {
-                String respresentation = user.getId() + " " + user.getName() + " " + user.getSurname() + " " + user.getMail() + " " + user.getBooksNumber();
-                result.add(respresentation);
-            }
-        } catch (SQLException e) {
-            result.add("Exception occurred in database.");
-            logger.warn("Could not get users in getUsers. " + e.getMessage());
-        }
-        CONNECTION.close();
-        return result;
     }
 
     /**
@@ -163,7 +105,7 @@ public class LibraryDatabase {
      * initializes the hashtables for takenBooks and takenBooksOrderedTime.
      */
     public static void initWaiting() throws SQLException, InvalidIdException {
-        Hashtable<Integer, ArrayDeque<CommonUser>> takenBooksTemp = new Hashtable();
+        Hashtable<Integer, ArrayDeque<CommonUser>> takenBooksTemp = new Hashtable<>();
         Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTimeTemp = new Hashtable<>();
 
         try {
@@ -196,6 +138,13 @@ public class LibraryDatabase {
         CONNECTION.close();
         takenBooks = takenBooksTemp;
         takenBooksOrderedTime = takenBooksOrderedTimeTemp;
+    }
+
+    public static Hashtable<Integer, ArrayDeque<Long>> getTakenBooksOrderedTime() {
+        return takenBooksOrderedTime;
+    }
+    public static Hashtable<Integer, ArrayDeque<CommonUser>> getTakenBooks() {
+        return takenBooks;
     }
 
     /**
@@ -319,14 +268,19 @@ public class LibraryDatabase {
      * Adds a new row in PAP_WAITING.
      */
     public static void addWaiting(Book book, long months, int userId) throws SQLException {
+        String get_keys = DatabaseConstants.InquiriesConstants.SELECT_MAX_KEY ;
         int book_id = book.getBookId();
-        String query_str = "insert into nkulakow.pap_waiting values("+book_id+", "+userId+", "+months+")";
-
+        String query_str = "insert into nkulakow.pap_waiting values(? ,"+book_id+", "+userId+", "+months+")";
         try {
             CONNECTION = DriverManager.getConnection(URL, LOGIN, getAutoPassword());
             logger.info("Connected to database.");
             Statement query = CONNECTION.createStatement();
-            query.executeUpdate(query_str);
+            ResultSet result = query.executeQuery(get_keys);
+            result.next();
+            int wait_int = result.getInt("wait_id") + 1;
+            PreparedStatement statement = CONNECTION.prepareStatement(query_str);
+            statement.setInt(1, wait_int);
+            statement.executeUpdate();
             logger.info("Executed addWaiting method.");
         } catch (java.sql.SQLException e) {
             logger.warn("Could not execute query in addWaiting method " + e.getMessage());
@@ -435,11 +389,6 @@ public class LibraryDatabase {
 }
 
 class DatabaseConstants {
-    public static final class Tables {
-        public static final int TABLE_USERS = 0;
-        public static final int TABLE_BOOKS = 1;
-        public static final int TABLE_LOANS = 2;
-    }
     public static final class BasicConstants {
         public static final String USER_ID = "user_id";
         public static final String BOOK_ID = "book_id";
@@ -473,5 +422,6 @@ class DatabaseConstants {
         public static final String SELECT_ADMINS = "SELECT a.*, p.login, p.password from nkulakow.PAP_ADMINS a join nkulakow.PAP_ADMINS_PASSWD p on(a.admin_id=p.admin_id)";
         public static final String SELECT_BOOKS = "SELECT * from nkulakow.PAP_BOOKS";
         public static final String SELECT_WAITING = "SELECT * from nkulakow.PAP_WAITING";
+        public static final String SELECT_MAX_KEY = "SELECT max(wait_id) as wait_id FROM nkulakow.pap_waiting";
     }
 }
