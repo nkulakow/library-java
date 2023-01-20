@@ -371,7 +371,7 @@ class UserModifier extends FrameContentManager {
             LibraryGUI.changePrompt("User data cannot be empty");
         } catch (InvalidLoginException e) {
             LibraryGUI.changePrompt("Login already exists");
-        } catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException | NullPointerException e) {
             LibraryGUI.changePrompt("Select non-empty table row");
         } catch (CannotConnectToDBException e) {
             LibraryGUI.changePrompt("Cannot connect to database, check your connection");
@@ -549,7 +549,7 @@ class BookModifier extends FrameContentManager {
             LibraryGUI.changePrompt("Book data cannot be empty");
         }  catch (CannotConnectToDBException e) {
             LibraryGUI.changePrompt("Cannot connect to database, check your connection");
-        } catch (IndexOutOfBoundsException exception) {
+        } catch (IndexOutOfBoundsException | NullPointerException exception) {
             LibraryGUI.changePrompt("Select non-empty table row");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
