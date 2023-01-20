@@ -1,136 +1,160 @@
 package org.example.GUI;
 
-import org.example.LibraryContextPackage.LibraryContext;
+import lombok.Getter;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
-import javax.swing.border.LineBorder;
 
 
-class LogInPage extends Page {
-    //some constant common stuff
-    final static int width = 800;
-    final static int height = 600;
-
+class LogInPage extends JFrame implements ActionListener {
+    private static final int width = 700;
+    private static final int height = 600;
     // private variables
+    @Getter
     private JTextField login_field;
+    @Getter
     private JPasswordField password_field;
-    private JButton login_button;
+    @Getter
     private JCheckBox userbox;
-    private ButtonGroup checksGroup;
+    @Getter
     private JCheckBox adminbox;
-    private JLabel prompt;
-
-    private final JPanel panel;
+    private final SpringLayout layout;
 
     public LogInPage() {
-        super(LogInPage.width, LogInPage.height);
-        this.panel = new JPanel();
-        this.panel.setLayout(null);
+        int x_pos = (Toolkit.getDefaultToolkit().getScreenSize().width - width) / 2;
+        int y_pos = (Toolkit.getDefaultToolkit().getScreenSize().height - height) / 2;
+        this.setBounds(x_pos, y_pos, width, height);
+
         this.setResizable(false);
+        this.layout = new SpringLayout();
+        this.setLayout(this.layout);
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.initContent();
     }
 
     private void initContent() {
+        this.getContentPane().setBackground(Color.ORANGE);
+        this.initPrompt();
+        this.initLogging();
+        this.initButtons();
         this.initCheckBocks();
-        this.initLoggingPart();
-        this.initPanels();
+    }
+
+    private void initLogging() {
+        this.login_field = (JTextField) ComponentDesigner.makeBorderedComponent(new JTextField(), 3, 3, 3,3);
+
+        var login_label = new JLabel("Login:");
+        login_label.setFont(ComponentDesigner.getDefaultFont(25));
+        login_label.setHorizontalAlignment(SwingConstants.LEFT);
+        login_label.setOpaque(false);
+
+        this.password_field = (JPasswordField) ComponentDesigner.makeBorderedComponent(new JPasswordField(), 3, 3, 3, 3);
+
+        var password_label = new JLabel("Password:");
+        password_label.setFont(ComponentDesigner.getDefaultFont(25));
+        password_label.setHorizontalAlignment(SwingConstants.LEFT);
+        password_label.setOpaque(false);
+
+        this.layout.putConstraint(SpringLayout.WEST, login_label, 80, SpringLayout.WEST, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.EAST, login_label, 230, SpringLayout.WEST, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.NORTH, login_label, 40, SpringLayout.SOUTH, LibraryGUI.main_prompt);
+        this.layout.putConstraint(SpringLayout.SOUTH, login_label, 80, SpringLayout.SOUTH, LibraryGUI.main_prompt);
+
+        this.layout.putConstraint(SpringLayout.WEST, this.login_field, 20, SpringLayout.EAST, login_label);
+        this.layout.putConstraint(SpringLayout.EAST, this.login_field, -80, SpringLayout.EAST, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.NORTH, this.login_field, 40, SpringLayout.SOUTH, LibraryGUI.main_prompt);
+        this.layout.putConstraint(SpringLayout.SOUTH, this.login_field, 80, SpringLayout.SOUTH, LibraryGUI.main_prompt);
+
+        this.layout.putConstraint(SpringLayout.WEST, password_label, 80, SpringLayout.WEST, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.EAST, password_label, 230, SpringLayout.WEST, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.NORTH, password_label, 20, SpringLayout.SOUTH, login_label);
+        this.layout.putConstraint(SpringLayout.SOUTH, password_label, 60, SpringLayout.SOUTH, login_label);
+
+        this.layout.putConstraint(SpringLayout.WEST, this.password_field, 20, SpringLayout.EAST, password_label);
+        this.layout.putConstraint(SpringLayout.EAST, this.password_field, -80, SpringLayout.EAST, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.NORTH, this.password_field, 20, SpringLayout.SOUTH, this.login_field);
+        this.layout.putConstraint(SpringLayout.SOUTH, this.password_field, 60, SpringLayout.SOUTH, this.login_field);
+
+        ImageIcon image = new ImageIcon("src/main/resources/images/winnie.jpeg");
+        this.setIconImage(image.getImage());
+
+        this.add(login_label);
+        this.add(this.login_field);
+        this.add(password_label);
+        this.add(this.password_field);
+    }
+
+    private void initButtons() {
+        ComponentDesigner.OptionButton login_button = ComponentDesigner.makeOptionButton("Log in");
+        login_button.addActionListener(this);
+        login_button.setAction_manager(new AppLogger());
+        ComponentDesigner.OptionButton exit_button = ComponentDesigner.makeOptionButton("EXIT");
+        exit_button.addActionListener(this);
+        exit_button.setAction_manager(new Exiter());
+
+        this.layout.putConstraint(SpringLayout.SOUTH, exit_button, -20, SpringLayout.SOUTH, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.NORTH, exit_button, -80, SpringLayout.SOUTH, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.WEST, exit_button, -100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.EAST, exit_button, 100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+
+        this.layout.putConstraint(SpringLayout.SOUTH, login_button, -20, SpringLayout.NORTH, exit_button);
+        this.layout.putConstraint(SpringLayout.NORTH, login_button, -80, SpringLayout.NORTH, exit_button);
+        this.layout.putConstraint(SpringLayout.WEST, login_button, -100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.EAST, login_button, 100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+
+        this.add(exit_button);
+        this.add(login_button);
     }
 
     private void initCheckBocks() {
         this.userbox = new JCheckBox("User");
-        this.userbox.setBounds(300, 360, 80, 20);
+        this.userbox.setFont(ComponentDesigner.getDefaultFont(20));
+        this.userbox.setFocusPainted(false);
         this.userbox.setOpaque(false);
 
         this.adminbox = new JCheckBox("Admin");
-        this.adminbox.setBounds(400, 360, 80, 20);
+        this.adminbox.setFont(ComponentDesigner.getDefaultFont(20));
+        this.adminbox.setFocusPainted(false);
         this.adminbox.setOpaque(false);
 
-        this.checksGroup = new ButtonGroup();
+        ButtonGroup checksGroup = new ButtonGroup();
         checksGroup.add(userbox);
         checksGroup.add(adminbox);
 
-        this.panel.add(this.userbox);
-        this.panel.add(this.adminbox);
+        this.layout.putConstraint(SpringLayout.WEST, this.userbox, -100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.EAST, this.userbox, -10, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.SOUTH, this.userbox, -210, SpringLayout.SOUTH, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.NORTH, this.userbox, -300, SpringLayout.SOUTH, this.getContentPane());
+
+        this.layout.putConstraint(SpringLayout.WEST, this.adminbox, 10, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.EAST, this.adminbox, 100, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.SOUTH, this.adminbox, -210, SpringLayout.SOUTH, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.NORTH, this.adminbox, -300, SpringLayout.SOUTH, this.getContentPane());
+
+        this.add(this.userbox);
+        this.add(this.adminbox);
     }
 
-    private void initLoggingPart() {
+    private void initPrompt() {
+        LibraryGUI.main_prompt.setFont(ComponentDesigner.getDefaultFont(40));
+        LibraryGUI.main_prompt.setHorizontalAlignment(SwingConstants.CENTER);
+        LibraryGUI.main_prompt.setText("Welcome!");
 
-        var color = new Color(243, 229, 165);
-        this.login_field = new JTextField();
-        this.login_field.setBounds(300, 200, 200, 30);
-        this.login_field.setBorder(new LineBorder(Color.BLACK));
-        this.login_field.setBackground(color);
+        this.layout.putConstraint(SpringLayout.WEST, LibraryGUI.main_prompt, -300, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.EAST, LibraryGUI.main_prompt, 300, SpringLayout.HORIZONTAL_CENTER, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.SOUTH, LibraryGUI.main_prompt, 80, SpringLayout.NORTH, this.getContentPane());
+        this.layout.putConstraint(SpringLayout.NORTH, LibraryGUI.main_prompt, 40, SpringLayout.NORTH, this.getContentPane());
 
-        this.password_field = new JPasswordField();
-        this.password_field.setBounds(300, 300, 200, 30);
-        this.password_field.setBorder(new LineBorder(Color.BLACK));
-        this.password_field.setBackground(color);
-
-        this.login_button = new JButton("Log in");
-        this.login_button.setBounds(300, 400, 80, 40);
-        this.login_button.setBackground(color);
-
-        JLabel login_text = new JLabel("Enter login");
-        login_text.setBounds(300, 160, 100, 30);
-        JLabel password_text = new JLabel("Enter password");
-        password_text.setBounds(300, 260, 150, 30);
-        this.prompt = new JLabel("Enter your login and password");
-        this.prompt.setBounds(150, 420, 500, 40);
-        this.prompt.setFont(new Font(this.prompt.getFont().getName(), Font.PLAIN, 15));
-
-        this.panel.add(this.login_field);
-        this.panel.add(this.password_field);
-        this.panel.add(this.login_button);
-        this.panel.add(login_text);
-        this.panel.add(password_text);
-    }
-
-    private void initPanels() {
-        this.panel.setBackground(new Color(243, 229, 65));
-        var bottomPanel = new JPanel();
-        bottomPanel.setBounds(0, 500, 800, 100);
-        bottomPanel.setBackground(new Color(243, 229, 65));
-        bottomPanel.add(this.prompt);
-        this.add(bottomPanel);
-        this.add(this.panel);
-
-        this.login_button.addActionListener(this);
+        this.add(LibraryGUI.main_prompt);
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == this.login_button) {
-            String login = this.login_field.getText();
-            String password = String.valueOf(this.password_field.getPassword());
-            if (this.userbox.isSelected())
-            {
-                if(LibraryContext.checkLoggingUsers(login, password)) {
-                    LibraryGUI.changeAfterLoggedToUserSite();
-                }
-                else {
-                    this.prompt.setText("Incorrect login and/or password");
-                }
-            }
-            else if (this.adminbox.isSelected()) {
-                if (LibraryContext.checkLoggingAdmins(login, password)) {
-                    LibraryGUI.changeAfterLoggedToAdminSite();
-                }
-                else {
-                    this.prompt.setText("Incorrect login and/or password");
-                }
-            }
-            else {
-                this.prompt.setText("Select 'User' or 'Admin'");
-            }
-
+        if(e.getSource() instanceof ComponentDesigner.OptionButton button) {
+            button.getAction_manager().manage();
         }
-    }
-
-    @Override
-    public void sendMessageToPrompt(final String mes){
-        this.prompt.setText(mes);
     }
 }

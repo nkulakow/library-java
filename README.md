@@ -64,13 +64,13 @@ Przewidujemy także wprowadzanie zmian do GUI ręcznie, pisząc kod klas zarząd
 
 **Klasy:**
 1. GUI
-    - Klasa LibraryGUI - klasa zawierająca i zarządzające głownymi elementami GUI - strony logowania, użytkownika i administratora.
+    - Klasa LibraryGUI - klasa zawierająca i zarządzające głownymi elementami GUI - stroną logowania i główną.
     - Klasa LogInPage - strona logowania dla wszystkich użytkowników.
-    - Klasa MainPage - strona administratora, zawiera najważniejsze kontrolki. Jej głownym elementem jest pole content_panel, którego zawartość jest wizualizacją logiki aplikacji. MainPage to także główny ActionListener aplikacji.
-    - Klasa UserPage - odpowiednik MainPage dla użytkownika nie-administratora.
-    - Klasy AddingPanel, BookAddingPanel, BottomPanel, OptionPanel - dostosowane do GUI aplikacji JPanele. Ich głównym zadaniem jest przechowywanie zawartości wyświetlanej na ekranie.
+    - Klasa MainPage - strona główna dla wszystkich użytkowników, zawiera najważniejsze kontrolki. Jej głownym elementem jest pole content_panel, którego zawartość jest wizualizacją logiki aplikacji. MainPage to także główny ActionListener aplikacji.
+    - Klasa ComponentDesigner - jest to fabryka odpowiednich komponentów page'ów.
     - Klasa FrameContentManager i wszystkie klasy pochodne - klasy zarządzające całą logiką GUI. Każda ta klasa ma zdefiniowaną własną metodę manage(JPanel content_panel), której zadaniem jest dostosowanie zawartości wyświetlanej na ekranie, do aktualnego stanu aplikacji, a także wymiana danych między GUI, a logiką (LibraryContext). Szkielet działania: 1.Pobierz dane od użytkownika. 2. Prześlij dane do logiki i odbierz rezultat. 3. Dostosuj do rezultatu zawartość ekranu.
-    - Pozostałe klasy (InfoListFont, etc.) - klasy służące do zebrania pewnych własności GUI, takich jak kolor, rozmiar czcionki itd.
+    - Klasa ObjectTable - używana do zarządzania tabelkami.
+    - Klasa Prompt - klasa zarządzająca promptem, wyświetlanym po wprowadzeniu zmian w BD.
 
 2. LibraryContext
     - Klasa LibraryContext - klasa hermetyzująca logikę aplikacji wykorzystująca obiekty klas Admin, CommonUser i Book. Zawiera metody modyfikujące stan lokalnego repozytorium biblioteki. Wykorzystuje metody klasy database do aktualizacji lokalnego repozytorium i wprowadzania zmian do bazy danych.

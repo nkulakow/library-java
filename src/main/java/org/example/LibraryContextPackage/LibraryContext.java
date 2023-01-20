@@ -30,6 +30,11 @@ public class LibraryContext {
     private static Hashtable<Integer, ArrayDeque<Long>> takenBooksOrderedTime = new Hashtable<>();
     private static final Logger logger = LogManager.getLogger(org.example.LibraryContextPackage.LibraryContext.class);
 
+    public static String decodePassword(byte[] password) {
+        byte[] bytePasswd = Base64.getDecoder().decode(password);
+        return new String(bytePasswd);
+    }
+
     /**
      * Method responsible for assigning a book to a user by assigning values to its two parameters: returnDate and userId.
      * If these parameters were set previously it means that a book is assignined to another user and the current user must be put in a book's queue indicated
@@ -72,35 +77,6 @@ public class LibraryContext {
         }
     }
 
-    /**
-    * Initializes LibContext specifically for tests - without allowing to connect do DB and without any Gui initialization.
-     * params:
-     * AsUser - a boolean value used to determine whether a user or an admin is trying to log in.
-     * returns:
-     * lack of value
-     */
-    public static void LibContextInitForTests(boolean AsUser) throws InvalidBookNumberException {
-        try {
-            LibraryDatabase.initLoginInfoForTests();
-
-            autoAdmin = null;
-            currentAdmin = null;
-            currentUser = null;
-            Admin.clearAll();
-            autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
-            autoAdmin.addObject(autoAdmin);
-            currentAdmin = autoAdmin;
-            autoAdmin.addObject(currentAdmin);
-
-            if(AsUser){
-                currentUser = new CommonUser("user", "Null", "user", "Null", 1, "mail", 0);
-                currentAdmin.addObject(currentUser);
-            }
-        }
-        catch (NullOrEmptyStringException | InvalidIdException | InvalidLoginException e){
-            logger.error("Error in LibContextInitForTests: " + e.getMessage());
-        }
-    }
 
     /**
      * Initializes LibContext. Using LibraryDatabase gets Admins, Books, Users and books orders info and creates objects corresponding to them.
@@ -111,17 +87,21 @@ public class LibraryContext {
      */
     public static void LibContextInit() {
         try {
+            currentAdmin = null;
+            currentUser = null;
+            Admin.clearAll();
             LibraryDatabase.initLoginInfo();
-
             autoAdmin = new Admin("root", "Null", "root", "root","root", 0);
             autoAdmin.addObject(autoAdmin);
             currentAdmin = autoAdmin;
             autoAdmin.addObject(currentAdmin);
 
+
             var newAdmins = LibraryDatabase.getAdmins();
             for (var admin : newAdmins){
                 autoAdmin.addObject(admin);
             }
+
 
             var newUsers = LibraryDatabase.getCommonUsers();
             for(var user : newUsers){
@@ -134,6 +114,8 @@ public class LibraryContext {
                 autoAdmin.addObject(book);
             }
 
+            takenBooks = new Hashtable<>();
+            takenBooksOrderedTime = new Hashtable<>();
             takenBooks = LibraryDatabase.getTakenBooks();
             takenBooksOrderedTime = LibraryDatabase.getTakenBooksOrderedTime();
 
@@ -492,6 +474,18 @@ public class LibraryContext {
         return borrowed;
     }
 
+    static public String[][] getBorrowedBooksRepresentation() {
+        var borrowed = LibraryContext.getBorrowedBooks();
+        String[][] result = new String[borrowed.size()][5];
+        int i = 0;
+        for(var book :  borrowed) {
+            result[i] = new String[]{Integer.toString(book.getBookId()), book.getName(), book.getAuthor(), book.getCategory(), book.getReturnDate().toString()};
+            i++;
+        }
+
+        return result;
+    }
+
     /**
      * Returns ordered books of currentUser.
      */
@@ -507,6 +501,18 @@ public class LibraryContext {
             }
         }
         return borrowed;
+    }
+
+    static public String[][] getOrderedBooksRepresentation() {
+        var borrowed = LibraryContext.getOrderedBooks();
+        String[][] result = new String[borrowed.size()][5];
+        int i = 0;
+        for(var book :  borrowed) {
+            result[i] = new String[]{Integer.toString(book.getBookId()), book.getName(), book.getAuthor(), book.getCategory(), book.getReturnDate().toString()};
+            i++;
+        }
+
+        return result;
     }
 
     /**

@@ -1,358 +1,771 @@
 package org.example.GUI;
 
 import org.example.LibraryContextPackage.*;
+import org.example.Main;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Vector;
+import java.util.Map;
 
 abstract class FrameContentManager {
     public static final int USERS = 0;
     public static final int BOOKS = 1;
+    public static final int BOOKS_ORDERING = 2;
 
-    public static final int ORDERED_BOOKS = 2;
-    public static final int BORROWED_BOOKS = 3;
-    public static final int ADMIN_USER_MOD = 4;
-    public static final int USER_USER_MOD = 5;
-    protected final int search_mode;
+    public static final int BOOKS_ORDERED = 3;
+    public static final int BOOKS_BORROWED = 4;
 
-    public FrameContentManager(final int mode) {
-        this.search_mode = mode;
-    }
-    abstract void manage(JPanel content_panel);
+
+    abstract void manage();
 
     public static void noDataPanic(JPanel content_panel) {
-        LibraryGUI.main_page.changePrompt("No data found");
+        LibraryGUI.main_prompt.setText("No data found");
         content_panel.setLayout(new FlowLayout());
-        content_panel.add(LibraryGUI.main_page.getPrompt());
+    }
+
+    public static JPanel getBottomFramePanel() {
+        var content_panel = LibraryGUI.main_page.getContent_panel();
+        var content_panel_layout = (BorderLayout) content_panel.getLayout();
+        var center_panel = (JPanel) content_panel_layout.getLayoutComponent(BorderLayout.CENTER);
+        var center_panel_layout = (BorderLayout) center_panel.getLayout();
+        return (JPanel) center_panel_layout.getLayoutComponent(BorderLayout.SOUTH);
+    }
+
+    public static String[] getUserData() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+
+        var data_panel = (JPanel) bottom_panel.getComponent(0);
+
+        var name_panel = (JPanel)(data_panel.getComponent(1));
+        var name_field = (JTextField) (name_panel.getComponent(1));
+
+        var surname_panel = (JPanel)(data_panel.getComponent(2));
+        var surname_field = (JTextField) (surname_panel.getComponent(1));
+
+        var login_panel = (JPanel)(data_panel.getComponent(3));
+        var login_field = (JTextField) (login_panel.getComponent(1));
+
+        var password_panel = (JPanel)(data_panel.getComponent(4));
+        var password_field = (JPasswordField) (password_panel.getComponent(1));
+
+        var mail_panel = (JPanel)(data_panel.getComponent(5));
+        var mail_field = (JTextField) (mail_panel.getComponent(1));
+
+        String name, surname, login, mail, password_str;
+        char[] password;
+        name = name_field.getText();
+        surname = surname_field.getText();
+        login = login_field.getText();
+        password = password_field.getPassword();
+        password_str = new String(password);
+        mail = mail_field.getText();
+
+        return new String[]{name, surname, login, mail, password_str};
+    }
+
+    public static String[] getBookData() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+
+        var data_panel = (JPanel) bottom_panel.getComponent(0);
+
+        var name_panel = (JPanel)(data_panel.getComponent(1));
+        var name_field = (JTextField) (name_panel.getComponent(1));
+
+        var author_panel = (JPanel)(data_panel.getComponent(2));
+        var author_field = (JTextField) (author_panel.getComponent(1));
+
+        var category_panel = (JPanel)(data_panel.getComponent(3));
+        var category_field = (JTextField) (category_panel.getComponent(1));
+
+        String name, author, category;
+        name = name_field.getText();
+        author = author_field.getText();
+        category = category_field.getText();
+
+        return new String[]{name, author, category};
+    }
+
+    public static void clearBottomPanel(int mode) {
+        var panel = FrameContentManager.getBottomFramePanel();
+        panel.removeAll();
+        if(mode == FrameContentManager.USERS)
+            panel.add(ComponentDesigner.makeUserAddingPanel());
+        else if (mode == FrameContentManager.BOOKS)
+            panel.add(ComponentDesigner.makeBookAddingPanel());
+        else if (mode == FrameContentManager.BOOKS_BORROWED)
+            panel.add(ComponentDesigner.makeBookReturnPanel());
+        panel.validate();
+        panel.repaint();
+    }
+
+    public static String[] getSelfData() {
+        var data_panel = LibraryGUI.main_page.getAccount_panel();
+
+        int first;
+        if (LibraryContext.getCurrentUser() != null)
+            first = 1;
+        else
+            first = 0;
+
+        var name_panel = (JPanel)(data_panel.getComponent(first));
+        var name_field = (JTextField) (name_panel.getComponent(1));
+
+        var surname_panel = (JPanel)(data_panel.getComponent(first + 1));
+        var surname_field = (JTextField) (surname_panel.getComponent(1));
+
+        var login_panel = (JPanel)(data_panel.getComponent(first + 2));
+        var login_field = (JTextField) (login_panel.getComponent(1));
+
+        var password_panel = (JPanel)(data_panel.getComponent(first + 3));
+        var password_field = (JPasswordField) (password_panel.getComponent(1));
+
+        var mail_panel = (JPanel)(data_panel.getComponent(first + 4));
+        var mail_field = (JTextField) (mail_panel.getComponent(1));
+
+        String name, surname, login, mail, password_str;
+        char[] password;
+        name = name_field.getText();
+        surname = surname_field.getText();
+        login = login_field.getText();
+        password = password_field.getPassword();
+        password_str = new String(password);
+        mail = mail_field.getText();
+
+        return new String[]{name, surname, login, mail, password_str};
     }
 }
 
-class Shower extends FrameContentManager {
-
-    public Shower(final int mode) {super(mode);}
+class Exiter extends FrameContentManager {
     @Override
-    void manage(JPanel content_panel) {
-        content_panel.removeAll();
-        Vector<String> repr;
-        if (search_mode == FrameContentManager.USERS) {
-            repr = new Vector<>(LibraryContext.showUsers());
+    void manage() {
+        Main.exit();
+    }
+}
+
+class AppLogger extends FrameContentManager {
+
+    @Override
+    void manage() {
+        LibraryGUI.main_prompt.setFont(ComponentDesigner.getDefaultFont(25));
+        String login = LibraryGUI.login_frame.getLogin_field().getText();
+        String password = String.valueOf(LibraryGUI.login_frame.getPassword_field().getPassword());
+        if (LibraryGUI.login_frame.getUserbox().isSelected())
+        {
+            if(LibraryContext.checkLoggingUsers(login, password)) {
+                LibraryGUI.changeAfterLogged(LibraryGUI.USER);
+            }
+            else {
+                LibraryGUI.main_prompt.setText("Incorrect login and/or password");
+            }
+        }
+        else if (LibraryGUI.login_frame.getAdminbox().isSelected()) {
+            if (LibraryContext.checkLoggingAdmins(login, password)) {
+                LibraryGUI.changeAfterLogged(LibraryGUI.ADMIN);
+            }
+            else {
+                LibraryGUI.main_prompt.setText("Incorrect login and/or password");
+            }
         }
         else {
-            repr = new Vector<>();
-            var books = LibraryContext.getOrderedBooks();
-            for (var book : books){repr.add(book.describe());}
+            LibraryGUI.main_prompt.setText("Select 'User' or 'Admin'");
         }
-        if (!repr.isEmpty()) {
-            var list = new JList<>(repr);
-            list.setFont(new InfoListFont());
-            content_panel.add(list);
-            content_panel.setLayout(new FlowLayout());
-        } else {
-            FrameContentManager.noDataPanic(content_panel);
-        }
-
-        content_panel.validate();
-        content_panel.repaint();
     }
 }
 
-class SearchShower extends FrameContentManager {
-    public SearchShower(final int mode) {
-        super(mode);
-    }
-
+class BookTableShower extends FrameContentManager {
     @Override
-    void manage(JPanel content_panel) {
-        content_panel.removeAll();
-        content_panel.setLayout(null);
+    void manage() {
+        var table = ComponentDesigner.makeBookTable(new String[][]{}, FrameContentManager.BOOKS);
+        var pane = LibraryGUI.main_page.getTable_pane();
+        pane.setViewportView(table);
+        LibraryGUI.main_page.setSearch_table(table);
+        LibraryGUI.main_page.current_mode = FrameContentManager.BOOKS;
 
-        var search_field = new JTextField();
-        search_field.setBounds(content_panel.getSize().width / 2 - 150, 0, 300, 30);
+        Searcher.search_mode = Searcher.BOOKS;
+        Searcher.last_results = null;
 
-        var button = new OptionPanel.OptionButton("Search");
-        button.addActionListener(LibraryGUI.main_page);
-        button.setAction_manager(new Searcher(this.search_mode));
-        button.setBounds(search_field.getX(), 30, 150, 30);
+        FrameContentManager.clearBottomPanel(FrameContentManager.BOOKS);
+    }
+}
 
-        content_panel.add(search_field);
-        content_panel.add(button);
-        content_panel.validate();
-        content_panel.repaint();
+class UserTableShower extends FrameContentManager {
+    @Override
+    void manage() {
+        var table = ComponentDesigner.makeUserTable(new String[][]{});
+        var pane = LibraryGUI.main_page.getTable_pane();
+        pane.setViewportView(table);
+        LibraryGUI.main_page.setSearch_table(table);
+        LibraryGUI.main_page.current_mode = FrameContentManager.USERS;
+
+        Searcher.search_mode = Searcher.USERS;
+        Searcher.last_results = null;
+
+        FrameContentManager.clearBottomPanel(FrameContentManager.USERS);
+    }
+}
+
+class ModifyPanelShower extends FrameContentManager {
+    @Override
+    void manage() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+        bottom_panel.removeAll();
+        bottom_panel.add(ComponentDesigner.makeUserModifyPanel());
+        bottom_panel.validate();
+    }
+}
+
+class AddingPanelShower extends FrameContentManager {
+    @Override
+    void manage() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+        bottom_panel.removeAll();
+        if(LibraryGUI.main_page.current_mode == FrameContentManager.USERS)
+            bottom_panel.add(ComponentDesigner.makeUserAddingPanel());
+        else
+            bottom_panel.add(ComponentDesigner.makeBookAddingPanel());
+        bottom_panel.validate();
     }
 }
 
 class Searcher extends FrameContentManager {
-    public Searcher(final int mode) {
-        super(mode);
-    }
+    public static final int USERS = 0;
+    public static final int BOOKS = 1;
+    public static final int BOOKS_ORDER = 2;
+    public static int search_mode;
+
     public static HashSet<LibraryContextActions> last_results;
-
-    public static JList<String> getSearchList(JPanel content_panel, final int mode) {
-        JTextField field = (JTextField) content_panel.getComponent(0);
-        String pattern = field.getText();
+    @Override
+    void manage() {
+        var pattern = LibraryGUI.main_page.getSearch_field().getText();
         HashSet<LibraryContextActions> results;
-        if(mode == Searcher.USERS)
-            results = LibraryContext.searchForObject((String searchPattern, Admin admin)->{admin.setToSearch(new HashSet<>(Admin.getUsers()));return admin.search(searchPattern);},pattern);
-        else
-            results = LibraryContext.searchForObject((String searchPattern, Admin admin)->{admin.setToSearch(new HashSet<>(Admin.getBooks()));return admin.search(searchPattern);},pattern);
+        int data_length;
+        int columns_number;
 
+        if(Searcher.search_mode == Searcher.USERS) {
+            results = LibraryContext.searchForObject((String searchPattern, Admin admin) -> {
+                admin.setToSearch(new HashSet<>(Admin.getUsers()));
+                return admin.search(searchPattern);
+            }, pattern);
+            columns_number = 5;
+        } else {
+            results = LibraryContext.searchForObject((String searchPattern, Admin admin) -> {
+                admin.setToSearch(new HashSet<>(Admin.getBooks()));
+                return admin.search(searchPattern);
+            }, pattern);
+            columns_number = 4;
+        }
         Searcher.last_results = results;
-        var infos = new Vector<String>();
-        for(var result : results) {
-            infos.add(result.describe());
+        data_length = results.size();
+
+        String[][] data = new String[data_length][columns_number];
+        int i = 0;
+        for(var object : results) {
+            data[i] = object.getRepresentation();
+            i++;
         }
-//        if (infos.isEmpty())
-//            infos.add("No data found");
-
-        var list = new JList<>(infos);
-        list.setFont(new InfoListFont());
-
-        return list;
-    }
-    @Override
-    void manage(JPanel content_panel) {
-        var list = Searcher.getSearchList(content_panel, this.search_mode);
-        content_panel.removeAll();
-        content_panel.setLayout(new FlowLayout());
-        if (list.getModel().getSize() > 0)
-            content_panel.add(list);
+        ObjectTable table;
+        if(Searcher.search_mode == Searcher.USERS)
+            table = ComponentDesigner.makeUserTable(data);
+        else if (Searcher.search_mode == Searcher.BOOKS)
+            table = ComponentDesigner.makeBookTable(data, FrameContentManager.BOOKS);
         else
-            FrameContentManager.noDataPanic(content_panel);
-        content_panel.validate();
-        content_panel.repaint();
+            table = ComponentDesigner.makeBookTable(data, FrameContentManager.BOOKS_ORDERING);
+        var pane = LibraryGUI.main_page.getTable_pane();
+        pane.setViewportView(table);
+        LibraryGUI.main_page.setSearch_table(table);
+        if(results.isEmpty())
+            LibraryGUI.changePrompt("No fitting data found");
     }
 }
 
+class UserSelector extends FrameContentManager implements ListSelectionListener {
 
-class ModifyShower extends FrameContentManager {
-    public ModifyShower(final int mode) {
-        super(mode);
-    }
+    public static int selected_id;
+    public static int selected_index;
     @Override
-    public void manage(JPanel content_panel) {
-        var search_field = new JTextField();
-        search_field.setBounds(content_panel.getSize().width / 2 - 150, 0, 300, 30);
+    void manage() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+        bottom_panel.removeAll();
+        bottom_panel.add(ComponentDesigner.makeUserModifyPanel());
+        bottom_panel.validate();
 
-        var button = new OptionPanel.OptionButton("Search for data to modify");
-        button.addActionListener(LibraryGUI.main_page);
-        button.setAction_manager(new ModifyChooser(this.search_mode));
-        button.setBounds(content_panel.getSize().width / 2 - 150, 30, 300, 30);
+        var searched = Searcher.last_results.toArray();
+        
+        var selected = (CommonUser) searched[selected_index];
+        UserSelector.selected_id = selected.getUserId();
 
-        content_panel.removeAll();
-        content_panel.setLayout(null);
-        content_panel.add(search_field);
-        content_panel.add(button);
-        content_panel.validate();
-        content_panel.repaint();
+        var modify_panel = (JPanel) bottom_panel.getComponent(0);
+
+        var name_panel = (JPanel)(modify_panel.getComponent(1));
+        var name_field = (JTextField) (name_panel.getComponent(1));
+
+        var surname_panel = (JPanel)(modify_panel.getComponent(2));
+        var surname_field = (JTextField) (surname_panel.getComponent(1));
+
+        var login_panel = (JPanel)(modify_panel.getComponent(3));
+        var login_field = (JTextField) (login_panel.getComponent(1));
+
+        var password_panel = (JPanel)(modify_panel.getComponent(4));
+        var password_field = (JPasswordField) (password_panel.getComponent(1));
+
+        var mail_panel = (JPanel)(modify_panel.getComponent(5));
+        var mail_field = (JTextField) (mail_panel.getComponent(1));
+
+        name_field.setText(selected.getName());
+        surname_field.setText(selected.getSurname());
+        login_field.setText(selected.getLogin());
+        password_field.setText(selected.getPassword());
+        mail_field.setText(selected.getMail());
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        var model = (ListSelectionModel) e.getSource();
+        if(!model.isSelectionEmpty()) {
+            try {
+                selected_index = model.getMinSelectionIndex();
+                this.manage();
+            } catch (NullPointerException exception) {
+                LibraryGUI.changePrompt("Choose non empty table position");
+            } catch (IndexOutOfBoundsException ignored) {
+
+            }
+        }
     }
 }
 
-class ModifyChooser extends FrameContentManager {
-    public ModifyChooser(final int mode) {
-        super(mode);
-    }
-
-    public static JList<String> last_results;
-
+class UserModifier extends FrameContentManager {
     @Override
-    void manage(JPanel content_panel) {
-        var list = Searcher.getSearchList(content_panel, this.search_mode);
-        content_panel.removeAll();
-        if(list.getModel().getSize() > 0) {
-            list.setBounds(10, 0, content_panel.getWidth() - 20, list.getCellBounds(0, 0).height * list.getModel().getSize());
-            ModifyChooser.last_results = list;
+    void manage() {
+        String name, surname, login, mail, password;
+        String[] data = FrameContentManager.getUserData();
 
-            var label = new JLabel("Select data to modify");
-            label.setBounds(list.getX(), list.getHeight(), 300, 30);
-            label.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
+        name = data[0];
+        surname = data[1];
+        login = data[2];
+        mail = data[3];
+        password = data[4];
 
-            var button = new OptionPanel.OptionButton("Select");
-            button.addActionListener(LibraryGUI.main_page);
-            if (this.search_mode == FrameContentManager.USERS)
-                button.setAction_manager(new UsersModifier());
+        Map<AttributesNames, String> map= new HashMap<>();
+        map.put(AttributesNames.name, name);
+        map.put(AttributesNames.surname, surname);
+        map.put(AttributesNames.mail, mail);
+        map.put(AttributesNames.login, login);
+        map.put(AttributesNames.password, password);
+        try {
+            int row_index = UserSelector.selected_index;
+            if (row_index >= Searcher.last_results.size())
+                throw new IndexOutOfBoundsException();
+            LibraryContext.modifyFewUserAttributes(map, UserSelector.selected_id);
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(name, row_index, ObjectTable.column_user_name);
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(surname, row_index, ObjectTable.column_user_surname);
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(login, row_index, ObjectTable.column_user_login);
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(mail, row_index, ObjectTable.column_user_mail);
+            LibraryGUI.changePrompt("User successfully modified");
+        } catch (NullOrEmptyStringException e) {
+            LibraryGUI.changePrompt("User data cannot be empty");
+        } catch (InvalidLoginException e) {
+            LibraryGUI.changePrompt("Login already exists");
+        } catch (IndexOutOfBoundsException | NullPointerException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
+        } catch (InvalidBookNumberException | InvalidIdException ignored) {
+
+        }
+    }
+}
+
+class UserDeleter extends FrameContentManager {
+    @Override
+    void manage() {
+        try {
+            int index = UserSelector.selected_index;
+            var selected = Searcher.last_results.toArray();
+            CommonUser user;
+            user = (CommonUser) selected[index];
+            LibraryContext.removeObject(user);
+            ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).removeRow(index);
+
+            LibraryGUI.changePrompt("User successfully deleted");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
+        }
+    }
+}
+class UserAdder extends FrameContentManager {
+    @Override
+    void manage() {
+        try {
+            String name, surname, login, mail, password;
+            String[] data = FrameContentManager.getUserData();
+
+            name = data[0];
+            surname = data[1];
+            login = data[2];
+            mail = data[3];
+            password = data[4];
+
+            int id = LibraryContext.generateCommonUserID();
+            LibraryContext.addObject(new CommonUser(
+                    login,
+                    password,
+                    name,
+                    surname,
+                    id,
+                    mail,
+                    0   //books number
+            ));
+            LibraryGUI.changePrompt("User successfully added");
+        } catch (NullOrEmptyStringException e) {
+            LibraryGUI.changePrompt("User data cannot be empty");
+        } catch (InvalidIdException | NumberFormatException e) {
+            LibraryGUI.changePrompt("Incorrect user id");
+        } catch (InvalidLoginException e) {
+            LibraryGUI.changePrompt("Login already exists");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
+        } catch (InvalidBookNumberException ignored) {
+
+        }
+    }
+}
+
+class SelfModifier extends FrameContentManager {
+    @Override
+    void manage() {
+        String name, surname, login, mail, password;
+        String[] data = FrameContentManager.getSelfData();
+
+        name = data[0];
+        surname = data[1];
+        login = data[2];
+        mail = data[3];
+        password = data[4];
+
+        Map<AttributesNames, String> map= new HashMap<>();
+        map.put(AttributesNames.name, name);
+        map.put(AttributesNames.surname, surname);
+        map.put(AttributesNames.mail, mail);
+        map.put(AttributesNames.login, login);
+        map.put(AttributesNames.password, password);
+        try {
+            if (LibraryContext.getCurrentUser() != null)
+                LibraryContext.modifyFewUserAttributes(map, LibraryContext.getCurrentUser().getUserId());
             else
-                button.setAction_manager(new BooksModifier());
-            button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
+                LibraryContext.modifyFewAdminAttributes(map);
+            LibraryGUI.changePrompt("Your data successfully modified");
+        } catch (NullOrEmptyStringException e) {
+            LibraryGUI.changePrompt("User data cannot be empty");
+        } catch (InvalidLoginException e) {
+            LibraryGUI.changePrompt("Login already exists");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
+        } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
-            content_panel.add(list);
-            content_panel.add(label);
-            content_panel.add(button);
-        } else {
-            FrameContentManager.noDataPanic(content_panel);
         }
-        content_panel.validate();
-        content_panel.repaint();
     }
 }
 
-class DeleteShower extends FrameContentManager {
-    public DeleteShower(final int mode) {
-        super(mode);
+class BookSelector extends FrameContentManager implements ListSelectionListener {
+
+    public static int selected_id;
+    public static int selected_index;
+    @Override
+    void manage() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+        bottom_panel.removeAll();
+        bottom_panel.add(ComponentDesigner.makeBookModifyPanel());
+        bottom_panel.validate();
+
+        var searched = Searcher.last_results.toArray();
+
+        var selected = (Book) searched[selected_index];
+        BookSelector.selected_id = selected.getBookId();
+
+        var modify_panel = (JPanel) bottom_panel.getComponent(0);
+
+        var name_panel = (JPanel)(modify_panel.getComponent(1));
+        var name_field = (JTextField) (name_panel.getComponent(1));
+
+        var author_panel = (JPanel)(modify_panel.getComponent(2));
+        var author_field = (JTextField) (author_panel.getComponent(1));
+
+        var category_panel = (JPanel)(modify_panel.getComponent(3));
+        var category_field = (JTextField) (category_panel.getComponent(1));
+
+        name_field.setText(selected.getName());
+        author_field.setText(selected.getAuthor());
+        category_field.setText(selected.getCategory());
     }
 
     @Override
-    void manage(JPanel content_panel) {
-        var search_field = new JTextField();
-        search_field.setBounds(content_panel.getSize().width / 2 - 150, 0, 300, 30);
+    public void valueChanged(ListSelectionEvent e) {
+        var model = (ListSelectionModel) e.getSource();
+        if(!model.isSelectionEmpty()) {
+            try {
+                selected_index = model.getMinSelectionIndex();
+                this.manage();
+            } catch (NullPointerException exception) {
+                LibraryGUI.changePrompt("Choose non empty table position");
+            } catch (ArrayIndexOutOfBoundsException ignored) {
 
-        var button = new OptionPanel.OptionButton("Search for data to delete");
-        button.addActionListener(LibraryGUI.main_page);
-        button.setAction_manager(new DeleteChooser(this.search_mode));
-        button.setBounds(content_panel.getSize().width / 2 - 150, 30, 300, 30);
-
-        content_panel.removeAll();
-        content_panel.setLayout(null);
-        content_panel.add(search_field);
-        content_panel.add(button);
-        content_panel.validate();
-        content_panel.repaint();
+            }
+        }
     }
 }
 
-class DeleteChooser extends FrameContentManager {
-    public DeleteChooser(final int mode) {
-        super(mode);
-    }
-
-    public static JList<String> last_results;
-
+class BookModifier extends FrameContentManager {
     @Override
-    void manage(JPanel content_panel) {
-        var list = Searcher.getSearchList(content_panel, this.search_mode);
-        content_panel.removeAll();
-        if (list.getModel().getSize() > 0) {
-            list.setBounds(10, 0, content_panel.getWidth() - 20, list.getCellBounds(0, 0).height * list.getModel().getSize());
-            list.setFont(new InfoListFont());
-            DeleteChooser.last_results = list;
+    void manage() {
+        String name, author, category;
+        String[] data = FrameContentManager.getBookData();
 
-            LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 300, 30);
-            LibraryGUI.main_page.changePrompt("Select data to delete");
+        name = data[0];
+        author = data[1];
+        category = data[2];
 
-            var button = new OptionPanel.OptionButton("Delete");
-            button.addActionListener(LibraryGUI.main_page);
-            if (this.search_mode == FrameContentManager.USERS)
-                button.setAction_manager(new UsersDeleter());
-            else
-                button.setAction_manager(new BooksDeleter());
-            button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
+        Map<AttributesNames, String> map= new HashMap<>();
+        map.put(AttributesNames.name, name);
+        map.put(AttributesNames.author, author);
+        map.put(AttributesNames.category, category);
+        try {
+            int row_index = BookSelector.selected_index;
+            if (row_index >= Searcher.last_results.size())
+                throw new IndexOutOfBoundsException();
+            LibraryContext.modifyFewBookAttributes(map, BookSelector.selected_id);
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(name, row_index, ObjectTable.column_book_name);
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(author, row_index, ObjectTable.column_book_author_);
+            LibraryGUI.main_page.getSearch_table().getModel().setValueAt(category, row_index, ObjectTable.column_book_category);
+            LibraryGUI.changePrompt("Book successfully modified");
+        } catch (NullOrEmptyStringException e) {
+            LibraryGUI.changePrompt("Book data cannot be empty");
+        }  catch (CannotConnectToDBException e) {
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
+        } catch (IndexOutOfBoundsException | NullPointerException exception) {
+            LibraryGUI.changePrompt("Select non-empty table row");
+        } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
-            content_panel.setLayout(null);
-            content_panel.add(list);
-            content_panel.add(button);
-        } else {
-            FrameContentManager.noDataPanic(content_panel);
         }
-
-        content_panel.add(LibraryGUI.main_page.getPrompt());
-        content_panel.validate();
-        content_panel.repaint();
     }
 }
 
-class ReturnChooser extends FrameContentManager {
-    public ReturnChooser() {
-        super(0);
-    }
-    public static JList<String> last_results;
-    public static Vector<Book> last_books;
+class BookOrderSelector extends FrameContentManager implements ListSelectionListener {
 
-    JList<String> getBooksToReturn() {
-
-        var results = LibraryContext.getBorrowedBooks();
-        last_books = results;
-        var infos = new Vector<String>();
-        for(var result : results) {
-            infos.add(result.describe());
-        }
-        var list = new JList<>(infos);
-        list.setFont(new InfoListFont());
-        return list;
-    }
+    public static int selected_id;
+    public static int selected_index;
     @Override
-    void manage(JPanel content_panel) {
-        var list = getBooksToReturn();
-        content_panel.removeAll();
-        if(list.getModel().getSize() > 0) {
-            list.setBounds(10, 0, content_panel.getWidth() - 20, list.getCellBounds(0, 0).height * list.getModel().getSize());
-            list.setFont(new InfoListFont());
-            ReturnChooser.last_results = list;
+    void manage() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
+        bottom_panel.removeAll();
+        bottom_panel.add(ComponentDesigner.makeOrderPanel());
+        bottom_panel.validate();
 
-            LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 600, 30);
-            LibraryGUI.main_page.changePrompt("Select book");
+        var searched = Searcher.last_results.toArray();
 
-            var button = new UserOptionPanel.OptionButton("Return");
-            button.addActionListener(LibraryGUI.user_page);
+        var selected = (Book) searched[selected_index];
+        BookOrderSelector.selected_id = selected.getBookId();
+    }
 
-            button.setAction_manager(new BooksReturner());
-            button.setBounds(list.getX(), list.getHeight() + 30, 150, 30);
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        var model = (ListSelectionModel) e.getSource();
+        if(!model.isSelectionEmpty()) {
+            try {
+                selected_index = model.getMinSelectionIndex();
+                this.manage();
+            } catch (NullPointerException exception) {
+                LibraryGUI.changePrompt("Choose non empty table position");
+            } catch (IndexOutOfBoundsException ignored) {
 
-            content_panel.setLayout(null);
-            content_panel.add(list);
-            content_panel.add(button);
-        } else {
-            FrameContentManager.noDataPanic(content_panel);
+            }
         }
-
-        content_panel.add(LibraryGUI.main_page.getPrompt());
-        content_panel.validate();
-        content_panel.repaint();
     }
 }
 
-class OrderChooser extends FrameContentManager {
-    public OrderChooser() {
-        super(0);
-    }
-    public static JList<String> last_results;
-    public static JTextField months_field = new JTextField();
-
+class BookOrderer extends FrameContentManager {
     @Override
-    void manage(JPanel content_panel) {
-        var list = Searcher.getSearchList(content_panel, Shower.BOOKS);
-        content_panel.removeAll();
-        if (list.getModel().getSize() > 0) {
-            list.setBounds(0, 0, content_panel.getWidth(), list.getCellBounds(0, 0).height * list.getModel().getSize());
-            list.setFont(new InfoListFont());
-            OrderChooser.last_results = list;
+    void manage() {
+        var bottom_panel = FrameContentManager.getBottomFramePanel();
 
-            LibraryGUI.main_page.getPrompt().setBounds(list.getX(), list.getHeight(), 300, 30);
-            LibraryGUI.main_page.changePrompt("Select book to order");
+        var order_panel = (JPanel) bottom_panel.getComponent(0);
+        var months_panel = (JPanel) order_panel.getComponent(1);
+        var months_field = (JTextField) months_panel.getComponent(1);
 
-            var label_months = new JLabel("Select months: ");
-            label_months.setBounds(list.getX(), list.getHeight()+30, 200, 30);
-            label_months.setBackground(LibraryGUI.GUIData.BACKGROUND_COLOR);
-
-            months_field.setBounds(list.getX() + 200, list.getHeight()+30, 100, 30);
-
-            var button = new UserOptionPanel.OptionButton("Order");
-            button.addActionListener(LibraryGUI.user_page);
-            button.setAction_manager(new BooksOrderer());
-            button.setBounds(list.getX(), list.getHeight() + 60, 150, 30);
-
-            content_panel.setLayout(null);
-            content_panel.add(list);
-            content_panel.add(LibraryGUI.main_page.getPrompt());
-            content_panel.add(button);
-            content_panel.add(label_months);
-            content_panel.add(months_field);
-        } else {
-            FrameContentManager.noDataPanic(content_panel);
+        Object[] selected;
+        int index = BookOrderSelector.selected_index;
+        try {
+            selected = Searcher.last_results.toArray();
+        } catch (NullPointerException e) {
+            LibraryGUI.changePrompt("Select a book");
+            return;
         }
+        long months;
+        try {
+            months = Long.parseLong(months_field.getText());
+        }
+        catch (java.lang.NumberFormatException e){
+            LibraryGUI.changePrompt("Input valid months number.");
+            return;
+        }
+        Book book;
+        try {
+            book = (Book) selected[index];
+            LibraryContext.orderBook(book, months);
+            LibraryGUI.changePrompt(book.getName() + " by " + book.getAuthor() + " successfully ordered");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
+        }
+    }
+}
 
-        content_panel.validate();
-        content_panel.repaint();
+class BookAdder extends FrameContentManager {
+    @Override
+    void manage() {
+        String name, author, category;
+        String[] data = FrameContentManager.getBookData();
+
+        name = data[0];
+        author = data[1];
+        category = data[2];
+
+        int id = LibraryContext.generateBookID();
+
+        try {
+            LibraryContext.addObject(new Book(
+                    name,
+                    category,
+                    id,
+                    author,
+                    true,
+                    null,
+                    null   //books number
+            ));
+            LibraryGUI.changePrompt("Book successfully added");
+        } catch (NullOrEmptyStringException e) {
+            LibraryGUI.changePrompt("Book data cannot be empty");
+        } catch (InvalidIdException | NumberFormatException e) {
+            LibraryGUI.changePrompt("Incorrect book id");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
+        }
+    }
+}
+
+class BookDeleter extends FrameContentManager {
+    @Override
+    void manage() {
+        try {
+            int index = BookSelector.selected_index;
+            var selected = Searcher.last_results.toArray();
+            Book book;
+            book = (Book) selected[index];
+            LibraryContext.removeObject(book);
+            ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).removeRow(index);
+
+            LibraryGUI.changePrompt("Book successfully deleted");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.changePrompt("Cannot connect to database, check your connection");
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
+        }
+    }
+}
+
+class Deleter extends FrameContentManager {
+    private static final UserDeleter user_deleter = new UserDeleter();
+    private static final BookDeleter book_deleter = new BookDeleter();
+    @Override
+    void manage() {
+        if(LibraryGUI.main_page.current_mode == FrameContentManager.USERS)
+            Deleter.user_deleter.manage();
+        else
+            Deleter.book_deleter.manage();
+    }
+}
+
+class AccountPanelSwitcher extends FrameContentManager {
+    @Override
+    void manage() {
+        int min_height = 1000;
+        if(LibraryGUI.main_page.getAccount_panel().isVisible()) {
+            LibraryGUI.main_page.getAccount_panel().setVisible(false);
+            LibraryGUI.main_page.setMinimumSize(MainPage.default_minimum_size);
+        }
+        else {
+            LibraryGUI.main_page.getAccount_panel().setVisible(true);
+            if(LibraryGUI.main_page.getHeight() < min_height) {
+                LibraryGUI.main_page.setSize(new Dimension(LibraryGUI.main_page.getWidth(), min_height));
+            }
+            LibraryGUI.main_page.setMinimumSize(new Dimension(LibraryGUI.main_page.getMinimumSize().width, min_height));
+        }
+    }
+}
+
+class BorrowedBooksShower extends FrameContentManager {
+    @Override
+    void manage() {
+        var table = ComponentDesigner.makeBorrowedBookTable(LibraryContext.getBorrowedBooksRepresentation(), FrameContentManager.BOOKS_BORROWED);
+        var pane = LibraryGUI.main_page.getTable_pane();
+        pane.setViewportView(table);
+        LibraryGUI.main_page.setSearch_table(table);
+        LibraryGUI.main_page.current_mode = FrameContentManager.BOOKS_BORROWED;
+
+        Searcher.search_mode = Searcher.BOOKS_BORROWED;
+        Searcher.last_results = null;
+
+        FrameContentManager.clearBottomPanel(FrameContentManager.BOOKS_BORROWED);
+    }
+}
+
+class BooksReturner extends FrameContentManager {
+    @Override
+    void manage() {
+        try {
+            var books = LibraryContext.getBorrowedBooks().toArray();
+            int index = LibraryGUI.main_page.getSearch_table().getSelectedRow();
+            var to_return = (Book) books[index];
+            LibraryContext.returnBook(to_return);
+            ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).removeRow(index);
+            LibraryGUI.changePrompt("Book returned " + to_return.describe());
+        } catch (CannotReturnBookException e) {
+            LibraryGUI.changePrompt("Could not return");
+        } catch (CannotConnectToDBException e) {
+            LibraryGUI.changePrompt("Cannot connect");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
+        }
+    }
+}
+
+class OrderedBooksShower extends FrameContentManager {
+    @Override
+    void manage() {
+        var table = ComponentDesigner.makeOrderedBookTable(LibraryContext.getOrderedBooksRepresentation(), FrameContentManager.BOOKS_BORROWED);
+        var pane = LibraryGUI.main_page.getTable_pane();
+        pane.setViewportView(table);
+        LibraryGUI.main_page.setSearch_table(table);
+        LibraryGUI.main_page.current_mode = FrameContentManager.BOOKS_ORDERED;
+
+        Searcher.search_mode = Searcher.BOOKS_ORDERED;
+        Searcher.last_results = null;
+
+        FrameContentManager.clearBottomPanel(FrameContentManager.BOOKS_ORDERED);
     }
 }
 
 class MockManager extends FrameContentManager {
-
-    public MockManager() {
-        super(0);
-    }
     @Override
-    void manage(JPanel content_panel) {
+    void manage() {
 
     }
 }

@@ -203,6 +203,11 @@ public class Admin extends User implements LibraryContextActions{
         }
     }
 
+    @Override
+    public String[] getRepresentation() {
+        return new String[0];
+    }
+
     /**
      * Finds CommonUser by given ID.
      */
