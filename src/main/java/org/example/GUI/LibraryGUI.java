@@ -1,5 +1,8 @@
 package org.example.GUI;
 
+import oracle.jdbc.driver.PlsqlIbtBindInfo;
+import org.example.LibraryContextPackage.LibraryContextActions;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,6 +14,7 @@ public class LibraryGUI {
     public static LogInPage login_frame;
     public static MainPage main_page;
     public static MainPage user_page;
+    private static Prompt prompt;
 
     public static JLabel main_prompt;
     public static void GUIInit() {
@@ -18,6 +22,7 @@ public class LibraryGUI {
         LibraryGUI.login_frame = new LogInPage();
         LibraryGUI.main_page = new MainPage();
         LibraryGUI.user_page = new MainPage();
+        LibraryGUI.prompt = new Prompt();
     }
 
     public static void showFrame(final int frame_id) {
@@ -33,6 +38,13 @@ public class LibraryGUI {
 
     public static void sendMessageToLoginPage(final String mes){
 
+    }
+
+    public static void changePrompt(String text) {
+        LibraryGUI.prompt.getLabel().setText(text);
+        LibraryGUI.prompt.setSize(15 * text.length(), Prompt.size.height);
+        LibraryGUI.prompt.center();
+        LibraryGUI.prompt.setVisible(true);
     }
 
     public static class GUIData {
