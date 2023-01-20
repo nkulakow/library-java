@@ -278,6 +278,8 @@ class Searcher extends FrameContentManager {
         var pane = LibraryGUI.main_page.getTable_pane();
         pane.setViewportView(table);
         LibraryGUI.main_page.setSearch_table(table);
+        if(results.isEmpty())
+            LibraryGUI.changePrompt("No fitting data found");
     }
 }
 
@@ -608,8 +610,8 @@ class BookOrderer extends FrameContentManager {
             LibraryGUI.changePrompt(book.getName() + " by " + book.getAuthor() + " successfully ordered");
         } catch (CannotConnectToDBException e) {
             LibraryGUI.changePrompt("Cannot connect to database, check your connection");
-        } catch (ArrayIndexOutOfBoundsException ignored) {
-
+        } catch (ArrayIndexOutOfBoundsException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
         }
     }
 }
@@ -716,10 +718,10 @@ class BorrowedBooksShower extends FrameContentManager {
 class BooksReturner extends FrameContentManager {
     @Override
     void manage() {
-        var books = LibraryContext.getBorrowedBooks().toArray();
-        int index = LibraryGUI.main_page.getSearch_table().getSelectedRow();
-        var to_return = (Book) books[index];
         try {
+            var books = LibraryContext.getBorrowedBooks().toArray();
+            int index = LibraryGUI.main_page.getSearch_table().getSelectedRow();
+            var to_return = (Book) books[index];
             LibraryContext.returnBook(to_return);
             ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).removeRow(index);
             LibraryGUI.changePrompt("Book returned " + to_return.describe());
@@ -727,6 +729,8 @@ class BooksReturner extends FrameContentManager {
             LibraryGUI.changePrompt("Could not return");
         } catch (CannotConnectToDBException e) {
             LibraryGUI.changePrompt("Cannot connect");
+        } catch (ArrayIndexOutOfBoundsException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
         }
     }
 }
