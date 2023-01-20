@@ -2,6 +2,7 @@ package org.example.GUI;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.example.Database.LibraryDatabase;
 import org.example.LibraryContextPackage.LibraryContext;
 import org.example.LibraryContextPackage.User;
 
@@ -607,13 +608,17 @@ public class ComponentDesigner {
         else
             current_user = LibraryContext.getCurrentAdmin();
 
+        var password = current_user.getPassword();
+        if(LibraryContext.getCurrentUser() == null)
+            password = LibraryContext.decodePassword(password.getBytes());
+
         var name_field = ComponentDesigner.makeBorderedComponent(new JTextField(current_user.getName()), 3, 3, 3, 3);
         name_field.setPreferredSize(field_size);
         var surname_field = ComponentDesigner.makeBorderedComponent(new JTextField(current_user.getSurname()), 3, 3, 3, 3);
         surname_field.setPreferredSize(field_size);
         var login_field = ComponentDesigner.makeBorderedComponent(new JTextField(current_user.getLogin()), 3, 3, 3, 3);
         login_field.setPreferredSize(field_size);
-        var password_field = ComponentDesigner.makeBorderedComponent(new JPasswordField(current_user.getPassword()), 3, 3, 3, 3);
+        var password_field = ComponentDesigner.makeBorderedComponent(new JPasswordField(password), 3, 3, 3, 3);
         password_field.setPreferredSize(field_size);
         var mail_field = ComponentDesigner.makeBorderedComponent(new JTextField(current_user.getMail()), 3, 3, 3, 3);
         mail_field.setPreferredSize(field_size);

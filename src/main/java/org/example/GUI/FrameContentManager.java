@@ -358,8 +358,10 @@ class UserModifier extends FrameContentManager {
         map.put(AttributesNames.login, login);
         map.put(AttributesNames.password, password);
         try {
-            LibraryContext.modifyFewUserAttributes(map, UserSelector.selected_id);
             int row_index = UserSelector.selected_index;
+            if (row_index >= Searcher.last_results.size())
+                throw new IndexOutOfBoundsException();
+            LibraryContext.modifyFewUserAttributes(map, UserSelector.selected_id);
             LibraryGUI.main_page.getSearch_table().getModel().setValueAt(name, row_index, ObjectTable.column_user_name);
             LibraryGUI.main_page.getSearch_table().getModel().setValueAt(surname, row_index, ObjectTable.column_user_surname);
             LibraryGUI.main_page.getSearch_table().getModel().setValueAt(login, row_index, ObjectTable.column_user_login);
@@ -369,6 +371,8 @@ class UserModifier extends FrameContentManager {
             LibraryGUI.changePrompt("User data cannot be empty");
         } catch (InvalidLoginException e) {
             LibraryGUI.changePrompt("Login already exists");
+        } catch (IndexOutOfBoundsException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
         } catch (CannotConnectToDBException e) {
             LibraryGUI.changePrompt("Cannot connect to database, check your connection");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
@@ -380,10 +384,10 @@ class UserModifier extends FrameContentManager {
 class UserDeleter extends FrameContentManager {
     @Override
     void manage() {
-        int index = UserSelector.selected_index;
-        var selected = Searcher.last_results.toArray();
-        CommonUser user;
         try {
+            int index = UserSelector.selected_index;
+            var selected = Searcher.last_results.toArray();
+            CommonUser user;
             user = (CommonUser) selected[index];
             LibraryContext.removeObject(user);
             ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).removeRow(index);
@@ -391,27 +395,25 @@ class UserDeleter extends FrameContentManager {
             LibraryGUI.changePrompt("User successfully deleted");
         } catch (CannotConnectToDBException e) {
             LibraryGUI.changePrompt("Cannot connect to database, check your connection");
-        } catch (ArrayIndexOutOfBoundsException ignored) {
-
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
         }
     }
 }
-
 class UserAdder extends FrameContentManager {
     @Override
     void manage() {
-        String name, surname, login, mail, password;
-        String[] data = FrameContentManager.getUserData();
-
-        name = data[0];
-        surname = data[1];
-        login = data[2];
-        mail = data[3];
-        password = data[4];
-
-        int id = LibraryContext.generateCommonUserID();
-
         try {
+            String name, surname, login, mail, password;
+            String[] data = FrameContentManager.getUserData();
+
+            name = data[0];
+            surname = data[1];
+            login = data[2];
+            mail = data[3];
+            password = data[4];
+
+            int id = LibraryContext.generateCommonUserID();
             LibraryContext.addObject(new CommonUser(
                     login,
                     password,
@@ -458,7 +460,7 @@ class SelfModifier extends FrameContentManager {
             if (LibraryContext.getCurrentUser() != null)
                 LibraryContext.modifyFewUserAttributes(map, LibraryContext.getCurrentUser().getUserId());
             else
-                LibraryContext.modifyFewUserAttributes(map, LibraryContext.getCurrentAdmin().getAdminId());
+                LibraryContext.modifyFewAdminAttributes(map);
             LibraryGUI.changePrompt("Your data successfully modified");
         } catch (NullOrEmptyStringException e) {
             LibraryGUI.changePrompt("User data cannot be empty");
@@ -513,7 +515,7 @@ class BookSelector extends FrameContentManager implements ListSelectionListener 
                 this.manage();
             } catch (NullPointerException exception) {
                 LibraryGUI.changePrompt("Choose non empty table position");
-            } catch (IndexOutOfBoundsException ignored) {
+            } catch (ArrayIndexOutOfBoundsException ignored) {
 
             }
         }
@@ -535,8 +537,10 @@ class BookModifier extends FrameContentManager {
         map.put(AttributesNames.author, author);
         map.put(AttributesNames.category, category);
         try {
-            LibraryContext.modifyFewBookAttributes(map, BookSelector.selected_id);
             int row_index = BookSelector.selected_index;
+            if (row_index >= Searcher.last_results.size())
+                throw new IndexOutOfBoundsException();
+            LibraryContext.modifyFewBookAttributes(map, BookSelector.selected_id);
             LibraryGUI.main_page.getSearch_table().getModel().setValueAt(name, row_index, ObjectTable.column_book_name);
             LibraryGUI.main_page.getSearch_table().getModel().setValueAt(author, row_index, ObjectTable.column_book_author_);
             LibraryGUI.main_page.getSearch_table().getModel().setValueAt(category, row_index, ObjectTable.column_book_category);
@@ -545,6 +549,8 @@ class BookModifier extends FrameContentManager {
             LibraryGUI.changePrompt("Book data cannot be empty");
         }  catch (CannotConnectToDBException e) {
             LibraryGUI.changePrompt("Cannot connect to database, check your connection");
+        } catch (IndexOutOfBoundsException exception) {
+            LibraryGUI.changePrompt("Select non-empty table row");
         } catch (InvalidBookNumberException | InvalidIdException ignored) {
 
         }
@@ -652,10 +658,10 @@ class BookAdder extends FrameContentManager {
 class BookDeleter extends FrameContentManager {
     @Override
     void manage() {
-        int index = BookSelector.selected_index;
-        var selected = Searcher.last_results.toArray();
-        Book book;
         try {
+            int index = BookSelector.selected_index;
+            var selected = Searcher.last_results.toArray();
+            Book book;
             book = (Book) selected[index];
             LibraryContext.removeObject(book);
             ((DefaultTableModel) LibraryGUI.main_page.getSearch_table().getModel()).removeRow(index);
@@ -663,8 +669,8 @@ class BookDeleter extends FrameContentManager {
             LibraryGUI.changePrompt("Book successfully deleted");
         } catch (CannotConnectToDBException e) {
             LibraryGUI.changePrompt("Cannot connect to database, check your connection");
-        } catch (ArrayIndexOutOfBoundsException ignored) {
-
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+            LibraryGUI.changePrompt("Select non-empty table row");
         }
     }
 }
