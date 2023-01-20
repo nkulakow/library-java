@@ -32,7 +32,8 @@ public class LibraryGUI {
     }
 
     public static void sendMessageToLoginPage(final String mes){
-
+        LibraryGUI.main_prompt.setText(mes);
+        LibraryGUI.main_prompt.setFont(ComponentDesigner.getDefaultFont(15));
     }
 
     public static class GUIData {
