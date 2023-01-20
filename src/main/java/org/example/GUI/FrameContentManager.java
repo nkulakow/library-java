@@ -319,8 +319,14 @@ class UserSelector extends FrameContentManager implements ListSelectionListener 
     public void valueChanged(ListSelectionEvent e) {
         var model = (ListSelectionModel) e.getSource();
         if(!model.isSelectionEmpty()) {
-            selected_index = model.getMinSelectionIndex();
-            this.manage();
+            try {
+                selected_index = model.getMinSelectionIndex();
+                this.manage();
+            } catch (NullPointerException exception) {
+                System.out.println("Choose non empty table position");
+            } catch (IndexOutOfBoundsException ignored) {
+
+            }
         }
     }
 }
@@ -493,8 +499,14 @@ class BookSelector extends FrameContentManager implements ListSelectionListener 
     public void valueChanged(ListSelectionEvent e) {
         var model = (ListSelectionModel) e.getSource();
         if(!model.isSelectionEmpty()) {
-            selected_index = model.getMinSelectionIndex();
-            this.manage();
+            try {
+                selected_index = model.getMinSelectionIndex();
+                this.manage();
+            } catch (NullPointerException exception) {
+                System.out.println("Choose non empty table position");
+            } catch (IndexOutOfBoundsException ignored) {
+
+            }
         }
     }
 }
@@ -550,8 +562,14 @@ class BookOrderSelector extends FrameContentManager implements ListSelectionList
     public void valueChanged(ListSelectionEvent e) {
         var model = (ListSelectionModel) e.getSource();
         if(!model.isSelectionEmpty()) {
-            BookOrderSelector.selected_index = model.getMinSelectionIndex();
-            this.manage();
+            try {
+                selected_index = model.getMinSelectionIndex();
+                this.manage();
+            } catch (NullPointerException exception) {
+                System.out.println("Choose non empty table position");
+            } catch (IndexOutOfBoundsException ignored) {
+
+            }
         }
     }
 }
