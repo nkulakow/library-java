@@ -1,10 +1,6 @@
-# PAP22L-Z01
+# Biblioteka 
+Jest to aplikacja robiona przez mój zespół w ramach przedmiotu Programowanie Aplikacyjne na Politechnice Warszawskie (w tym poniższa część README).
 
-### Członkowie zespołu:
-- Marcin Wawrzyniak 318741
-- Mateusz Kiełbus 318668
-- Janek Hapunik 318659
-- Nel Kułakowska 318687
 
 ## Aktualności
 <ins>Zrealizowane do te pory:</ins>
